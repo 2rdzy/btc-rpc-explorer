@@ -249,6 +249,42 @@ block content
 							span #{chainworkData[0]}
 							span  x 10
 							sup #{chainworkData[1].exponent}
+
+					if (result.getblock.header_version == 2)
+						- var zeroHex = /^0*$/;
+						- var showXorKey = result.getblock.xor_key && !zeroHex.test(result.getblock.xor_key);
+						- var showMmRhs = result.getblock.mm_rhs && !zeroHex.test(result.getblock.mm_rhs);
+
+						.mt-4
+							+summaryRow(6 + (showXorKey ? 1 : 0) + (showMmRhs ? 1 : 0))
+								+summaryItem("Header Version", "This block uses the extended BLAKE2b header, which carries extra nonce, time and merge-mining fields.")
+									| 2 (BLAKE2b)
+
+								+summaryItem("Nonce 2")
+									| 0x#{result.getblock.nonce2}
+
+								+summaryItem("Nonce 3")
+									| 0x#{result.getblock.nonce3}
+
+								+summaryItem("Extranonce")
+									| #{utils.ellipsizeMiddle(result.getblock.extranonce, 12)}
+									+copyTextButton(result.getblock.extranonce)
+
+								+summaryItem("Time Offset", "Offset of the header timestamp, in seconds.")
+									| #{result.getblock.time_offset}
+
+								+summaryItem("Header Flags")
+									| #{result.getblock.header_flags}
+
+								if (showXorKey)
+									+summaryItem("XOR Key", `Bits cleared from the XOR key mask: ${result.getblock.xor_key_mask_clear_bits}`)
+										| #{utils.ellipsizeMiddle(result.getblock.xor_key, 12)}
+										+copyTextButton(result.getblock.xor_key)
+
+								if (showMmRhs)
+									+summaryItem("Merge-Mining Hash", "Right-hand side of the merge-mining commitment.")
+										| #{utils.ellipsizeMiddle(result.getblock.mm_rhs, 12)}
+										+copyTextButton(result.getblock.mm_rhs)
 											
 
 				if (!result.getblock.tx || result.getblock.tx.length == 0)
