@@ -1,4 +1,4 @@
-$body-bg: #1a2433;
+$body-bg: #1b1d1f;
 $body-color: #f7fafa;
 
 $main-bg: darken($body-bg, 4%);
@@ -12,10 +12,10 @@ $dark: darken($body-bg, 8%);
 );*/
 
 
-$blue: #0d6efd;
+$blue: #C4402A;
 $light: darken(#f8f9fa, 5%);
-$link-color: $blue;
-$card-highlight-color: #3d76cc;
+$link-color: #D65641;
+$card-highlight-color: #D65641;
 
 $table-striped-bg-factor: 0.15;
 
@@ -33,7 +33,7 @@ $border-color: lighten($body-bg, 4%);
 
 $card-border-color: $border-color;
 
-$link-hover-color:			#408cff;
+$link-hover-color:			#E5A395;
 
 
 /*$table-striped-bg: lighten($body-bg, 2%);*/
@@ -165,7 +165,7 @@ $nav-tabs-border-color: $body-color;
 }
 
 
-$header-footer-bg: #112138;
+$header-footer-bg: #822A1C;
 
 .bg-header-footer {
 	background-color: $header-footer-bg !important;
@@ -190,7 +190,7 @@ $header-footer-bg: #112138;
 }
 
 .border-card-highlight-badge {
-	border-color: #183662 !important;
+	border-color: #3a3d40 !important;
 }
 
 .border-dark {
