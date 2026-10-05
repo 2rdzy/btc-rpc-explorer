@@ -356,10 +356,30 @@ process.on("unhandledRejection", (reason, p) => {
 	debugLog("Unhandled Rejection at: Promise", p, "reason:", reason, "stack:", (reason != null ? reason.stack : "null"));
 });
 
+function loadCustomMiningPoolConfigs() {
+	const customConfigDir = path.join(__dirname, "public", "txt", "mining-pools-configs-custom", global.coinConfig.ticker);
+	const configs = [];
+
+	try {
+		fs.readdirSync(customConfigDir).filter(file => file.endsWith(".json")).forEach(file => {
+			configs.push(JSON.parse(fs.readFileSync(path.join(customConfigDir, file), 'utf8')));
+		});
+
+	} catch (err) {
+		if (err.code != "ENOENT") {
+			utils.logError("customMiningPoolConfigs", err, {configDir:customConfigDir});
+		}
+	}
+
+	return configs;
+}
+
 function loadMiningPoolConfigs() {
 	debugLog("Loading mining pools config");
 
-	global.miningPoolsConfigs = [];
+	// Hand-maintained configs live apart from the downloaded ones (which `npm run miners`
+	// replaces) and come first, so they take precedence.
+	global.miningPoolsConfigs = loadCustomMiningPoolConfigs();
 
 	var miningPoolsConfigDir = path.join(__dirname, "public", "txt", "mining-pools-configs", global.coinConfig.ticker);
 
