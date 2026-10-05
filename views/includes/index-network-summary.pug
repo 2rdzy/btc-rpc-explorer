@@ -112,7 +112,7 @@ if (exchangeRates)
 +contentSection
 	+summaryRow(2 + (halvingSoon ? 1 : 0) + (hashrate7d ? 1 : 0) + (chainTxStats && chainTxStats[7 * targetBlocksPerDay] ? 1 : 0) + (difficultyAdjustmentData ? 1 : 0))
 		if (hashrate7d)
-			+summaryItem("7d Hashrate", "The average hashrate of the global mining network over the last 7 days. A comparison to the 30-day average is included to help gauge the rate of change.")
+			+summaryItem("7d Hashrate", "The average hashrate of the mining network over the last 7 days, in BLAKE2b hashes per second. A comparison to the 30-day average is included to help gauge the rate of change.")
 				- var hashrate7dayData = utils.formatLargeNumber(hashrate7d, 1);
 
 				span.me-1 #{hashrate7dayData[0]}

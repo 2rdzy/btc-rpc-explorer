@@ -266,7 +266,38 @@ function getChainTxStats(blockCount, blockhashEnd) {
 	});
 }
 
-function getNetworkHashrate(blockCount) {
+// Height of the hard fork to BLAKE2b proof of work, as reported by Knots'
+// getdeploymentinfo, or null when the node does not report one (or it has not
+// taken effect yet).
+async function getBlake2bForkHeight() {
+	try {
+		const deploymentInfo = await getDeploymentInfo();
+
+		if (deploymentInfo && deploymentInfo.blake2b && deploymentInfo.blake2b.active) {
+			return deploymentInfo.blake2b.height;
+		}
+
+	} catch (err) {
+		utils.logError("blake2bForkHeight", err);
+	}
+
+	return null;
+}
+
+// Network hashrate over the last blockCount blocks, or null when that window
+// reaches back before the BLAKE2b fork: chainwork before and after it counts
+// hashes of different algorithms, so a rate across the fork means nothing.
+async function getNetworkHashrate(blockCount) {
+	const forkHeight = await getBlake2bForkHeight();
+
+	if (forkHeight != null) {
+		const blockchainInfo = await getBlockchainInfo();
+
+		if (blockchainInfo.blocks - blockCount < forkHeight) {
+			return null;
+		}
+	}
+
 	return tryCacheThenRpcApi(miscCache, "getNetworkHashrate-" + blockCount, FIFTEEN_MIN, function() {
 		return rpcApi.getNetworkHashrate(blockCount);
 	});
@@ -2270,6 +2301,7 @@ module.exports = {
 	getSmartFeeEstimate: getSmartFeeEstimate,
 	getUtxoSetSummary: getUtxoSetSummary,
 	getNetworkHashrate: getNetworkHashrate,
+	getBlake2bForkHeight: getBlake2bForkHeight,
 	getBlockStats: getBlockStats,
 	getBlockStatsByHeight: getBlockStatsByHeight,
 	getBlocksStatsByHeight: getBlocksStatsByHeight,
