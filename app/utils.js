@@ -871,6 +871,15 @@ function parseExponentStringDouble(val) {
 		: lead + ( +pow >= decimal.length ? (decimal + "0".repeat(+pow-decimal.length)) : (decimal.slice(0,+pow)+"."+decimal.slice(+pow)));
 }
 
+// Knots reports "difficulty" for SHA256d blocks and "difficulty_blake2b" for BLAKE2b (header-v2) blocks.
+function getDifficulty(obj) {
+	return obj.difficulty != null ? obj.difficulty : obj.difficulty_blake2b;
+}
+
+function isBlake2bDifficulty(obj) {
+	return obj.difficulty == null && obj.difficulty_blake2b != null;
+}
+
 function formatLargeNumber(n, decimalPlaces) {
 	try {
 		for (let i = 0; i < exponentScales.length; i++) {
@@ -1678,6 +1687,8 @@ module.exports = {
 	estimatedSupply: estimatedSupply,
 	refreshExchangeRates: refreshExchangeRates,
 	parseExponentStringDouble: parseExponentStringDouble,
+	getDifficulty: getDifficulty,
+	isBlake2bDifficulty: isBlake2bDifficulty,
 	formatLargeNumber: formatLargeNumber,
 	formatLargeNumberSignificant: formatLargeNumberSignificant,
 	geoLocateIpAddresses: geoLocateIpAddresses,
