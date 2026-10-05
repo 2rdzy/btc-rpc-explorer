@@ -446,6 +446,36 @@ function getRpcMethodHelp(methodName) {
 
 
 
+// RPC methods whose reply is never legitimately empty: when the node answers
+// with an error for one of these, fail loudly instead of resolving null.
+// (Methods like getrawtransaction rely on a null result for "not found".)
+const methodsThatMustSucceed = new Set([
+	"getblockchaininfo",
+	"getblocktemplate",
+	"getdeploymentinfo",
+	"getmempoolinfo",
+	"getmininginfo",
+	"getnetworkhashps",
+	"getnetworkinfo"
+]);
+
+function checkRpcError(method, rpcResult) {
+	if (!rpcResult || !rpcResult.error) {
+		return;
+	}
+
+	const rpcError = rpcResult.error;
+
+	debugLog(`RPC error: method=${method}, code=${rpcError.code}, message=${rpcError.message}`);
+
+	if (methodsThatMustSucceed.has(method)) {
+		const err = new Error(`RPC ${method} failed: ${rpcError.message} (code ${rpcError.code})`);
+		err.rpcCode = rpcError.code;
+
+		throw err;
+	}
+}
+
 function getRpcData(cmd, verifyingConnection=false) {
 	let startTime = new Date().getTime();
 
@@ -461,6 +491,8 @@ function getRpcData(cmd, verifyingConnection=false) {
 
 			try {
 				const rpcResult = await client.request(cmd, []);
+				checkRpcError(cmd, rpcResult);
+
 				const result = rpcResult.result;
 
 				//console.log(`RPC: request=${cmd}, result=${JSON.stringify(result)}`);
@@ -523,6 +555,8 @@ function getRpcDataWithParams(request, verifyingConnection=false) {
 			
 			try {
 				const rpcResult = await client.request(request.method, request.parameters);
+				checkRpcError(request.method, rpcResult);
+
 				const result = rpcResult.result;
 
 				//console.log(`RPC: request=${request}, result=${JSON.stringify(result)}`);

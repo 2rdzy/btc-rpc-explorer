@@ -326,6 +326,10 @@ function getUtxoSetSummary(useCoinStatsIndexIfAvailable=true, useCacheIfAvailabl
 async function getNextBlockEstimate() {
 	const blockTemplate = await getBlockTemplate();
 
+	if (!blockTemplate || !blockTemplate.transactions) {
+		throw new Error("The node did not return a block template.");
+	}
+
 	let minFeeRate = 1000000;
 	let maxFeeRate = 0;
 	let minFeeTxid = null;
