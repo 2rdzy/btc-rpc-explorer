@@ -1,0 +1,11 @@
+{
+	"coinbase_tags": {
+		"AlphaPool": { "name": "AlphaPool" },
+		"Lazarus": { "name": "Lazarus" },
+		"omegapool.tech": { "name": "omegapool.tech" },
+		"Legata": { "name": "Legata" }
+	},
+	"payout_addresses": {},
+	"block_hashes": {},
+	"block_heights": {}
+}
