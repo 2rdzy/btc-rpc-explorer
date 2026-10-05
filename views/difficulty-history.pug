@@ -44,6 +44,7 @@ block content
 				.row
 					.col
 						+contentSection("Difficulty History")
+							p.small.text-muted.mb-2(id="algo-note", style="display: none;")
 							each yearItem in yearItems
 								canvas(id=`graph-diff-hist-${yearItem[1]}`, class='graph-diff-hist')
 
@@ -155,8 +156,12 @@ block endOfBody
 
 				fillDifficultyTable(summary);
 
+				if (summary.firstBlake2bEpoch != null) {
+					$("#algo-note").text(`Epochs before ${summary.firstBlake2bEpoch} report SHA-256d difficulty. From epoch ${summary.firstBlake2bEpoch} the proof of work is BLAKE2b and difficulty is the expected number of hashes per block. The two are on different scales and are not comparable, so no change is shown across the switch.`).show();
+				}
+
 				for (var i = 0; i < yearItems.length; i++) {
-					createGraph(`graph-diff-hist-${yearItems[i][1]}`, [summary.graphData_years[yearItems[i][1]]], "Difficulty", true);
+					createGraph(`graph-diff-hist-${yearItems[i][1]}`, [summary.graphData_years[yearItems[i][1]], summary.blake2bGraphData_years[yearItems[i][1]]], "Difficulty", true, ["SHA-256d difficulty", "BLAKE2b difficulty (expected hashes)"], ["#adb5bd", "#C4402A"]);
 				}
 
 				for (var i = 0; i < yearItems.length; i++) {
@@ -226,7 +231,14 @@ block endOfBody
 					row.find(".data-difficulty").text(new Decimal(item.difficulty).toDP(3));
 				}
 
-				if (deltaItem.difficultyDelta) {
+				if (item.blake2b) {
+					row.find(".data-difficulty").append(' <span class="badge bg-primary ms-1" title="BLAKE2b proof of work: difficulty is the expected number of hashes per block">BLAKE2b</span>');
+				}
+
+				if (deltaItem.algorithmChange) {
+					row.find(".data-difficulty-delta").text("algorithm change").addClass("text-muted");
+
+				} else if (deltaItem.difficultyDelta) {
 					if (deltaItem.difficultyDelta > 0) {
 						row.find(".data-difficulty-delta").text("+" + (new Decimal(deltaItem.difficultyDelta).toDP(2)));
 						row.find(".data-difficulty-delta").addClass("text-success");
@@ -258,7 +270,10 @@ block endOfBody
 				row.find(".data-epoch").text(item.epoch);
 				//row.find(".data-date").text(item.count.toLocaleString());
 				//row.find(".data-block-start").text(sumBlockCount.toDP(2));
-				if (item.difficultyDelta) {
+				if (item.algorithmChange) {
+					row.find(".data-difficulty-delta").text("algorithm change").addClass("text-muted");
+
+				} else if (item.difficultyDelta) {
 					if (item.difficultyDelta > 0) {
 						row.find(".data-difficulty-delta").text("+" + (new Decimal(item.difficultyDelta).toDP(2)));
 						row.find(".data-difficulty-delta").addClass("text-success");
@@ -279,7 +294,7 @@ block endOfBody
 		}
 
 		var chartsById = {};
-		function createGraph(graphId, datas, yLabelStr, logY) {
+		function createGraph(graphId, datas, yLabelStr, logY, labels, colors) {
 			if (chartsById[graphId]) {
 				chartsById[graphId].destroy();
 			}
@@ -287,8 +302,13 @@ block endOfBody
 			var datasets = [];
 
 			for (var i = 0; i < datas.length; i++) {
+				if (datas.length > 1 && datas[i].length == 0) {
+					continue;
+				}
+
 				datasets.push({
-					borderColor: '#007bff',
+					label: labels ? labels[i] : undefined,
+					borderColor: colors ? colors[i] : '#C4402A',
 					borderWidth: 2,
 					backgroundColor: 'rgba(0,0,0,0)',
 					data: datas[i],
@@ -308,7 +328,7 @@ block endOfBody
 						mode: 'index',
 					},
 					plugins: {
-						legend: { display: false },
+						legend: { display: datasets.length > 1 },
 					},
 					scales: {
 						x: {
@@ -389,8 +409,11 @@ block endOfBody
 
 			summary.graphData = [];
 			summary.graphData_years = {};
+			summary.blake2bGraphData_years = {};
+			summary.firstBlake2bEpoch = null;
 			for (let i = 0; i < yearItems.length; i++) {
 				summary.graphData_years[yearItems[i][1]] = [];
+				summary.blake2bGraphData_years[yearItems[i][1]] = [];
 			}
 
 			summary.changeGraphData_years = {};
@@ -402,7 +425,13 @@ block endOfBody
 				var heightStr = `${raw.heights[i]}`;
 				var previousHeightStr = `${raw.heights[i - 1]}`;
 
-				summary.difficultyData.push({epoch:i, date:raw[heightStr].time, difficulty:raw[heightStr].difficulty});
+				var isBlake2b = !!raw[heightStr].blake2b;
+
+				if (isBlake2b && summary.firstBlake2bEpoch == null) {
+					summary.firstBlake2bEpoch = i;
+				}
+
+				summary.difficultyData.push({epoch:i, date:raw[heightStr].time, difficulty:raw[heightStr].difficulty, blake2b:isBlake2b});
 
 				summary.graphData.push({x:i, y:raw[heightStr].difficulty});
 
@@ -410,7 +439,7 @@ block endOfBody
 
 				for (let j = 0; j < yearItems.length; j++) {
 					if (yearIndex < yearItems[j][1]) {
-						summary.graphData_years[yearItems[j][1]].push({x:i, y:raw[heightStr].difficulty});
+						(isBlake2b ? summary.blake2bGraphData_years : summary.graphData_years)[yearItems[j][1]].push({x:i, y:raw[heightStr].difficulty});
 					}
 				}
 
@@ -427,6 +456,19 @@ block endOfBody
 				} else {
 					var d1 = raw[heightStr].difficulty;
 					var d0 = raw[previousHeightStr].difficulty
+
+					if (isBlake2b != !!raw[previousHeightStr].blake2b) {
+						// the proof of work changed between these epochs: the two difficulties are not comparable
+						summary.difficultyDeltaData.push({epoch:i, algorithmChange:true});
+
+						for (let j = 0; j < yearItems.length; j++) {
+							if (yearIndex < yearItems[j][1]) {
+								summary.changeGraphData_years[yearItems[j][1]].push({x:i, y:null});
+							}
+						}
+
+						continue;
+					}
 
 					var deltaPercent = 100 * (d1 / d0 - 1);
 
