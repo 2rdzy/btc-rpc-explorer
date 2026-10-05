@@ -410,7 +410,7 @@ function loadMiningPoolConfigs() {
 
 async function getSourcecodeProjectMetadata() {
 	var options = {
-		url: "https://api.github.com/repos/janoside/btc-rpc-explorer",
+		url: "https://api.github.com/repos/2rdzy/btc-rpc-explorer",
 		headers: {
 			'User-Agent': 'request'
 		}

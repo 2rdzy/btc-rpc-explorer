@@ -63,7 +63,7 @@ importers:
         specifier: ^13.0.1
         version: 13.0.1
       electrum-client:
-        specifier: github:janoside/electrum-client
+        specifier: github:janoside/electrum-client#d98e929028d2b05c88a41fe37652737912bead79
         version: https://codeload.github.com/janoside/electrum-client/tar.gz/d98e929028d2b05c88a41fe37652737912bead79
       express:
         specifier: ^4.21.2
