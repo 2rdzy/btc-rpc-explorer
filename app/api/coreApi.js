@@ -472,8 +472,10 @@ async function getDifficultyByBlockHeights(blockHeights) {
 		let blockHeight = blockHeights[i];
 		let blockHeightStr = `${blockHeight}`;
 
-		if (global.difficultyByBlockheightCache[blockHeightStr]) {
-			results[blockHeight] = global.difficultyByBlockheightCache[blockHeightStr];
+		// entries cached by older versions may lack a difficulty (BLAKE2b headers), so fetch those again
+		const cachedItem = global.difficultyByBlockheightCache[blockHeightStr];
+		if (cachedItem && cachedItem.difficulty != null) {
+			results[blockHeight] = cachedItem;
 
 		} else {
 			neededBlockHeights.push(blockHeight);
