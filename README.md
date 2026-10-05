@@ -75,7 +75,7 @@ btc-rpc-explorer
 
 #### Run from source:
 
-1. `git clone https://github.com/janoside/btc-rpc-explorer`
+1. `git clone https://github.com/2rdzy/btc-rpc-explorer`
 2. `cd btc-rpc-explorer`
 3. `npm install`
 4. `npm start`

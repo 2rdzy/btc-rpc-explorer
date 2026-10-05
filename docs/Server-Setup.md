@@ -31,7 +31,7 @@ Misc setup
 Get source, npm install
 
     cd /home/bitcoin
-    git clone https://github.com/janoside/btc-rpc-explorer.git
+    git clone https://github.com/2rdzy/btc-rpc-explorer.git
     cd /home/bitcoin/btc-rpc-explorer
     npm install
     
