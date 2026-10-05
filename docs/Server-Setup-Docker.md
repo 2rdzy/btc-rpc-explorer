@@ -6,7 +6,7 @@
 	apt install docker.io
 	
 	# get source, npm install
-	git clone https://github.com/janoside/btc-rpc-explorer.git
+	git clone https://github.com/2rdzy/btc-rpc-explorer.git
 	cd btc-rpc-explorer
 	
 	# build docker image

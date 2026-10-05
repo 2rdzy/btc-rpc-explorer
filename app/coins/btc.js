@@ -75,13 +75,13 @@ module.exports = {
 		"regtest":"./img/network-regtest/coin-icon.svg"
 	},
 	coinColorsByNetwork: {
-		"main": "#F7931A",
+		"main": "#C4402A",
 		"test": "#1daf00",
 		"signet": "#af008c",
 		"regtest": "#777"
 	},
 	siteTitlesByNetwork: {
-		"main":"Bitcoin Explorer",
+		"main":"Blake2b Bitcoin Explorer",
 		"test":"Testnet Explorer",
 		"regtest":"Regtest Explorer",
 		"signet":"Signet Explorer",

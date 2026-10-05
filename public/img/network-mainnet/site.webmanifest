@@ -1,6 +1,6 @@
 {
-    "name": "BTC Explorer",
-    "short_name": "BTC Explorer",
+    "name": "Blake2b Explorer",
+    "short_name": "Blake2b Explorer",
     "icons": [
         {
             "src": "android-chrome-192x192.png",
@@ -13,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#022e70",
-    "background_color": "#022e70",
+    "theme_color": "#822A1C",
+    "background_color": "#822A1C",
     "display": "standalone"
 }
