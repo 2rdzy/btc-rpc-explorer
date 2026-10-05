@@ -1,4 +1,4 @@
-### Setup of https://bitcoinexplorer.org on Ubuntu 20.04
+### Setting up an explorer on Ubuntu 20.04 (replace explorer.example.com with your domain)
 
 	# update and install packages
 	apt update
