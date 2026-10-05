@@ -164,22 +164,23 @@ if (exchangeRates)
 						.progress-bar(style=`width: ${halvingProgressPercent.toDP(0)}%`)
 
 		+summaryItem("Difficulty", null, null, null, "icon:bi-clock-history", "./difficulty-history", "View difficulty history")
-			- var difficultyData = utils.formatLargeNumber(getblockchaininfo.difficulty, 3);
+			- var currentDifficulty = utils.getDifficulty(getblockchaininfo);
+			- var difficultyData = utils.formatLargeNumber(currentDifficulty, 3);
 			
-			if (getblockchaininfo.difficulty > 1000)
-				span.border-dotted(title=parseFloat(getblockchaininfo.difficulty).toLocaleString(), data-bs-toggle="tooltip")
+			if (currentDifficulty > 1000)
+				span.border-dotted(title=parseFloat(currentDifficulty).toLocaleString(), data-bs-toggle="tooltip")
 					span #{difficultyData[0]}
 					span  x 10
 					sup #{difficultyData[1].exponent}
 
 			else
-				span #{new Decimal(getblockchaininfo.difficulty).toDP(3)}
+				span #{new Decimal(currentDifficulty).toDP(3)}
 
-			if (global.athDifficulty)
+			if (global.athDifficulty && !utils.isBlake2bDifficulty(getblockchaininfo))
 				span.text-tiny.text-muted.ms-2
 					| (
 
-					- var diffX = getblockchaininfo.difficulty;
+					- var diffX = currentDifficulty;
 					if (global.athDifficulty == diffX)
 						span.border-dotted(title='The current difficulty is an All-Time High!' data-bs-toggle='tooltip')
 							span.text-success ATH

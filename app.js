@@ -646,7 +646,7 @@ async function loadDifficultyHistory(tipBlockHeight=null) {
 	
 	global.athDifficulty = 0;
 	for (let i = 0; i < heights.length; i++) {
-		if (global.difficultyHistory[`${heights[i]}`].difficulty > global.athDifficulty) {	
+		if (!global.difficultyHistory[`${heights[i]}`].blake2b && global.difficultyHistory[`${heights[i]}`].difficulty > global.athDifficulty) {	
 			global.athDifficulty = global.difficultyHistory[heights[i]].difficulty;
 		}
 	}
