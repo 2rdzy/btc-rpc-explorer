@@ -9,7 +9,7 @@
 			"version": "3.5.1",
 			"license": "MIT",
 			"dependencies": {
-				"@janoside/app-utils": "github:janoside/app-utils#ba4c23d3f",
+				"@janoside/app-utils": "github:2rdzy/app-utils#ba4c23d3f",
 				"async": "^3.2.6",
 				"axios": "^1.11.0",
 				"basic-auth": "^2.0.1",
@@ -27,7 +27,7 @@
 				"debug": "^4.4.1",
 				"decimal.js": "^10.6.0",
 				"dotenv": "^13.0.1",
-				"electrum-client": "github:janoside/electrum-client#d98e929028d2b05c88a41fe37652737912bead79",
+				"electrum-client": "github:2rdzy/electrum-client#d98e929028d2b05c88a41fe37652737912bead79",
 				"express": "^4.21.2",
 				"express-async-handler": "^1.2.0",
 				"express-rate-limit": "^8.0.1",
@@ -1190,7 +1190,7 @@
 		},
 		"node_modules/@janoside/app-utils": {
 			"version": "1.0.0",
-			"resolved": "git+ssh://git@github.com/janoside/app-utils.git#ba4c23d3fcfb5d6eb9f5de951bf47e046e03b281",
+			"resolved": "git+ssh://git@github.com/2rdzy/app-utils.git#ba4c23d3fcfb5d6eb9f5de951bf47e046e03b281",
 			"license": "MIT",
 			"dependencies": {
 				"@aws-sdk/client-s3": "^3.288.0",
@@ -3515,7 +3515,7 @@
 		},
 		"node_modules/electrum-client": {
 			"version": "1.1.7",
-			"resolved": "git+ssh://git@github.com/janoside/electrum-client.git#d98e929028d2b05c88a41fe37652737912bead79",
+			"resolved": "git+ssh://git@github.com/2rdzy/electrum-client.git#d98e929028d2b05c88a41fe37652737912bead79",
 			"license": "MIT",
 			"engines": {
 				"node": ">=6"
