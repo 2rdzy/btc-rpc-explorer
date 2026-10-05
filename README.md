@@ -1,175 +1,149 @@
-# BTC RPC Explorer
+# BTC RPC Explorer: Blake2b fork
 
-## Self-Hosted Bitcoin explorer for everyone running [Bitcoin Core](https://github.com/bitcoin/bitcoin).
-
-[![npm version][npm-ver-img]][npm-ver-url] [![NPM downloads][npm-dl-alltime-img]][npm-dl-url]
-
-
----
-
+## Self-hosted explorer for the BLAKE2b chain of [Bitcoin Knots](https://github.com/bitcoinknots/bitcoin).
 
 ![homepage](./public/img/screenshots/homepage.png)
 
+This is a self-hosted explorer driven by RPC calls to your own Bitcoin Knots node. It is a fork of [BTC RPC Explorer](https://github.com/janoside/btc-rpc-explorer) by Dan Janosik (MIT license), adapted to the chain that Knots follows since its BLAKE2b hard fork. It is easy to run and lacks some features compared to database-backed explorers.
+
+Whatever reasons you may have for running a full node (trustlessness, technical curiosity, supporting the network, etc) it's valuable to appreciate the *fullness* of your own node. With this explorer you can explore the blockchain, and also the functional capabilities of your own node.
 
 
-This is a self-hosted explorer for the Bitcoin blockchain, driven by RPC calls to your own [Bitcoin](https://github.com/bitcoin/bitcoin) node. It is easy to run and can be connected to other tools (like Electrum servers) to achieve a full-featured explorer.
+# What is different from upstream
 
-Whatever reasons you may have for running a full node (trustlessness, technical curiosity, supporting the network, etc) it's valuable to appreciate the *fullness* of your node. With this explorer, you can explore not just the blockchain database, but also explore all of the functional capabilities of your own node.
+* Reads `difficulty_blake2b` as well as `difficulty` (Knots reports the former for BLAKE2b blocks).
+* Sends the `blake2b` rule with `getblocktemplate`, which Knots requires on this chain.
+* The block page shows the extended BLAKE2b header fields (`nonce2`, `nonce3`, extranonce, time offset, flags).
+* The difficulty history keeps SHA-256d and BLAKE2b difficulty apart, because they are on different scales and cannot be compared.
+* No hashrate is reported for a window that reaches back before the fork, for the same reason.
+* The node details page shows the BLAKE2b fork height and whether it has taken effect.
+* A hand-maintained list identifies the miners seen on this chain (`public/txt/mining-pools-configs-custom/`).
+* Red theme and the Blake2b name.
 
-Live demos:
-
-* [BitcoinExplorer.org](https://bitcoinexplorer.org) / [testnet](https://testnet.bitcoinexplorer.org) / [signet](https://signet.bitcoinexplorer.org)
+Blocks up to the fork are shared with Bitcoin. From the fork on, blocks use BLAKE2b proof of work and difficulty is the expected number of hashes per block.
 
 
 # Features
 
-* Network Summary dashboard
+* Network summary dashboard
 * View details of blocks, transactions, and addresses
 * Analysis tools for viewing stats on blocks, transactions, and miner activity
 * JSON REST API
 * See raw JSON content from bitcoind used to generate most pages
 * Search by transaction ID, block hash/height, and address
-* Optional transaction history for addresses by querying from Electrum-protocol servers (e.g. Electrs, ElectrumX), blockchain.com, blockchair.com, or blockcypher.com
+* Optional transaction history for addresses by querying an Electrum-protocol server (e.g. Fulcrum, Electrs, ElectrumX)
 * Mempool summary, with fee, size, and age breakdowns
 * RPC command browser and terminal
 
 
 # Changelog / Release notes
 
-See [CHANGELOG.md](/CHANGELOG.md).
+See [CHANGELOG.md](/CHANGELOG.md) (upstream's history).
 
 
 # Getting started
 
 ## Prerequisites
 
-1. Install `Bitcoin Core` - [instructions](https://bitcoin.org/en/full-node). Ensure that `Bitcoin Core`'s' RPC server is enabled (`server=1`).
-2. Allow `Bitcoin Core` to synchronize with the Bitcoin network (you *can* use this tool while sychronizing, but some pages may fail).
-3. Install Node.js (18+ required, 22+ recommended).
+1. A Bitcoin Knots node on the BLAKE2b chain (v29.4.2 or later), with its RPC server enabled (`server=1`).
+2. Let the node synchronize (you *can* use this tool while synchronizing, but some pages may fail).
+3. Node.js 18+ (22+ recommended).
+4. Optional, for address history: an Electrum-protocol server for the same chain, such as a Fulcrum build that follows it.
 
-### Note about pruning and indexing configurations
+### Note about pruning and indexing
 
-This tool is designed to work best with full transaction indexing enabled (`txindex=1`) and pruning **disabled**. 
-However, if you're running Bitcoin Core v0.21+ you can run *without* `txindex` enabled and/or *with* `pruning` enabled and this tool will continue to function, but some data will be incomplete or missing. Also note that such Bitcoin Core configurations receive less thorough testing.
+This tool works best with full transaction indexing enabled (`txindex=1`) and pruning **disabled**. You can run without `txindex` and/or with pruning, and the tool will continue to function, but some data will be incomplete or missing.
 
-In particular, with `pruning` enabled and/or `txindex` disabled, the following functionality is altered:
+With pruning enabled and/or `txindex` disabled:
 
-* You will only be able to search for mempool, recently confirmed, and wallet transactions by their txid. Searching for non-wallet transactions that were confirmed over 3 blocks ago is only possible if you provide the confirmed block height in addition to the txid.
-* Pruned blocks will display basic header information, without the list of transactions. Transactions in pruned blocks will not be available, unless they're wallet-related. Block stats will only work for unpruned blocks.
+* You will only be able to search for mempool, recently confirmed, and wallet transactions by their txid.
+* Pruned blocks will display basic header information, without the list of transactions.
 * The address and amount of previous transaction outputs will not be shown, only the txid:vout.
 * The mining fee will only be available for unconfirmed transactions.
 
 
 ## Install / Run
 
-If you're running on mainnet with the default datadir and port, the default configuration should *Just Work*. Otherwise, see the **Configuration** section below.
-
-#### Install via `npm`:
-
-*Note: npm v7+ is required*
-
 ```bash
-npm install -g btc-rpc-explorer
-btc-rpc-explorer
+git clone https://github.com/2rdzy/btc-rpc-explorer
+cd btc-rpc-explorer
+npm install
+npm start
 ```
 
-#### Run from source:
-
-1. `git clone https://github.com/2rdzy/btc-rpc-explorer`
-2. `cd btc-rpc-explorer`
-3. `npm install`
-4. `npm start`
-
-
-#### Install via AUR Arch Linux:
-
-###### Note: The below AUR package was created and is maintained by [@dougEfresh](https://github.com/dougEfresh). The details and history of the package can be seen [here](https://aur.archlinux.org/packages/btc-rpc-explorer/).
-
-1. `git clone https://aur.archlinux.org/btc-rpc-explorer.git`
-2. `cd btc-rpc-explorer`
-3. `makepkg -csi`
-4. `systemctl enable --now btc-rpc-explorer`
-
-
-
-After a default installation+startup using any of the above methods, the app can be viewed at [http://127.0.0.1:3002/](http://127.0.0.1:3002/)
+The app is then at [http://127.0.0.1:3002/](http://127.0.0.1:3002/). Views are cached, so restart after editing a template.
 
 
 ## Configuration
 
-Configuration options may be set via environment variables or CLI arguments.
+Set options with environment variables or CLI arguments.
 
-#### Configuration with environment variables
+#### Environment variables
 
-To configure with environment variables, you need to create one of the 2 following files and enter values in it:
+Create one of these files and enter values in it:
 
 1. `~/.config/btc-rpc-explorer.env`
-2. `.env` in the working directory for btc-rpc-explorer
+2. `.env` in the working directory
 
-In either case, refer to [.env-sample](.env-sample) for a list of the options and formatting details.
+See [.env-sample](.env-sample) for all options. A typical `.env` for a local node with cookie authentication and a Fulcrum server:
 
-#### Configuration with CLI args
+```
+BTCEXP_HOST=127.0.0.1
+BTCEXP_PORT=3002
 
-For configuring with CLI arguments, run `btc-rpc-explorer --help` for the full list of options. An example execution is:
+BTCEXP_BITCOIND_HOST=127.0.0.1
+BTCEXP_BITCOIND_PORT=8332
+BTCEXP_BITCOIND_COOKIE=/path/to/.cookie
 
-```bash
-btc-rpc-explorer --port 8080 --bitcoind-port 18443 --bitcoind-cookie ~/.bitcoin/regtest/.cookie
+BTCEXP_ADDRESS_API=electrum
+BTCEXP_ELECTRUM_SERVERS=tls://your-fulcrum-host:50002
+BTCEXP_ELECTRUM_TXINDEX=true
 ```
 
-#### Demo site settings
+Notes:
 
-To match the features visible on the demo site at [BitcoinExplorer.org](https://bitcoinexplorer.org) you'll need to set the following non-default configuration values:
+* The cookie file is regenerated every time bitcoind restarts. Copy it again after a restart.
+* The Electrum client does not verify the server's TLS certificate (so self-signed Fulcrum certificates work). Only use it with a server you trust on a network you trust.
+* To use a node on another machine without opening its RPC port, forward it over SSH: `ssh -N -L 8332:127.0.0.1:8332 user@node-host`, then point `BTCEXP_BITCOIND_HOST` at `127.0.0.1`.
 
-    BTCEXP_DEMO=true 		# enables some demo/informational aspects of the site
-    BTCEXP_NO_RATES=false		# enables querying of exchange rate data
-    BTCEXP_SLOW_DEVICE_MODE=false	# enables resource-intensive tasks (UTXO set query, 24hr volume querying) that are inappropriate for "slow" devices
-    BTCEXP_ADDRESS_API=electrum 	# use electrum-protocol servers for address lookups
-    BTCEXP_ELECTRUM_SERVERS=tcp://your-electrum-protocol-server-host:50001		# address(es) for my electrum-protocol server(s)
-    BTCEXP_IPSTACK_APIKEY=your-api-key		# enable peer ip geo-location
-    BTCEXP_MAPBOX_APIKEY=your-api-key		# enable map of peer locations
+#### CLI arguments
+
+Run `node bin/cli.js --help` for the full list, for example:
+
+```bash
+node bin/cli.js --port 8080 --bitcoind-port 8332 --bitcoind-cookie ~/.bitcoin/.cookie
+```
+
+#### Demo mode
+
+`BTCEXP_DEMO=true` enables some demo behaviour: page size limits and an open RPC terminal. Do not enable it on a node you care about without reading the settings in [.env-sample](.env-sample).
 
 #### SSO authentication
 
-You can configure SSO authentication similar to what ThunderHub and RTL provide.
-To enable it, make sure `BTCEXP_BASIC_AUTH_PASSWORD` is **not** set and set `BTCEXP_SSO_TOKEN_FILE` to point to a file write-accessible by btc-rpc-explorer.
-Then to access btc-rpc-explorer, your SSO provider needs to read the token from this file and set it in URL parameter `token`.
-For security reasons the token changes with each login, so the SSO provider needs to read it each time!
+You can configure SSO authentication similar to what ThunderHub and RTL provide. To enable it, make sure `BTCEXP_BASIC_AUTH_PASSWORD` is **not** set and set `BTCEXP_SSO_TOKEN_FILE` to point to a file write-accessible by btc-rpc-explorer. Your SSO provider then needs to read the token from this file and set it in the URL parameter `token`. The token changes with each login, so the provider needs to read it each time.
 
-After successful access with the token, a cookie is set for authentication, so you don't need to worry about it anymore.
-To improve user experience you can set `BTCEXP_SSO_LOGIN_REDIRECT_URL` to the URL of your SSO provider.
-This will cause users to be redirected to your login page if needed.
+After successful access with the token, a cookie is set for authentication. To redirect users to your login page when needed, set `BTCEXP_SSO_LOGIN_REDIRECT_URL`.
+
 
 ## Run via Docker
 
 1. `docker build -t btc-rpc-explorer .`
 2. `docker run -it -p 3002:3002 -e BTCEXP_HOST=0.0.0.0 btc-rpc-explorer`
 
+See also [docker-compose.yml](docker-compose.yml) and [docs/Server-Setup-Docker.md](docs/Server-Setup-Docker.md).
+
 
 ## Reverse proxy with HTTPS
 
-See [instructions here](docs/nginx-reverse-proxy.md) for using nginx+certbot (letsencrypt) for an HTTPS-accessible, reverse-proxied site.
+See [docs/nginx-reverse-proxy.md](docs/nginx-reverse-proxy.md) for nginx and certbot (Let's Encrypt), and [docs/Server-Setup.md](docs/Server-Setup.md) for a full server walkthrough.
 
 
-# Support
+## Development
 
-If you get value from this project, please consider supporting my work with a donation. All donations are truly appreciated.
-
-Donate via BTC Pay Server:
-
-* [https://donate.bitcoinexplorer.org](https://donate.bitcoinexplorer.org)
-
-Or, via a lightning address:
-
-thanks@donate.btc21.org
+* `npm run css` rebuilds the three theme stylesheets from `public/scss/` and rewrites the integrity hashes in `app/resourceIntegrityHashes.js`. Commit the compiled `*.min.css` files and the hashes together, or browsers will reject the stylesheets.
+* `npm run miners` downloads the upstream mining pool lists. It does not touch `public/txt/mining-pools-configs-custom/`.
 
 
-[npm-ver-img]: https://img.shields.io/npm/v/btc-rpc-explorer.svg?style=flat
-[npm-ver-url]: https://www.npmjs.com/package/btc-rpc-explorer
-[npm-dl-img]: http://img.shields.io/npm/dm/btc-rpc-explorer.svg?style=flat
-[npm-dl-url]: https://npmcharts.com/compare/btc-rpc-explorer?minimal=true
+# License
 
-[npm-dl-weekly-img]: https://badgen.net/npm/dw/btc-rpc-explorer?icon=npm&cache=300
-[npm-dl-monthly-img]: https://badgen.net/npm/dm/btc-rpc-explorer?icon=npm&cache=300
-[npm-dl-yearly-img]: https://badgen.net/npm/dy/btc-rpc-explorer?icon=npm&cache=300
-[npm-dl-alltime-img]: https://badgen.net/npm/dt/btc-rpc-explorer?icon=npm&cache=300&label=total%20downloads
-
+MIT. See [LICENSE](LICENSE). Original work by Dan Janosik.

@@ -1,4 +1,4 @@
-### Setup of https://bitcoinexplorer.org on Ubuntu 20.04
+### Setting up an explorer on Ubuntu 20.04 (replace explorer.example.com with your domain)
 
 Update and install packages
 
@@ -25,8 +25,8 @@ Misc setup
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt
     
     # get nginx config
-    wget https://raw.githubusercontent.com/janoside/btc-rpc-explorer/master/docs/explorer.btc21.org.conf
-    mv explorer.btc21.org.conf /etc/nginx/sites-available/bitcoinexplorer.org
+    wget https://raw.githubusercontent.com/2rdzy/btc-rpc-explorer/master/docs/explorer.example.com.conf
+    mv explorer.example.com.conf /etc/nginx/sites-available/explorer.example.com
 
 Get source, npm install
 
@@ -39,7 +39,7 @@ Get source, npm install
     pm2 start bin/www --name "btc"
     
     # get letsencrypt cert
-    certbot --nginx -d bitcoinexplorer.org
+    certbot --nginx -d explorer.example.com
     
 Tor setup
 
