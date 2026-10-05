@@ -87,22 +87,6 @@ html(lang="en")
 							
 						
 						ul.navbar-nav
-							if (config.demoSite && homepage)
-								li.nav-item.dropdown.me-0.me-md-2.mt-2.mt-md-0.text-center.text-md-start
-									a.nav-link.dropdown-toggle.bg-header-footer-highlight.rounded(href="javascript:void(0)", role="button", data-bs-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
-										img.align-text-top.me-1(src=assetUrl(coinConfig.coinIconUrlsByNetwork[activeBlockchain]), style="width: 20px;")
-
-									div.dropdown-menu.dropdown-menu-end.shadow(aria-label="Demo Sites")
-										span.dropdown-header Public Demo Sites
-
-										- var demoSites = ["main", "test", "signet"];
-										
-										each demoSite in demoSites
-											a.dropdown-item(href=coinConfig.demoSiteUrlsByNetwork[demoSite])
-												img.align-text-top.me-2(src=assetUrl(coinConfig.coinIconUrlsByNetwork[demoSite]), style="width: 20px;")
-												
-												| #{coinConfig.siteTitlesByNetwork[demoSite].replace("Explorer", "").replace("Bitcoin", "Mainnet")}
-
 							if (config.siteTools)
 								li.nav-item.dropdown.me-0.me-md-2.mt-2.mt-md-0.text-center.text-md-start
 									a.nav-link.rounded.bg-header-footer-highlight.text-white.dropdown-toggle(href="javascript:void(0)", role="button", data-bs-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
@@ -282,30 +266,6 @@ html(lang="en")
 								span(style="font-size: 0.9em;")  (
 									a.footer-link(href="./changelog") changelog
 									span )
-
-					.col-lg-3
-						if (config.demoSite)
-							.mb-4
-								h6 Public Demos
-
-								.ms-2
-									if (coinConfig.demoSiteUrlsByNetwork && coinConfig.demoSiteUrlsByNetwork.main)
-										a.footer-link(href=coinConfig.demoSiteUrlsByNetwork.main) #{coinConfig.demoSiteUrlsByNetwork.main}
-									else
-										a.footer-link(href="https://bitcoinexplorer.org") https://bitcoinexplorer.org
-
-									br
-
-									a.footer-link(href="http://btcexpz7xlwrqknqw6p3bok6shf73qtkd6zxct4x4qta2ktvh7ntprad.onion", title="Tor v3 Hidden Service", data-bs-toggle="tooltip") btcexp….onion
-									span.ms-1 (tor v3)
-									+copyTextButton("http://btcexpz7xlwrqknqw6p3bok6shf73qtkd6zxct4x4qta2ktvh7ntprad.onion")
-									
-									div.mt-2
-										- var demoSites = ["main", "test", "signet"];
-										
-										each demoSite in demoSites
-											a.me-2(href=coinConfig.demoSiteUrlsByNetwork[demoSite], title=coinConfig.siteTitlesByNetwork[demoSite], data-bs-toggle="tooltip")
-												img(src=assetUrl(coinConfig.logoUrlsByNetwork[demoSite]), alt=coinConfig.siteTitlesByNetwork[demoSite], style="width: 40px; height: 40px;")
 
 					.col-lg-3
 						.mb-4

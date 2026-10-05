@@ -86,11 +86,6 @@ module.exports = {
 		"regtest":"Regtest Explorer",
 		"signet":"Signet Explorer",
 	},
-	demoSiteUrlsByNetwork: {
-		"main": "https://bitcoinexplorer.org",
-		"test": "https://testnet.bitcoinexplorer.org",
-		"signet": "https://signet.bitcoinexplorer.org",
-	},
 	knownTransactionsByNetwork: {
 		main: "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16",
 		test: "22e7e860660f368b5c653c272b0445a0625d19fdec02fc158ef9800a5c3a07e8",
