@@ -685,6 +685,16 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 			promises.push(new Promise(async (resolve, reject) => {
 				try {
 					const hashrate = await coreApi.getNetworkHashrate(x);
+
+					if (hashrate == null) {
+						// the window reaches back before the BLAKE2b fork
+						rates[index] = null;
+
+						resolve();
+
+						return;
+					}
+
 					let summary = utils.formatLargeNumber(hashrate, decimals);
 					
 					rates[index] = {
