@@ -1,7 +1,7 @@
 {
 	"name": "btc-rpc-explorer",
 	"version": "3.5.1",
-	"description": "Open-source, self-hosted Bitcoin explorer",
+	"description": "Open-source, self-hosted explorer for the BLAKE2b Bitcoin Knots chain",
 	"private": false,
 	"bin": "bin/cli.js",
 	"scripts": {
@@ -21,6 +21,8 @@
 	},
 	"keywords": [
 		"bitcoin",
+		"bitcoin-knots",
+		"blake2b",
 		"btc",
 		"blockchain"
 	],
@@ -30,6 +32,10 @@
 		"type": "git",
 		"url": "git+https://github.com/2rdzy/btc-rpc-explorer.git"
 	},
+	"bugs": {
+		"url": "https://github.com/2rdzy/btc-rpc-explorer/issues"
+	},
+	"homepage": "https://github.com/2rdzy/btc-rpc-explorer#readme",
 	"dependencies": {
 		"@janoside/app-utils": "github:janoside/app-utils#ba4c23d3f",
 		"async": "^3.2.6",
@@ -49,7 +55,7 @@
 		"debug": "^4.4.1",
 		"decimal.js": "^10.6.0",
 		"dotenv": "^13.0.1",
-		"electrum-client": "github:janoside/electrum-client",
+		"electrum-client": "github:janoside/electrum-client#d98e929028d2b05c88a41fe37652737912bead79",
 		"express": "^4.21.2",
 		"express-async-handler": "^1.2.0",
 		"express-rate-limit": "^8.0.1",

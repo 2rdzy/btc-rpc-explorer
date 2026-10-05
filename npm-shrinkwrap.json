@@ -27,7 +27,7 @@
 				"debug": "^4.4.1",
 				"decimal.js": "^10.6.0",
 				"dotenv": "^13.0.1",
-				"electrum-client": "github:janoside/electrum-client",
+				"electrum-client": "github:janoside/electrum-client#d98e929028d2b05c88a41fe37652737912bead79",
 				"express": "^4.21.2",
 				"express-async-handler": "^1.2.0",
 				"express-rate-limit": "^8.0.1",
