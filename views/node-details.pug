@@ -132,11 +132,28 @@ block content
 							"bip66":  { "link": "https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki", "title": "Strict DER signatures" },
 							"csv":    { "link": "https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki", "title": "OP_CHECKSEQUENCEVERIFY" },
 							"segwit": { "link": "https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki", "title": "Segregated Witness (Consensus layer)" }, 
-							"taproot":{ "link": "https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki", "title": "Taproot: SegWit version 1 spending rules" }
+							"taproot":{ "link": "https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki", "title": "Taproot: SegWit version 1 spending rules" },
+							"reduced_data":{ "link": null, "title": "Reduced Data Temporary Softfork (RDTS, BIP-110)" },
+							"long_coinbase_maturity":{ "link": null, "title": "Longer coinbase maturity" }
 						};
 
 					+contentSection("Deployments")
-						+summaryRow(utils.objectProperties(getdeploymentinfo.deployments).length)
+						+summaryRow(utils.objectProperties(getdeploymentinfo.deployments).length + (getdeploymentinfo.blake2b ? 1 : 0))
+							if (getdeploymentinfo.blake2b)
+								+summaryItem("blake2b", "Hard fork to BLAKE2b proof of work. Blocks before it are shared with Bitcoin; from it on, this chain follows its own rules.")
+									if (getdeploymentinfo.blake2b.active)
+										span.me-2
+											span.text-success active
+											span.text-tiny.text-muted.ms-2 (
+												a.border-dotted(href=`./block-height/${getdeploymentinfo.blake2b.height}`, title=`The fork took effect at block ${getdeploymentinfo.blake2b.height.toLocaleString()}`, data-bs-toggle="tooltip") #{getdeploymentinfo.blake2b.height.toLocaleString()}
+												| +)
+
+									else
+										span.me-2
+											span.text-warning scheduled
+											span.text-tiny.text-muted.ms-2 (
+												| block #{getdeploymentinfo.blake2b.height.toLocaleString()})
+
 							each item, itemName in getdeploymentinfo.deployments
 								// (title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl)
 								+summaryItem(itemName, forkUrls[itemName] ? forkUrls[itemName].title : null)
@@ -175,7 +192,7 @@ block content
 												span.me-2 :
 												| #{item.bip9.min_activation_height.toLocaleString()}
 
-									if (forkUrls[itemName])
+									if (forkUrls[itemName] && forkUrls[itemName].link)
 										small
 											a(href=forkUrls[itemName].link, title=`More info about ${itemName}`, data-bs-toggle="tooltip", target="_blank")
 												i.bi-box-arrow-up-right.small
