@@ -480,14 +480,16 @@ async function getDifficultyByBlockHeights(blockHeights) {
 
 	blockHeaders.forEach(header => {
 		global.difficultyByBlockheightCache[`${header.height}`] = {
-			difficulty: header.difficulty,
+			difficulty: utils.getDifficulty(header),
+			blake2b: utils.isBlake2bDifficulty(header),
 			time: header.time
 		};
 
 		global.difficultyByBlockheightCacheDirty = true;
 
 		results[header.height] = {
-			difficulty: header.difficulty,
+			difficulty: utils.getDifficulty(header),
+			blake2b: utils.isBlake2bDifficulty(header),
 			time: header.time
 		};
 	});
