@@ -12,7 +12,7 @@ const bitcoinjs = require('bitcoinjs-lib');
 const sha256 = require("crypto-js/sha256");
 const hexEnc = require("crypto-js/enc-hex");
 const { bech32, bech32m } = require("bech32");
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 const asyncHandler = require("express-async-handler");
 const markdown = require("markdown-it")();
 

@@ -11,7 +11,7 @@ const bitcoinjs = require('bitcoinjs-lib');
 const bip32 = require('bip32');
 const bs58check = require('bs58check');
 const { bech32, bech32m } = require("bech32");
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 const asyncHandler = require("express-async-handler");
 
 const utils = require('./../app/utils.js');

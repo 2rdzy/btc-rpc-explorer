@@ -15,7 +15,7 @@ const bs58check = require('bs58check');
 const { bech32, bech32m } = require("bech32");
 const sha256 = require("crypto-js/sha256");
 const hexEnc = require("crypto-js/enc-hex");
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 const semver = require("semver");
 const markdown = require("markdown-it")();
 const asyncHandler = require("express-async-handler");
@@ -2005,26 +2005,36 @@ router.get("/terminal", function(req, res, next) {
 });
 
 router.post("/terminal", function(req, res, next) {
+	const reply = (body) => {
+		res.write(JSON.stringify(body, null, 4), function() {
+			res.end();
+		});
+
+		next();
+	};
+
+	if (typeof req.body.cmd !== "string") {
+		return reply({"Error":"No command"});
+	}
+
 	let params = req.body.cmd.trim().split(/\s+/);
 	let cmd = params.shift();
 	let paramsStr = req.body.cmd.trim().substring(cmd.length).trim();
 
 	if (cmd == "parsescript") {
-		const nbs = require('node-bitcoin-script');
-		let parsedScript = nbs.parseRawScript(paramsStr, "hex");
+		if (!/^([0-9a-fA-F]{2})+$/.test(paramsStr)) {
+			return reply({"Error":"parsescript needs a script as hex"});
+		}
 
-		res.write(JSON.stringify({"parsed":parsedScript}, null, 4), function() {
-			res.end();
-		});
+		try {
+			return reply({"parsed":{"asm":bitcoinjs.script.toASM(Buffer.from(paramsStr, "hex"))}});
 
-		next();
+		} catch (err) {
+			return reply({"Error":`Unable to parse the script: ${err.message}`});
+		}
 
 	} else {
-		res.write(JSON.stringify({"Error":"Unknown command"}, null, 4), function() {
-			res.end();
-		});
-
-		next();
+		return reply({"Error":"Unknown command"});
 	}
 });
 

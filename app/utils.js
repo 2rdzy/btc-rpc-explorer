@@ -7,7 +7,7 @@ const debugLog = debug("btcexp:utils");
 const debugErrorLog = debug("btcexp:error");
 const debugErrorVerboseLog = debug("btcexp:errorVerbose");
 
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 const axios = require("axios");
 const qrcode = require("qrcode");
 const bs58check = require("bs58check");
