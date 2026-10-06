@@ -377,16 +377,15 @@ app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expre
 app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
 app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
 app/utils.js: TS2339: Property 'errorMsg' does not exist on type '{}'.
-app/utils.js: TS2339: Property 'lessSignificantDigits' does not exist on type '{ currencyUnit: any; simpleVal: any; intVal: number; }'.
+app/utils.js: TS2339: Property 'lessSignificantDigits' does not exist on type '{ currencyUnit: any; simpleVal: string; intVal: number; }'.
 app/utils.js: TS2339: Property 'userData' does not exist on type '{ errorId: any; error: any; }'.
-app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: any; intVal: number; }'.
-app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: any; intVal: number; }'.
-app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: any; intVal: number; }'.
+app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: string; intVal: number; }'.
+app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: string; intVal: number; }'.
+app/utils.js: TS2339: Property 'val' does not exist on type '{ currencyUnit: any; simpleVal: string; intVal: number; }'.
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
 app/utils.js: TS7006: Parameter 'account' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'action' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'address' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'addressType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'amount' implicitly has an 'any' type.
@@ -394,10 +393,6 @@ app/utils.js: TS7006: Parameter 'amount' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'amount' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'amount' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'amount' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'array' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'array' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'b' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'b' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
@@ -406,16 +401,12 @@ app/utils.js: TS7006: Parameter 'cacheDir' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'cacheKey' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'cacheName' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'cacheType' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'chars' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'chunkCount' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'chunkSize' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'coinbaseTx' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'coinbaseTx' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'currentBlockHeader' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'currentBlockHeader' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'decimalPlaces' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'difficultyAdjustmentDataArg' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'duration' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'e' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'eraStartBlockHeader' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'eraStartBlockHeader' implicitly has an 'any' type.
@@ -431,40 +422,17 @@ app/utils.js: TS7006: Parameter 'forcedDecimalPlaces' implicitly has an 'any' ty
 app/utils.js: TS7006: Parameter 'forcedDecimalPlaces' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'formatType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'formatType' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'g' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'g' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'height' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'hex' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'hex' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'hex' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'hexString' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'ipAddresses' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'key' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'key' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'length' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'length' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'length' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'localCurrency' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'm' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'max' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'max' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'min' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'min' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'ms' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'n' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'n' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'name' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'name' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'name' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'name' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'object' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'outputType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'outputType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'p' implicitly has an 'any' type.
@@ -474,23 +442,15 @@ app/utils.js: TS7006: Parameter 'perfResults' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'promise' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'promise' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'promises' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'properties' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'provider' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'r' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'r' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'req' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'req' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'res' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'results' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'seed' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'seed' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'significantDigits' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'startTimeNanos' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'str' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'str' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'str' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'strings' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'subversion' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'tags' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'targetFormat' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
@@ -499,7 +459,6 @@ app/utils.js: TS7006: Parameter 'uid' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'uid' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'userAgentString' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'v' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'val' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'value' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'value' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'value' implicitly has an 'any' type.
@@ -507,12 +466,6 @@ app/utils.js: TS7006: Parameter 'value' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'version' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'x' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'xpub' implicitly has an 'any' type.
 app/utils.js: TS7018: Object literal's property 'errors' implicitly has an 'any[]' type.
 app/utils.js: TS7034: Variable 'perfLog' implicitly has type 'any[]' in some locations where its type cannot be determined.
@@ -525,7 +478,6 @@ app/utils.js: TS7053: Element implicitly has an 'any' type because expression of
 app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
