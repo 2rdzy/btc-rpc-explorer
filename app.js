@@ -74,7 +74,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require("express-session");
 const MemoryStore = require('memorystore')(session);
-const csrfApi = require("csurf");
+const csrf = require("./app/csrf.js");
 const config = require("./app/config.js");
 const { simpleGit } = require('simple-git');
 const utils = require("./app/utils.js");
@@ -1034,9 +1034,8 @@ expressApp.use(function(req, res, next) {
 	next();
 });
 
-const csrfProtection = csrfApi();
-expressApp.use(csrfProtection, (req, res, next) => {
-	res.locals.csrfToken = req.csrfToken();
+expressApp.use(csrf.csrfProtection, (req, res, next) => {
+	res.locals.csrfToken = csrf.generateToken(req);
 
 	next();
 });

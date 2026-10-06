@@ -4,7 +4,6 @@ const debug = require("debug");
 const debugLog = debug("btcexp:cleanup");
 
 const express = require('express');
-const csrfApi = require('csurf');
 const router = express.Router();
 const util = require('util');
 const moment = require('moment');
