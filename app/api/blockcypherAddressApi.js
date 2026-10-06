@@ -4,6 +4,13 @@ const axios = require("axios").default;
 const utils = require("./../utils.js");
 
 
+/**
+ * @param {string} address
+ * @param {string} scriptPubkey
+ * @param {string} sort
+ * @param {number} limit
+ * @param {number} offset
+ */
 function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 	return new Promise(async (resolve, reject) => {
 		if (address.startsWith("bc1")) {
@@ -31,6 +38,7 @@ function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 
 			var blockcypherJson = apiResponse.data;
 
+			/** @type {any} */
 			var response = {};
 
 			response.txids = [];

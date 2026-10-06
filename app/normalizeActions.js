@@ -1,3 +1,4 @@
+/** @param {string} baseUrl */
 const buildNormalizingRegexes = (baseUrl) => {
 	return [
 		{ regex: new RegExp(`^${baseUrl}$`, "i"), action:"index" },
@@ -19,6 +20,10 @@ const buildNormalizingRegexes = (baseUrl) => {
 	];
 }
 
+/**
+ * @param {string} baseUrl
+ * @param {string} action
+ */
 module.exports = (baseUrl, action) => {
 	const normalizingRegexes = buildNormalizingRegexes(baseUrl);
 

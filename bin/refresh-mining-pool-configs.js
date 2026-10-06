@@ -11,6 +11,7 @@ const axios = require("axios").default;
 const utils = require("../app/utils.js");
 const coins = require("../app/coins.js");
 
+/** @param {string} coinName */
 async function refreshMiningPoolsForCoin(coinName) {
 	console.log(`Refreshing mining pools for ${coinName}...`);
 		
@@ -49,6 +50,11 @@ async function refreshMiningPoolsForCoin(coinName) {
 	}
 }
 
+/**
+ * @param {string} coinName
+ * @param {number} index
+ * @param {string} url
+ */
 async function refreshMiningPoolConfig(coinName, index, url) {
 	try {
 		const response = await axios.get(url, { transformResponse: res => res });

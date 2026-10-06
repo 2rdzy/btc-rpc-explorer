@@ -2,8 +2,9 @@
 
 const btc = require("./coins/btc.js");
 
-module.exports = {
+// indexable by coin name (coins[config.coin])
+module.exports = /** @type {Record<string, any>} */ ({
 	"BTC": btc,
 
 	"coins":["BTC"]
-};
+});

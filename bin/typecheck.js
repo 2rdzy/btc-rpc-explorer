@@ -17,6 +17,7 @@ const baselineFile = path.join(root, "typecheck-baseline.txt");
 
 // "routes/x.js(12,5): error TS2339: Property 'a' does not exist..." -> "routes/x.js: TS2339: Property 'a' ..."
 // Line and column are left out, so that moving code around does not change a finding's identity.
+/** @param {string} output */
 function parseErrors(output) {
 	const errors = [];
 
@@ -34,6 +35,7 @@ function parseErrors(output) {
 	return errors.sort();
 }
 
+/** @param {string[]} items */
 function count(items) {
 	const counts = new Map();
 
@@ -43,6 +45,10 @@ function count(items) {
 }
 
 // what is in `current` more often than in `baseline`
+/**
+ * @param {string[]} current
+ * @param {string[]} baseline
+ */
 function difference(current, baseline) {
 	const baselineCounts = count(baseline);
 	const found = [];
@@ -58,6 +64,10 @@ function difference(current, baseline) {
 	return found;
 }
 
+/**
+ * @param {string[]} current
+ * @param {string[]} baseline
+ */
 function compare(current, baseline) {
 	return {
 		added: difference(current, baseline),

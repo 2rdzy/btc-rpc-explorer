@@ -521,12 +521,13 @@ module.exports = {
 	historicalData: btcFun.items,
 	exchangeRateData:{
 		jsonUrl:"https://api.coindesk.com/v1/bpi/currentprice.json",
-		responseBodySelectorFunction:function(responseBody) {
+		responseBodySelectorFunction:function(/** @type {any} */ responseBody) {
 			//console.log("Exchange Rate Response: " + JSON.stringify(responseBody));
 
 			var exchangedCurrencies = ["USD", "GBP", "EUR"];
 
 			if (responseBody.bpi) {
+				/** @type {Record<string, any>} */
 				var exchangeRates = {};
 
 				for (var i = 0; i < exchangedCurrencies.length; i++) {
@@ -543,7 +544,7 @@ module.exports = {
 	},
 	goldExchangeRateData:{
 		jsonUrl:"https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD",
-		responseBodySelectorFunction:function(responseBody) {
+		responseBodySelectorFunction:function(/** @type {any} */ responseBody) {
 			//console.log("Exchange Rate Response: " + JSON.stringify(responseBody));
 
 			if (responseBody[0].topo && responseBody[0].topo.platform == "MT5") {
@@ -557,6 +558,10 @@ module.exports = {
 			return null;
 		}
 	},
+	/**
+	 * @param {number} blockHeight
+	 * @param {string} chain
+	 */
 	blockRewardFunction:function(blockHeight, chain) {
 		let halvingBlockInterval = (chain == "regtest" ? 150 : 210000);
 		let index = Math.floor(blockHeight / halvingBlockInterval);

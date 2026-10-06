@@ -169,7 +169,7 @@ expressApp.set('views', path.join(__dirname, 'views'));
 // ref: https://blog.stigok.com/post/disable-pug-debug-output-with-expressjs-web-app
 expressApp.engine('pug', (path, /** @type {any} */ options, fn) => {
 	options.debug = false;
-	return pug.__express.call(null, path, options, fn);
+	return /** @type {any} */ (pug).__express.call(null, path, options, fn);
 });
 
 expressApp.set('view engine', 'pug');
