@@ -34,8 +34,8 @@ describe('Basic auth middleware', () => {
 		assert.equal(result.authenticated, false);
 	});
 
-	test('refuses a password that starts like the right one, or is longer, or is empty', () => {
-		for (const attempt of ['secre', 'secret!', 'secretsecret', '', 'SECRET']) {
+	test('refuses a password that starts like the right one, or is longer, or is empty, or only differs by trailing zero bytes', () => {
+		for (const attempt of ['secre', 'secret!', 'secretsecret', '', 'SECRET', 'secret\0', 'secret\0\0']) {
 			assert.equal(run('secret', basic(attempt)).status, 401, attempt);
 		}
 	});

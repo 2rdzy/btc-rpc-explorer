@@ -2,9 +2,20 @@ import crypto from "crypto";
 import type { NextFunction, Request, Response } from "express";
 import basicAuth from "basic-auth";
 
-// compares the digests, which are always the same length, so neither the time nor the length gives anything away
-const sameSecret = (a: string, b: string): boolean =>
-	crypto.timingSafeEqual(crypto.createHash("sha256").update(a).digest(), crypto.createHash("sha256").update(b).digest());
+// compares in constant time: both are padded to the same length, and the lengths are compared after, so the time does
+// not depend on how much of the password was right
+const sameSecret = (given: string, expected: string): boolean => {
+	const a = Buffer.from(given);
+	const b = Buffer.from(expected);
+	const length = Math.max(a.length, b.length, 1);
+	const paddedA = Buffer.alloc(length);
+	const paddedB = Buffer.alloc(length);
+
+	a.copy(paddedA);
+	b.copy(paddedB);
+
+	return crypto.timingSafeEqual(paddedA, paddedB) && a.length === b.length;
+};
 
 export = (pass: string) => (req: Request, res: Response, next: NextFunction) => {
 	const cred = basicAuth(req);
