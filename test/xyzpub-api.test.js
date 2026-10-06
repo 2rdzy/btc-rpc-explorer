@@ -3,9 +3,8 @@
 const assert = require('node:assert/strict');
 const { afterEach, beforeEach, describe, mock, test } = require('node:test');
 
-require('./helpers/setup.js');
+const { fakeRpc } = require('./helpers/setup.js');
 const xyzpubApi = require('../app/api/xyzpubApi.js');
-const coreApi = require('../app/api/coreApi.js');
 const addressApi = require('../app/api/addressApi.js');
 const { xpubChangeVersionBytes } = require('../app/helpers/addresses.js');
 
@@ -87,7 +86,7 @@ describe('searchXpubTxids', () => {
 	afterEach(() => { config.addressApi = originalApi; });
 
 	test('stops after the gap, and reports used and empty addresses', async () => {
-		mock.method(coreApi, 'getAddress', async address => ({ address, scriptPubKey: '00' }));
+		fakeRpc({ validateaddress: params => ({ address: params[0], scriptPubKey: '00' }) });
 		const get = mock.method(axios, 'get', answer({ [receive[0]]: { 0: ['t1', 't2'] } }));
 
 		const out = await xyzpubApi.searchXpubTxids(zpub, 3);
@@ -100,7 +99,7 @@ describe('searchXpubTxids', () => {
 	});
 
 	test('pages through an address with more transactions than one page', async () => {
-		mock.method(coreApi, 'getAddress', async address => ({ address, scriptPubKey: '00' }));
+		fakeRpc({ validateaddress: params => ({ address: params[0], scriptPubKey: '00' }) });
 		const full = Array.from({ length: 20 }, (_, i) => 'a' + i);
 		const get = mock.method(axios, 'get', answer({ [receive[0]]: { 0: full, 20: ['last'] } }));
 
