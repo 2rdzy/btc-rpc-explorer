@@ -21,3 +21,5 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: npm run build
+      - run: node dist/bin/cli.js --help

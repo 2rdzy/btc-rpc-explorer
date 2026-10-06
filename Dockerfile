@@ -1,9 +1,9 @@
-FROM node:20 as builder
+FROM node:22 as builder
 WORKDIR /workspace
 COPY . .
-RUN npm install
+RUN npm ci && npm run build && npm prune --omit=dev
 
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /workspace
 COPY --from=builder /workspace .
 RUN apk --update add git

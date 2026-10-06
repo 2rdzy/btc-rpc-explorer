@@ -28,15 +28,16 @@ Misc setup
     wget https://raw.githubusercontent.com/2rdzy/btc-rpc-explorer/master/docs/explorer.example.com.conf
     mv explorer.example.com.conf /etc/nginx/sites-available/explorer.example.com
 
-Get source, npm install
+Get source, install and build
 
     cd /home/bitcoin
     git clone https://github.com/2rdzy/btc-rpc-explorer.git
     cd /home/bitcoin/btc-rpc-explorer
-    npm install
+    npm ci
+    npm run build
     
-    # startup via pm2
-    pm2 start bin/www --name "btc"
+    # startup via pm2 (the built code is in dist/)
+    pm2 start dist/bin/www.js --name "btc" --node-args="--enable-source-maps"
     
     # get letsencrypt cert
     certbot --nginx -d explorer.example.com
