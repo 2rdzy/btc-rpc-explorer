@@ -9,7 +9,7 @@
 		"test": "node --test test/*.test.js",
 		"miners": "node ./bin/refresh-mining-pool-configs.js",
 		"integrity": "node ./bin/frontend-resource-integrity.js",
-		"lint": "eslint app routes",
+		"lint": "eslint .",
 		"css-light-debug": "sass --style expanded ./public/scss/light.scss ./public/style/light.css",
 		"css-dark-debug": "sass --style expanded ./public/scss/dark.scss ./public/style/dark.css",
 		"css-dark-v1-debug": "sass --style expanded ./public/scss/dark-v1.scss ./public/style/dark-v1.css",
@@ -86,7 +86,9 @@
 		"event-loop-stats": "^1.4.1"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.39.5",
 		"eslint": "^9.34.0",
+		"globals": "^14.0.0",
 		"sass": "^1.90.0"
 	}
 }

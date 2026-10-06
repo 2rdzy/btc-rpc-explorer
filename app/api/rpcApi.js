@@ -317,6 +317,9 @@ async function noTxIndexTransactionLookup(txid, walletOnly) {
 	// This is only available in Electrs and requires enabling BTCEXP_ELECTRUM_TXINDEX.
 	if (!walletOnly && (config.addressApi == "electrum" || config.addressApi == "electrumx") && config.electrumTxIndex) {
 		try {
+			// required here because electrumAddressApi needs this module
+			const electrumAddressApi = require("./electrumAddressApi.js");
+
 			let blockhash = await electrumAddressApi.lookupTxBlockHash(txid);
 
 			return await getRawTransaction(txid, blockhash);

@@ -3,6 +3,7 @@
 const utils = require("../utils.js");
 const config = require("../config.js");
 const coins = require("../coins.js");
+const { getRpcData, getRpcDataWithParams } = require("./rpcApi.js");
 
 const SHA256 = require("crypto-js/sha256");
 const earliestBlockTime = 1231006505;
@@ -232,6 +233,8 @@ function getRawTransactions(txids) {
 	return new Promise(function(resolve, reject) {
 		var txs = [];
 		for (var i = 0; i < txids.length; i++) {
+			const txid = txids[i];
+
 			txs.push({
 				"txid": txid,
 				"hash": txid,
