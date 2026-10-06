@@ -29,6 +29,11 @@ const coins = require("./coins.js");
 const coinConfig = coins[config.coin];
 const redisCache = require("./redisCache.js");
 const statTracker = require("./statTracker.js");
+const { formatHex, getRandomString, addThousandsSeparators, ellipsize, ellipsizeMiddle, parseExponentStringDouble, summarizeDuration } = require("./helpers/text.js");
+const { splitArrayIntoChunks, splitArrayIntoChunksByChunkCount, objectProperties, objHasProperty, stringifySimple, obfuscateProperties, sleep } = require("./helpers/collections.js");
+const { seededRandom, seededRandomIntBetween, randomInt } = require("./helpers/random.js");
+const { rgbToHsl, colorHexToRgb, colorHexToHsl } = require("./helpers/color.js");
+const { parseNodeVersion, getDifficulty, isBlake2bDifficulty } = require("./helpers/node.js");
 
 
 const exponentScales = [
@@ -169,66 +174,9 @@ function redirectToConnectPageIfNeeded(req, res) {
 	return false;
 }
 
-/** @param {BufferEncoding} [outputFormat] */
-function formatHex(hex, outputFormat="utf8") {
-	return Buffer.from(hex, "hex").toString(outputFormat);
-}
 
-function splitArrayIntoChunks(array, chunkSize) {
-	let j = array.length;
-	let chunks = [];
-	
-	for (let i = 0; i < j; i += chunkSize) {
-		chunks.push(array.slice(i, i + chunkSize));
-	}
 
-	return chunks;
-}
 
-function splitArrayIntoChunksByChunkCount(array, chunkCount) {
-	let bigChunkSize = Math.ceil(array.length / chunkCount);
-	let bigChunkCount = chunkCount - (chunkCount * bigChunkSize - array.length);
-
-	let chunks = [];
-
-	let chunkStart = 0;
-	for (let chunk = 0; chunk < chunkCount; chunk++) {
-		let chunkSize = (chunk < bigChunkCount ? bigChunkSize : (bigChunkSize - 1));
-
-		chunks.push(array.slice(chunkStart, chunkStart + chunkSize));
-
-		chunkStart += chunkSize;
-	}
-
-	return chunks;
-}
-
-function getRandomString(length, chars) {
-	let mask = '';
-	
-	if (chars.indexOf('a') > -1) {
-		mask += 'abcdefghijklmnopqrstuvwxyz';
-	}
-	
-	if (chars.indexOf('A') > -1) {
-		mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	}
-	
-	if (chars.indexOf('#') > -1) {
-		mask += '0123456789';
-	}
-	
-	if (chars.indexOf('!') > -1) {
-		mask += '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\';
-	}
-	
-	let result = '';
-	for (let i = length; i > 0; --i) {
-		result += mask[Math.floor(Math.random() * mask.length)];
-	}
-	
-	return result;
-}
 
 function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedDecimalPlaces) {
 	formatType = formatType.toLowerCase();
@@ -329,13 +277,6 @@ function formatCurrencyAmountInSmallestUnits(amount, forcedDecimalPlaces) {
 	return formatCurrencyAmountWithForcedDecimalPlaces(amount, coins[config.coin].baseCurrencyUnit.name, forcedDecimalPlaces);
 }
 
-// ref: https://stackoverflow.com/a/2901298/673828
-function addThousandsSeparators(x) {
-	let parts = x.toString().split(".");
-	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-	return parts.join(".");
-}
 
 function satoshisPerUnitOfLocalCurrency(localCurrency) {
 	if (global.exchangeRates != null) {
@@ -428,122 +369,13 @@ function formatExchangedCurrency(amount, exchangeType, decimals=2) {
 	return "";
 }
 
-function seededRandom(seed) {
-	let x = Math.sin(seed++) * 10000;
-	return x - Math.floor(x);
-}
-
-function seededRandomIntBetween(seed, min, max) {
-	let rand = seededRandom(seed);
-	return (min + (max - min) * rand);
-}
-
-function randomInt(min, max) {
-	return min + Math.floor(Math.random() * max);
-}
-
-function ellipsize(str, length, ending="…") {
-	if (str.length <= length) {
-		return str;
-
-	} else {
-		return str.substring(0, length - ending.length) + ending;
-	}
-}
-
-function ellipsizeMiddle(str, length, replacement="…", extraCharAtStart=true) {
-	if (str.length <= length) {
-		return str;
-
-	} else {
-		//"abcde"(3)->"a…e"
-		//"abcdef"(3)->"a…f"
-		//"abcdef"(5)->"ab…ef"
-		//"abcdef"(4)->"ab…f"
-		if ((length - replacement.length) % 2 == 0) {
-			return str.substring(0, (length - replacement.length) / 2) + replacement + str.slice(-(length - replacement.length) / 2);
-
-		} else {
-			if (extraCharAtStart) {
-				return str.substring(0, Math.ceil((length - replacement.length) / 2)) + replacement + str.slice(-Math.floor((length - replacement.length) / 2));
-
-			} else {
-				return str.substring(0, Math.floor((length - replacement.length) / 2)) + replacement + str.slice(-Math.ceil((length - replacement.length) / 2));
-			}
-			
-		}
-	}
-}
 
 
 
-// options:
-//  - oneElement (default: false)
-//  - stripZeroes (default: true)
-//  - shortenDurationNames (default: true)
-//  - outputCommas (default: true)
-/** @param {{oneElement?: boolean, stripZeroes?: boolean, shortenDurationNames?: boolean, outputCommas?: boolean, decimalPlaces?: number}} [options] */
-function summarizeDuration(duration, options={}) {
-	let oneElement = "oneElement" in options ? options.oneElement : false;
-	let stripZeroes = "stripZeroes" in options ? options.stripZeroes : true;
-	let shortenDurationNames = "shortenDurationNames" in options ? options.shortenDurationNames : true;
-	let outputCommas = "outputCommas" in options ? options.outputCommas : true;
-	let decimalPlaces = "decimalPlaces" in options ? options.decimalPlaces : 1;
 
-	//console.log(JSON.stringify(options) + " - " + oneElement + " - " + stripZeroes + " - " + shortenDurationNames + " - " + outputCommas);
 
-	let formatParts = duration.format().split(",").map(x => x.trim());
-	let str = formatParts.join(", ");
 
-	if (oneElement) {
-		/** @type {number[]} */
-		let parts = [duration.asYears(), duration.asMonths(), duration.asWeeks(), duration.asDays(), duration.asHours(), duration.asMinutes(), duration.asSeconds()];
-		let partNames = ["years", "months", "weeks", "days", "hours", "minutes", "seconds"];
 
-		for (let i = 0; i < parts.length; i++) {
-			if (parts[i] > 1) {
-				str = `${new Decimal(parts[i]).toDP(decimalPlaces)} ${partNames[i]}`;
-
-				break;
-			}
-		}
-	} else if (stripZeroes) {
-		// strip duration elements with zero magnitude (e.g. 11 months 0 days 12 hours)
-		formatParts = formatParts.map(x => { return x.startsWith("0 ") ? "" : x; }).filter(x => x.length > 0);
-
-		// hack: moment.js seems to have a bug where there can be formatted items that include "-0" magnitude elements
-		formatParts = formatParts.map(x => { return x.startsWith("-0 ") ? "" : x; }).filter(x => x.length > 0);
-
-		str = formatParts.join(", ");
-	}
-	
-
-	if (shortenDurationNames) {
-		str = str.replace(" years", "y");
-		str = str.replace(" year", "y");
-
-		str = str.replace(" months", "mo");
-		str = str.replace(" month", "mo");
-
-		str = str.replace(" weeks", "w");
-		str = str.replace(" week", "w");
-
-		str = str.replace(" days", "d");
-		str = str.replace(" day", "d");
-
-		str = str.replace(" hours", "hr");
-		str = str.replace(" hour", "hr");
-
-		str = str.replace(" minutes", "min");
-		str = str.replace(" minute", "min");
-	}
-
-	if (!outputCommas) {
-		str = str.split(", ").join(" ");
-	}
-
-	return str;
-}
 
 function logMemoryUsage() {
 	let mbUsed = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -869,42 +701,9 @@ function geoLocateIpAddresses(ipAddresses, provider) {
 	});
 }
 
-function parseExponentStringDouble(val) {
-	let [lead,decimal,pow] = val.toString().split(/e|\./);
-	return +pow <= 0 
-		? "0." + "0".repeat(Math.abs(pow)-1) + lead + decimal
-		: lead + ( +pow >= decimal.length ? (decimal + "0".repeat(+pow-decimal.length)) : (decimal.slice(0,+pow)+"."+decimal.slice(+pow)));
-}
 
-// Parse a node's subversion string ('/Satoshi:29.4.2/Knots:20260508/') into its version and a
-// semver (major.minor.patch) used to gate RPC calls. The fourth part of a 4-part version is a
-// bug fix release, irrelevant for RPC versioning, and is dropped. When the version cannot be
-// read, the semver is one that passes every version check, which may cause unexpected results.
-function parseNodeVersion(subversion) {
-	const match = /\/Satoshi:([^/]*)\//.exec(subversion);
 
-	if (!match) {
-		return { version: null, semver: "1000.1000.0" };
-	}
 
-	const version = match[1];
-	const parts = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.[0-9]+)?$/.exec(version);
-
-	if (!parts) {
-		return { version: version, semver: "1000.1000.0" };
-	}
-
-	return { version: version, semver: `${parts[1]}.${parts[2]}.${parts[3]}` };
-}
-
-// Knots reports "difficulty" for SHA256d blocks and "difficulty_blake2b" for BLAKE2b (header-v2) blocks.
-function getDifficulty(obj) {
-	return obj.difficulty != null ? obj.difficulty : obj.difficulty_blake2b;
-}
-
-function isBlake2bDifficulty(obj) {
-	return obj.difficulty == null && obj.difficulty_blake2b != null;
-}
 
 /** @returns {[Decimal, any]} the number scaled down, and the scale that was used ({} when none) */
 function formatLargeNumber(n, decimalPlaces) {
@@ -948,46 +747,8 @@ function formatLargeNumberSignificant(n, significantDigits) {
 	}
 }
 
-function rgbToHsl(r, g, b) {
-	r /= 255, g /= 255, b /= 255;
-	let max = Math.max(r, g, b), min = Math.min(r, g, b);
-	let h, s, l = (max + min) / 2;
 
-	if(max == min){
-		h = s = 0; // achromatic
-	}else{
-		let d = max - min;
-		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-		switch(max){
-			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-			case g: h = (b - r) / d + 2; break;
-			case b: h = (r - g) / d + 4; break;
-		}
-		h /= 6;
-	}
 
-	return {h:h, s:s, l:l};
-}
-
-function colorHexToRgb(hex) {
-	// Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-	let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-	hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-		return r + r + g + g + b + b;
-	});
-
-	let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result ? {
-		r: parseInt(result[1], 16),
-		g: parseInt(result[2], 16),
-		b: parseInt(result[3], 16)
-	} : null;
-}
-
-function colorHexToHsl(hex) {
-	let rgb = colorHexToRgb(hex);
-	return rgbToHsl(rgb.r, rgb.g, rgb.b);
-}
 
 
 // https://stackoverflow.com/a/31424853/673828
@@ -1271,47 +1032,9 @@ const dtMillis = (startTimeNanos) => {
 	return Number(dtNanos) * 1e-6;
 };
 
-function objectProperties(obj) {
-	const props = [];
-	for (const prop in obj) {
-		if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-			props.push(prop);
-		}
-	}
 
-	return props;
-}
 
-function objHasProperty(obj, name) {
-	return Object.prototype.hasOwnProperty.call(obj, name);
-}
 
-function iterateProperties(obj, action) {
-	for (const [key, value] of Object.entries(obj)) {
-		action([key, value]);
-	}
-}
-
-function stringifySimple(object) {
-	let simpleObject = {};
-	for (let prop in object) {
-			if (!object.hasOwnProperty(prop)) {
-					continue;
-			}
-
-			if (typeof(object[prop]) == 'object') {
-					continue;
-			}
-
-			if (typeof(object[prop]) == 'function') {
-					continue;
-			}
-
-			simpleObject[prop] = object[prop];
-	}
-
-	return JSON.stringify(simpleObject); // returns cleaned up JSON
-}
 
 function getVoutAddress(vout) {
 	if (vout && vout.scriptPubKey) {
@@ -1613,7 +1336,6 @@ function tryParseAddress(address) {
 }
 
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const awaitPromises = async (promises) => {
 	const promiseResults = await Promise.allSettled(promises);
@@ -1629,19 +1351,6 @@ const awaitPromises = async (promises) => {
 	return promiseResults;
 };
 
-const obfuscateProperties = (obj, properties) => {
-	if (process.env.BTCEXP_SKIP_LOG_OBFUSCATION) {
-		return obj;
-	}
-	
-	let objCopy = Object.assign({}, obj);
-
-	properties.forEach(name => {
-		objCopy[name] = "*****";
-	});
-
-	return objCopy;
-}
 
 const perfLog = [];
 let perfLogItemCount = 0;
