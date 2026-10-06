@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"strict": true,
+		"checkJs": false
+	},
+	"include": ["types/**/*.d.ts", "app/**/*.ts", "routes/**/*.ts", "bin/**/*.ts"],
+	"exclude": ["node_modules", "public", "dist", "test"]
+}

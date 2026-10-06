@@ -59,7 +59,7 @@ function client() {
 	return { request, token };
 }
 
-const form = fields => ({ method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(fields).toString() });
+const form = fields => ({ method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: typeof fields === 'string' ? fields : new URLSearchParams(fields).toString() });
 const json = (fields, headers = {}) => ({ method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(fields) });
 
 describe('CSRF protection', () => {
@@ -100,6 +100,15 @@ describe('CSRF protection', () => {
 			assert.equal((await c.request('/action', json({}, { [header]: await c.token() }))).status, 200);
 		});
 	}
+
+	test('a post with the token repeated (so an array) or as an object is refused', async () => {
+		const c = client();
+		const token = await c.token();
+
+		assert.equal((await c.request('/action', form(`_csrf=${token}&_csrf=${token}`))).status, 403);
+		assert.equal((await c.request('/action', json({ _csrf: [token] }))).status, 403);
+		assert.equal((await c.request('/action', json({ _csrf: { a: token } }))).status, 403);
+	});
 
 	test('a post with a wrong token is refused', async () => {
 		const c = client();

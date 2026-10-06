@@ -13,6 +13,6 @@
 		"noImplicitAny": true,
 		"types": ["node"]
 	},
-	"include": ["types/**/*.d.ts", "app.js", "app/**/*.js", "routes/**/*.js", "bin/**/*.js"],
+	"include": ["types/**/*.d.ts", "app.js", "app/**/*.js", "app/**/*.ts", "routes/**/*.js", "routes/**/*.ts", "bin/**/*.js", "bin/**/*.ts"],
 	"exclude": ["node_modules", "public"]
 }

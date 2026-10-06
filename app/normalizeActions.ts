@@ -1,5 +1,4 @@
-/** @param {string} baseUrl */
-const buildNormalizingRegexes = (baseUrl) => {
+const buildNormalizingRegexes = (baseUrl: string) => {
 	return [
 		{ regex: new RegExp(`^${baseUrl}$`, "i"), action:"index" },
 		{ regex: new RegExp(`^${baseUrl}block-height/.*`, "i"), action: "block-height" },
@@ -18,13 +17,9 @@ const buildNormalizingRegexes = (baseUrl) => {
 
 		{ regex: new RegExp(`^${baseUrl}admin/dashboard`, "i"), action: "admin.dashboard" },
 	];
-}
+};
 
-/**
- * @param {string} baseUrl
- * @param {string} action
- */
-module.exports = (baseUrl, action) => {
+export = (baseUrl: string, action: string): string => {
 	const normalizingRegexes = buildNormalizingRegexes(baseUrl);
 
 	for (let i = 0; i < normalizingRegexes.length; i++) {
