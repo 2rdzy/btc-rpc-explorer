@@ -158,7 +158,8 @@ router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
 
 	try {
 		const results = await coreApi.getRawTransactionsWithInputs([txid], txInputLimit);
-		const outJson = results.transactions[0];
+		// a copy: the transaction can be the cached one (or the built-in genesis transaction), which must stay as it is
+		const outJson = structuredClone(results.transactions[0]);
 		const txInputs = results.txInputsByTransaction[txid] || {};
 		
 		let inputBtc = 0;

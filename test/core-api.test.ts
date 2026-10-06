@@ -243,6 +243,22 @@ describe('transactions with inputs', () => {
 	});
 });
 
+describe('transactions by height', () => {
+	test('each transaction is looked up with the hash of the block at its height', async () => {
+		const calls = fakeRpc({
+			getblockhash: params => hash(params[0]),
+			getrawtransaction: params => ({ txid: params[0] })
+		});
+
+		const out = await coreApi.getRawTransactionsByHeights([txid(1), txid(2)], { [txid(1)]: 700 });
+
+		assert.deepEqual(out, [{ txid: txid(1) }, { txid: txid(2) }]);
+		const lookups = calls.filter(c => c.method === 'getrawtransaction').map(c => c.params).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+
+		assert.deepEqual(lookups, [[txid(1), 1, hash(700)], [txid(2), 1]]);
+	});
+});
+
 describe('next block, difficulty and chain stats', () => {
 	test('getNextBlockEstimate groups the template by fee rate', async () => {
 		fakeRpc({
@@ -375,6 +391,28 @@ describe('mempool and mining summaries', () => {
 		[orderedIds[1]]: entry(0.0003, 200, 3000),
 		[orderedIds[2]]: entry(0.00004, 100, 2000)
 	};
+
+	test('the age labels of the mempool summary say days, hours, minutes or seconds by the oldest transaction', async () => {
+		const now = Math.floor(Date.now() / 1000);
+
+		// [txid, age of the oldest transaction in seconds, the unit and last label that is expected]
+		const cases: [string, number, string, string][] = [
+			['gggggggggg01', 3 * 86400, 'd', '3.0d'],
+			['hhhhhhhhhh02', 5 * 3600, 'h', '5.0h'],
+			['iiiiiiiiii03', 30 * 60, 'm', '30.0m'],
+			['jjjjjjjjjj04', 45, 's', '45s']
+		];
+
+		for (const [id, age, unit, lastLabel] of cases) {
+			fakeRpc({ getrawmempool: () => [id], getmempoolentry: () => entry(0.0001, 200, now - age) });
+
+			const labels: string[] = (await coreApi.buildMempoolSummary('s', 5, 5, () => {})).ageBucketLabels;
+
+			assert.equal(labels.length, 5);
+			assert.ok(labels.every(label => label.endsWith(unit)), `${unit}: ${labels}`);
+			assert.equal(labels[4], lastLabel);
+		}
+	});
 
 	test('the oldest, largest and highest fee transactions are listed in order', async () => {
 		fakeRpc({ getrawmempool: () => orderedIds, getmempoolentry: params => orderedEntries[params[0]] });
