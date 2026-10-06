@@ -72,7 +72,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 					smartFeeEstimates[feeConfTargets[i]] = "?";
 
 				} else {
-					smartFeeEstimates[feeConfTargets[i]] = parseInt(new Decimal(rawSmartFeeEstimate.feerate).times(coinConfig.baseCurrencyUnit.multiplier).dividedBy(1000));
+					smartFeeEstimates[feeConfTargets[i]] = new Decimal(rawSmartFeeEstimate.feerate).times(coinConfig.baseCurrencyUnit.multiplier).dividedBy(1000).trunc().toNumber();
 				}
 			}
 

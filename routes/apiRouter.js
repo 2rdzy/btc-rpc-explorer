@@ -773,14 +773,14 @@ router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res, next) => {
 	let timePerBlock2 = dt / heightDiff;
 
 	let blockRatioPercent = new Decimal(blockCount / predictedBlockCount).times(100);
-	if (blockRatioPercent > 400) {
+	if (blockRatioPercent.gt(400)) {
 		blockRatioPercent = new Decimal(400);
 	}
-	if (blockRatioPercent < 25) {
+	if (blockRatioPercent.lt(25)) {
 		blockRatioPercent = new Decimal(25);
 	}
 	
-	let diffAdjPercent = 0;
+	let diffAdjPercent = new Decimal(0);
 	if (predictedBlockCount > blockCount) {
 		diffAdjPercent = new Decimal(100).minus(blockRatioPercent).times(-1);
 		//diffAdjPercent = diffAdjPercent * -1;
@@ -928,7 +928,7 @@ router.get("/mempool/fees", asyncHandler(async (req, res, next) => {
 		if (rawSmartFeeEstimate.errors) {
 			smartFeeEstimates[feeConfTargets[i]] = "?";
 		} else {
-			smartFeeEstimates[feeConfTargets[i]] = parseInt(new Decimal(rawSmartFeeEstimate.feerate).times(coinConfig.baseCurrencyUnit.multiplier).dividedBy(1000));
+			smartFeeEstimates[feeConfTargets[i]] = new Decimal(rawSmartFeeEstimate.feerate).times(coinConfig.baseCurrencyUnit.multiplier).dividedBy(1000).trunc().toNumber();
 		}
 	}		
 		

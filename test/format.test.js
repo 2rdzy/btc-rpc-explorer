@@ -38,6 +38,61 @@ describe('exchanged currency formatting', () => {
 	});
 });
 
+describe('currency amounts', () => {
+	before(() => {
+		global.exchangeRates = { usd: 61234.5678, eur: 56789.1234 };
+		global.currencySymbols = { usd: '$', eur: '€' };
+		require('../app/currencies.js');
+	});
+
+	after(() => {
+		delete global.exchangeRates;
+		delete global.currencySymbols;
+		delete global.currencyTypes;
+	});
+
+	test('formats a BTC amount with thousands separators', () => {
+		assert.deepEqual(utils.formatCurrencyAmount(new Decimal(1234.5678), 'btc'), { currencyUnit: 'BTC', simpleVal: '1,234.5678', intVal: 1234, val: '1,234.5678' });
+	});
+
+	test('converts BTC to sats', () => {
+		assert.deepEqual(utils.formatCurrencyAmount(new Decimal(0.5), 'sat'), { currencyUnit: 'sat', simpleVal: '50,000,000', intVal: 50000000, val: '50,000,000' });
+	});
+
+	test('converts BTC to a local currency', () => {
+		assert.deepEqual(utils.formatCurrencyAmount(new Decimal(1234.5678), 'usd'), { val: '75,598,225.65', currencyUnit: 'USD', simpleVal: '75,598,225.65', intVal: 75598225 });
+	});
+
+	test('forced decimal places round the shown value but keep the whole part in intVal', () => {
+		assert.deepEqual(utils.formatCurrencyAmountWithForcedDecimalPlaces(new Decimal(1234.5678), 'usd', 0), { val: '75,598,226', currencyUnit: 'USD', simpleVal: '75,598,226', intVal: 75598225 });
+		assert.equal(utils.formatCurrencyAmountWithForcedDecimalPlaces(new Decimal(0.123456789), 'btc', 2).val, '0.12');
+	});
+
+	test('the whole part of an amount below 0.000001 BTC is 0 (it used to be read from the string "1e-8" as 1)', () => {
+		assert.equal(utils.formatCurrencyAmount(new Decimal(0.00000001), 'btc').intVal, 0);
+		assert.equal(utils.formatCurrencyAmountWithForcedDecimalPlaces(new Decimal(1e-9), 'btc', 5).intVal, 0);
+	});
+
+	test('satoshis per unit of a local currency', () => {
+		assert.deepEqual(utils.satoshisPerUnitOfLocalCurrency('usd'), { amt: '1,633', amtRaw: 1633, unit: 'sat/$' });
+	});
+});
+
+describe('large number formatting', () => {
+	test('with significant digits', () => {
+		assert.equal(utils.formatLargeNumberSignificant(12345.6789, 3)[0].toString(), '12.3');
+		assert.equal(utils.formatLargeNumberSignificant(123456789, 5)[0].toString(), '123.46');
+		assert.equal(utils.formatLargeNumberSignificant(123456789, 5)[1].name, 'mega');
+	});
+
+	test('negative, tiny and very large numbers', () => {
+		assert.equal(utils.formatLargeNumber(-1234567, 3)[0].toString(), '-1.235');
+		assert.equal(utils.formatLargeNumber(1e-7, 3)[0].toString(), '0');
+		assert.deepEqual(utils.formatLargeNumber(3.3e22, 3)[0].toString(), '33');
+		assert.equal(utils.formatLargeNumber(3.3e22, 3)[1].name, 'zetta');
+	});
+});
+
 describe('halving estimates', () => {
 	const estimate = height => utils.nextHalvingEstimates({ height: Math.floor(height / 2016) * 2016, time: 1.6e9 }, { height, time: 1.7e9 });
 
