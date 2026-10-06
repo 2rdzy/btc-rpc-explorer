@@ -7,6 +7,7 @@ const tseslint = require('typescript-eslint');
 module.exports = [
 	{ ignores: ['node_modules/**', 'public/**', 'cache/**', 'raw/**', 'dist/**'] },
 	js.configs.recommended,
+	// the only JavaScript is this file (test/no-javascript.test.ts keeps it that way)
 	{
 		files: ['**/*.js'],
 		languageOptions: {
@@ -14,19 +15,10 @@ module.exports = [
 			sourceType: 'commonjs',
 			globals: {
 				...globals.node,
-				...globals.commonjs,
-
-				// set up by app.js at startup and used without the "global." prefix
-				coinConfig: 'readonly',
-				SATS_PER_BTC: 'readonly'
+				...globals.commonjs
 			}
 		},
 		rules: {
-			// these are real findings but too widespread to fix everywhere yet: fix them as the code is touched
-			'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }],
-			'no-async-promise-executor': 'warn',
-			'no-prototype-builtins': 'warn',
-
 			'no-constant-condition': ['error', { checkLoops: false }],
 			'no-empty': ['error', { allowEmptyCatch: true }]
 		}

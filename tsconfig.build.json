@@ -4,9 +4,8 @@
 		"noEmit": false,
 		"outDir": "dist",
 		"rootDir": ".",
-		"sourceMap": true,
-		"noImplicitAny": false
+		"sourceMap": true
 	},
-	"include": ["types/**/*.d.ts", "app.ts", "app/**/*.js", "app/**/*.ts", "routes/**/*.js", "routes/**/*.ts", "bin/www.ts", "bin/cli.ts", "bin/refresh-mining-pool-configs.js"],
+	"include": ["types/**/*.d.ts", "app.ts", "app/**/*.ts", "routes/**/*.ts", "docs/**/*.ts", "bin/www.ts", "bin/cli.ts", "bin/refresh-mining-pool-configs.ts"],
 	"exclude": ["node_modules", "public", "dist", "test"]
 }

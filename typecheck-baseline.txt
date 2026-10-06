@@ -1,2 +1,0 @@
-# Type errors that existed when type checking was added. Do not add to this file: fix the code instead.
-# Rewritten by: npm run typecheck -- --update

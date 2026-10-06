@@ -156,7 +156,7 @@ export function getBlockTotalFeesFromCoinbaseTxAndBlockHeight(coinbaseTx: any, b
 		}
 	}
 
-	if (blockReward < 1e-8 || blockReward == null) {
+	if (blockReward == null || blockReward.lt(1e-8)) {
 		return totalOutput;
 
 	} else {
