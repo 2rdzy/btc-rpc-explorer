@@ -1,6 +1,6 @@
 "use strict";
 
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 const Decimal8 = Decimal.clone({ precision:8, rounding:8 });
 
 const btcFun = require("./btcFun.js");

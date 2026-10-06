@@ -1,0 +1,291 @@
+# Type errors that existed when type checking was added. Do not add to this file: fix the code instead.
+# Rewritten by: npm run typecheck -- --update
+app.js: TS2300: Duplicate identifier 'locals'.
+app.js: TS2306: File 'app/currencies.js' is not a module.
+app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
+app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
+app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
+app.js: TS2339: Property 'debug' does not exist on type 'object'.
+app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'onStartup' does not exist on type 'Express'.
+app.js: TS2339: Property 'port' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'port' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'post' does not exist on type 'typeof import("node_modules/axios/index")'.
+app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'split' does not exist on type 'string | string[]'.
+app.js: TS2339: Property 'stack' does not exist on type 'unknown'.
+app.js: TS2339: Property 'startTime' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+app.js: TS2339: Property 'startTime' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+app.js: TS2339: Property 'status' does not exist on type 'Error'.
+app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2339: Property 'username' does not exist on type 'Session & Partial<SessionData>'.
+app.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app.js: TS2349: This expression is not callable.
+app.js: TS2769: No overload matches this call.
+app/actionPerformanceMonitor.js: TS2345: Argument of type 'bigint' is not assignable to parameter of type 'string'.
+app/api/blockchainAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/api/blockchainAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/api/blockchainAddressApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/blockchairAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/api/blockcypherAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/api/coreApi.js: TS2339: Property 'buckets' does not exist on type '{ count: number; totalFees: Decimal; totalBytes: number; totalWeight: number; minFeeRate: number; maxFeeRate: number; }'.
+app/api/coreApi.js: TS2339: Property 'buckets' does not exist on type '{ count: number; totalFees: Decimal; totalBytes: number; totalWeight: number; minFeeRate: number; maxFeeRate: number; }'.
+app/api/coreApi.js: TS2339: Property 'description' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'detailsLines' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'name' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'properties' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'properties' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'properties' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'properties' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'properties' does not exist on type '{}'.
+app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ age: number; txidKey: any; }'.
+app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ feePerByte: number; txidKey: any; }'.
+app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ size: number; txidKey: any; }'.
+app/api/coreApi.js: TS2339: Property 'weightRatio' does not exist on type '{ minFeeRate: number; maxFeeRate: number; totalWeight: number; txidCount: number; }'.
+app/api/coreApi.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/api/rpcApi.js: TS2339: Property 'rpcCode' does not exist on type 'Error'.
+app/config.js: TS2345: Argument of type 'string | 10 | 25' is not assignable to parameter of type 'string'.
+app/config.js: TS2345: Argument of type 'string | 5 | 10' is not assignable to parameter of type 'string'.
+app/credentials.js: TS2339: Property 'auth' does not exist on type 'UrlWithParsedQuery | { query: {}; }'.
+app/credentials.js: TS2339: Property 'auth' does not exist on type 'UrlWithParsedQuery | { query: {}; }'.
+app/credentials.js: TS2339: Property 'cookie' does not exist on type 'ParsedUrlQuery | {}'.
+app/credentials.js: TS2339: Property 'hostname' does not exist on type 'UrlWithParsedQuery | { query: {}; }'.
+app/credentials.js: TS2339: Property 'port' does not exist on type 'UrlWithParsedQuery | { query: {}; }'.
+app/credentials.js: TS2339: Property 'timeout' does not exist on type 'ParsedUrlQuery | {}'.
+app/systemMonitor.js: TS2769: No overload matches this call.
+app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
+app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
+app/utils.js: TS2322: Type 'string' is not assignable to type 'number[]'.
+app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'bigint' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+app/utils.js: TS2345: Argument of type 'string' is not assignable to parameter of type 'BufferEncoding'.
+app/utils.js: TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/utils.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
+app/utils.js: TS2367: This comparison appears to be unintentional because the types 'Decimal' and 'string' have no overlap.
+app/utils.js: TS2367: This comparison appears to be unintentional because the types 'Decimal' and 'string' have no overlap.
+bin/cli.js: TS2307: Cannot find module './www' or its corresponding type declarations.
+bin/cli.js: TS2322: Type 'boolean' is not assignable to type 'string'.
+bin/cli.js: TS2322: Type 'unknown' is not assignable to type 'string'.
+bin/frontend-resource-integrity.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
+bin/refresh-mining-pool-configs.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
+bin/refresh-mining-pool-configs.js: TS2345: Argument of type '(err: any) => void' is not assignable to parameter of type 'WriteFileOptions'.
+routes/adminRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+routes/apiRouter.js: TS18048: 'currentBlock' is possibly 'undefined'.
+routes/apiRouter.js: TS18048: 'currentBlock' is possibly 'undefined'.
+routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
+routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
+routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
+routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
+routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
+routes/apiRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
+routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
+routes/apiRouter.js: TS2339: Property 'abbreviation' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'error' does not exist on type 'number'.
+routes/apiRouter.js: TS2339: Property 'exponent' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'exponent' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'exponent' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'format' does not exist on type 'Duration'.
+routes/apiRouter.js: TS2339: Property 'match' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
+routes/apiRouter.js: TS2339: Property 'name' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'success' does not exist on type 'number'.
+routes/apiRouter.js: TS2339: Property 'val' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'val' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'val' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
+routes/apiRouter.js: TS2339: Property 'val' does not exist on type 'string | { val: any; symbol: any; unit: any; valRaw: string; }'.
+routes/apiRouter.js: TS2339: Property 'valRaw' does not exist on type 'string | { val: any; symbol: any; unit: any; valRaw: string; }'.
+routes/apiRouter.js: TS2339: Property 'valRaw' does not exist on type 'string | { val: any; symbol: any; unit: any; valRaw: string; }'.
+routes/apiRouter.js: TS2339: Property 'version' does not exist on type 'Decoded'.
+routes/apiRouter.js: TS2345: Argument of type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+routes/apiRouter.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
+routes/apiRouter.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
+routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<{}, any, any, ParsedQs, Record<string, any>>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'toLowerCase' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
+routes/baseRouter.js: TS2339: Property 'trim' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
+routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
+routes/baseRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/baseRouter.js: TS2365: Operator '<' cannot be applied to types 'number' and 'string | number | ParsedQs | (string | ParsedQs)[]'.
+routes/baseRouter.js: TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
+routes/internalApiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/internalApiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
+routes/snippetRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.

@@ -17,7 +17,8 @@
 		"css-light": "sass --style compressed ./public/scss/light.scss ./public/style/light.min.css",
 		"css-dark": "sass --style compressed ./public/scss/dark.scss ./public/style/dark.min.css",
 		"css-dark-v1": "sass --style compressed ./public/scss/dark-v1.scss ./public/style/dark-v1.min.css",
-		"css": "npm run css-light && npm run css-dark && npm run css-dark-v1 && npm run integrity"
+		"css": "npm run css-light && npm run css-dark && npm run css-dark-v1 && npm run integrity",
+		"typecheck": "node bin/typecheck.js"
 	},
 	"keywords": [
 		"bitcoin",
@@ -87,8 +88,12 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
+		"@types/express": "^4.17.25",
+		"@types/express-session": "^1.19.0",
+		"@types/node": "^22.20.5",
 		"eslint": "^9.34.0",
 		"globals": "^14.0.0",
-		"sass": "^1.90.0"
+		"sass": "^1.90.0",
+		"typescript": "^5.9.3"
 	}
 }

@@ -131,8 +131,8 @@ module.exports = {
 	noTxIndexSearchDepth: (+process.env.BTCEXP_NOTXINDEX_SEARCH_DEPTH || 3),
 
 	rateLimiting: {
-		windowMinutes: process.env.BTCEXP_RATE_LIMIT_WINDOW_MINUTES || 15,
-		windowMaxRequests: process.env.BTCEXP_RATE_LIMIT_WINDOW_MAX_REQUESTS || 200
+		windowMinutes: Number(process.env.BTCEXP_RATE_LIMIT_WINDOW_MINUTES) || 15,
+		windowMaxRequests: Number(process.env.BTCEXP_RATE_LIMIT_WINDOW_MAX_REQUESTS) || 200
 	},
 
 	rpcBlacklist:

@@ -14,7 +14,7 @@ const qrcode = require('qrcode');
 const bitcoinjs = require('bitcoinjs-lib');
 const sha256 = require("crypto-js/sha256");
 const hexEnc = require("crypto-js/enc-hex");
-const Decimal = require("decimal.js");
+const { Decimal } = require("decimal.js");
 
 
 const utils = require('./../app/utils.js');
