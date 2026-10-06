@@ -55,9 +55,14 @@ async function refreshMiningPoolConfig(coinName, index, url) {
 
 		const filename = path.join(__dirname, "..", "public", "txt", "mining-pools-configs", coinName, index + ".json");
 
-		fs.writeFileSync(filename, response.data, (err) => {
+		try {
+			fs.writeFileSync(filename, response.data);
+
+		} catch (err) {
 			console.log(`Error writing file '${filename}': ${err}`);
-		});
+
+			throw err;
+		}
 
 		console.log(`Wrote '${coinName}/${index}.json' with contents of url: ${url}`);
 

@@ -8,6 +8,7 @@ const fs = require("fs");
 const debug = require("debug");
 const debugLog = debug("btcexp:config");
 
+/** @type {any} */
 const btcUri = process.env.BTCEXP_BITCOIND_URI ? url.parse(process.env.BTCEXP_BITCOIND_URI, true) : { query: { } };
 const btcAuth = btcUri.auth ? btcUri.auth.split(':') : [];
 

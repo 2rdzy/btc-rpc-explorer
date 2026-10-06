@@ -472,8 +472,7 @@ function checkRpcError(method, rpcResult) {
 	debugLog(`RPC error: method=${method}, code=${rpcError.code}, message=${rpcError.message}`);
 
 	if (methodsThatMustSucceed.has(method)) {
-		const err = new Error(`RPC ${method} failed: ${rpcError.message} (code ${rpcError.code})`);
-		err.rpcCode = rpcError.code;
+		const err = Object.assign(new Error(`RPC ${method} failed: ${rpcError.message} (code ${rpcError.code})`), {rpcCode: rpcError.code});
 
 		throw err;
 	}

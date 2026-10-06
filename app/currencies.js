@@ -46,3 +46,6 @@ global.currencySymbols = {
 	"eur": "€",
 	"gbp": "£"
 };
+
+// this file only sets globals; the export lets other files require it
+module.exports = {};

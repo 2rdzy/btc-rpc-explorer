@@ -22,7 +22,7 @@ dirs.forEach(dirPath => {
 
 			var hash = crypto.createHash("sha384");
 
-			const data = hash.update(content, 'utf-8');
+			const data = hash.update(content);
 
 			const gen_hash = data.digest('base64');
 

@@ -119,7 +119,7 @@ const snippetActionsRouter = require('./routes/snippetRouter.js');
 const adminActionsRouter = require('./routes/adminRouter.js');
 const testActionsRouter = require('./routes/testRouter.js');
 
-const expressApp = express();
+const expressApp = /** @type {import("express").Express & {onStartup?: any, continueStartup?: any}} */ (express());
 
 
 const statTracker = require("./app/statTracker.js");
@@ -145,7 +145,7 @@ const processStatsInterval = setInterval(() => {
 		statsProcessFunction,
 		statsProcessFunction);
 
-}, process.env.STATS_PROCESS_INTERVAL || (5 * 60 * 1000));
+}, Number(process.env.STATS_PROCESS_INTERVAL) || (5 * 60 * 1000));
 	
 // Don't keep Node.js process up
 processStatsInterval.unref();
@@ -167,7 +167,7 @@ expressApp.use(require("./app/actionPerformanceMonitor.js")(statTracker, {
 expressApp.set('views', path.join(__dirname, 'views'));
 
 // ref: https://blog.stigok.com/post/disable-pug-debug-output-with-expressjs-web-app
-expressApp.engine('pug', (path, options, fn) => {
+expressApp.engine('pug', (path, /** @type {any} */ options, fn) => {
 	options.debug = false;
 	return pug.__express.call(null, path, options, fn);
 });
@@ -289,7 +289,7 @@ if (config.baseUrl != '/') {
 
 
 process.on("unhandledRejection", (reason, p) => {
-	debugLog("Unhandled Rejection at: Promise", p, "reason:", reason, "stack:", (reason != null ? reason.stack : "null"));
+	debugLog("Unhandled Rejection at: Promise", p, "reason:", reason, "stack:", (reason != null ? /** @type {any} */ (reason).stack : "null"));
 });
 
 function loadCustomMiningPoolConfigs() {
@@ -1056,7 +1056,7 @@ expressApp.use(function(req, res, next) {
 	var time = Date.now() - req.startTime;
 	var userAgent = req.headers['user-agent'];
 	var crawler = utils.getCrawlerFromUserAgentString(userAgent);
-	let ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim();
+	let ip = (/** @type {string} */ (req.headers['x-forwarded-for']) || req.connection.remoteAddress || '').split(',')[0].trim();
 
 	if (crawler) {
 		debugAccessLog(`Finished action '${req.path}' (${res.statusCode}) in ${time}ms for crawler '${crawler}' / '${userAgent}', ip=${ip}`);
@@ -1075,7 +1075,7 @@ expressApp.use(function(req, res, next) {
 	utils.trackAppEvent("error404");
 
 	var err = new Error(`Not Found: ${req ? req.url : 'unknown url'}`);
-	err.status = 404;
+	Object.assign(err, {status: 404});
 
 	next(err);
 });

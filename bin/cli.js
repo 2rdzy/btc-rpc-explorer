@@ -82,13 +82,15 @@ Object.keys(args).filter(k => k.length > 1).forEach(k => {
 	if (args[k] === false) {
 		debugLog(`Config(arg): BTCEXP_NO_${envify(k)}=true`);
 
-		process.env[`BTCEXP_NO_${envify(k)}`] = true;
+		process.env[`BTCEXP_NO_${envify(k)}`] = "true";
 
 	} else {
 		debugLog(`Config(arg): BTCEXP_${envify(k)}=${args[k]}`);
 
-		process.env[`BTCEXP_${envify(k)}`] = args[k];
+		process.env[`BTCEXP_${envify(k)}`] = String(args[k]);
 	}
 });
 
+// bin/www has no file extension, so TypeScript cannot resolve it
+// @ts-ignore
 require('./www');
