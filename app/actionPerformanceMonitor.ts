@@ -3,7 +3,7 @@ import onHeaders from "on-headers";
 import debug from "debug";
 const debugLog = debug("monitor");
 
-import utils from "./utils.js";
+import { getCrawlerFromUserAgentString } from "./helpers/http.js";
 import type * as StatTracker from "./statTracker.js";
 
 interface ActionMonitorOptions {
@@ -45,7 +45,7 @@ const onHeadersListener = (config: ActionMonitorConfig, req: Request, statusCode
 		statTracker.trackEvent(`action-status.*.${category}00`);
 
 		const userAgent = req.headers['user-agent'];
-		const crawler = utils.getCrawlerFromUserAgentString(userAgent);
+		const crawler = getCrawlerFromUserAgentString(userAgent);
 		if (crawler) {
 			statTracker.trackEvent(`site-crawl.${crawler}`);
 		}

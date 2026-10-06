@@ -85,3 +85,7 @@ export function obfuscateProperties<T extends object>(obj: T, properties: string
 }
 
 export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
+// The bytes of a hex string.
+export const arrayFromHexString = (hexString: string): Uint8Array =>
+	new Uint8Array((hexString.match(/.{1,2}/g) as RegExpMatchArray).map(byte => parseInt(byte, 16)));

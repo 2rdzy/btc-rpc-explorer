@@ -3,7 +3,7 @@ const debugLog = debug("btcexp:cache");
 
 import { LRUCache } from "lru-cache";
 
-import utils from "./utils.js";
+import { addThousandsSeparators } from "./helpers/text.js";
 
 const watchKeysRegex = /regexToMatchCacheKeysForDebugLogging/;
 
@@ -30,7 +30,7 @@ export function createMemoryLruCache(cacheName: string, cacheObj: LRUCache<strin
 					onCacheEvent("memory", "hit", key);
 
 					if (key.match(watchKeysRegex)) {
-						debugLog(`cache.${cacheName}[${key}]: HIT  (${utils.addThousandsSeparators(JSON.stringify(val).length)} B)`);
+						debugLog(`cache.${cacheName}[${key}]: HIT  (${addThousandsSeparators(JSON.stringify(val).length)} B)`);
 					}
 				} else {
 					onCacheEvent("memory", "miss", key);
@@ -47,7 +47,7 @@ export function createMemoryLruCache(cacheName: string, cacheObj: LRUCache<strin
 			cacheObj.set(key, obj, {ttl: maxAge});
 
 			if (key.match(watchKeysRegex)) {
-				debugLog(`cache.${cacheName}[${key}]: SET  (${utils.addThousandsSeparators(JSON.stringify(obj).length)} B), T=${maxAge}`);
+				debugLog(`cache.${cacheName}[${key}]: SET  (${addThousandsSeparators(JSON.stringify(obj).length)} B), T=${maxAge}`);
 			}
 
 			onCacheEvent("memory", "set", key);

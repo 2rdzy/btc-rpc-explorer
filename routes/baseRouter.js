@@ -1184,7 +1184,7 @@ router.get("/predicted-blocks", asyncHandler(async (req, res, next) => {
 
 router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
 	try {
-		const mempoolTxids = await utils.timePromise("predicted-blocks.getAllMempoolTxids", coreApi.getAllMempoolTxids());
+		const mempoolTxids = await utils.timePromise("predicted-blocks.getAllMempoolTxids", coreApi.getAllMempoolTxids);
 		let mempoolTxSummaries = await coreApi.getMempoolTxSummaries(mempoolTxids, Math.random().toString(36).substr(2, 5), (x) => {});
 
 		const blockTemplate = {weight: 0, totalFees: new Decimal(0), vB: 0, txCount:0, txids: []};
