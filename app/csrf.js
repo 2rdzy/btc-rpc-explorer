@@ -5,6 +5,7 @@
 
 const { csrfSync } = require("csrf-sync");
 
+/** @param {import("express").Request} req */
 const getTokenFromRequest = (req) => {
 	return (req.body && req.body._csrf)
 		|| (req.query && req.query._csrf)

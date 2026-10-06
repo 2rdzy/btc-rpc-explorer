@@ -10,6 +10,7 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": false,
+		"noImplicitAny": true,
 		"types": ["node"]
 	},
 	"include": ["types/**/*.d.ts", "app.js", "app/**/*.js", "routes/**/*.js", "bin/**/*.js"],

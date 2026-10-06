@@ -11,6 +11,7 @@ const dirs = [
 
 const filetypeMatch = /^.*\.(js|css)$/;
 
+/** @type {Record<string, string>} */
 const hashesByFilename = {};
 
 dirs.forEach(dirPath => {

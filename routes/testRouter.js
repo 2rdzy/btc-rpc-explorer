@@ -56,7 +56,7 @@ router.get("/tx-display", asyncHandler(async (req, res, next) => {
 
 	await Promise.all(promises);
 
-	res.locals.transactions.sort((a, b) => {
+	res.locals.transactions.sort((/** @type {any} */ a, /** @type {any} */ b) => {
 		return txidOrder.indexOf(a.txid) - txidOrder.indexOf(b.txid);
 	});
 

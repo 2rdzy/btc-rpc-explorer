@@ -4,6 +4,13 @@ const axios = require("axios").default;
 const utils = require("./../utils.js");
 
 
+/**
+ * @param {string} address
+ * @param {string} scriptPubkey
+ * @param {string} sort
+ * @param {number} limit
+ * @param {number} offset
+ */
 function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 	// Note: blockchair api seems to not respect the limit parameter, always using 100
 	return new Promise(async (resolve, reject) => {
@@ -26,6 +33,7 @@ function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 			var responseObj = response.data;
 			responseObj = responseObj.data[address];
 
+			/** @type {any} */
 			var result = {};
 
 			result.txids = [];

@@ -24,6 +24,7 @@ function generateToken() {
 	return crypto.randomBytes(18).toString("base64").replace(/\+/g, '-').replace(/\//g, '_')
 }
 
+/** @param {string} tokenFile */
 function updateToken(tokenFile) {
 	// This implements atomic update of the token file to avoid corrupted tokens causing trouble
 	// If first saves the token into a temporary file and then moves it over. The move is atomic.
@@ -39,6 +40,10 @@ function updateToken(tokenFile) {
 	return newToken;
 }
 
+/**
+ * @param {string} tokenFile
+ * @param {string} loginRedirect
+ */
 module.exports = (tokenFile, loginRedirect) => {
 	// Reinitializing the token at start is important due to same reason we don't read it back.
 	// It also avoids races when another process binds the same port and reads the token in order to later use
@@ -46,7 +51,7 @@ module.exports = (tokenFile, loginRedirect) => {
 	var token = updateToken(tokenFile);
 	var cookies = new Set();
 
-	return (req, res, next) => {
+	return (/** @type {import("express").Request} */ req, /** @type {import("express").Response} */ res, /** @type {import("express").NextFunction} */ next) => {
 		if (req.cookies && cookies.has(req.cookies[authCookieName])) {
 			req.authenticated = true;
 
@@ -55,10 +60,13 @@ module.exports = (tokenFile, loginRedirect) => {
 
 		
 		let matchingToken = false;
-		if (req.query.token) {
+		const queryToken = req.query.token;
+
+		// only a string can be the token (a repeated ?token= parameter gives an array, ?token[a]= an object)
+		if (typeof queryToken === "string" && queryToken) {
 			try {
 				// We use timingSafeEqual to avoid timing attacks
-				matchingToken = crypto.timingSafeEqual(Buffer.from(req.query.token, "utf8"), Buffer.from(token, "utf8"));
+				matchingToken = crypto.timingSafeEqual(Buffer.from(queryToken, "utf8"), Buffer.from(token, "utf8"));
 
 			} catch (e) {
 				utils.logError("23rheuweesaa", e);

@@ -141,7 +141,7 @@ See [docs/nginx-reverse-proxy.md](docs/nginx-reverse-proxy.md) for nginx and cer
 ## Development
 
 * `npm test` runs the tests, `npm run lint` runs ESLint, and `npm run typecheck` type-checks the JavaScript with TypeScript (`tsconfig.json`). CI runs all three.
-* The type check is clean, so any type error fails it. `typecheck-baseline.txt` (the list of findings that were tolerated while the code base was cleaned up) is empty; if a change has to tolerate a finding, record it there with `npm run typecheck -- --update`, and prefer fixing it.
+* The code is typed with JSDoc comments, so it runs as it is on Node, with no build step. The type check runs with `noImplicitAny`: new code must declare its parameter and variable types, for example `/** @param {string} name */`. The code that predates this is listed in `typecheck-baseline.txt` and only *new* findings fail the check; when you touch a function, type it and run `npm run typecheck -- --update` to shrink the list. Do not add to it.
 * `npm run css` rebuilds the three theme stylesheets from `public/scss/` and rewrites the integrity hashes in `app/resourceIntegrityHashes.js`. Commit the compiled `*.min.css` files and the hashes together, or browsers will reject the stylesheets.
 * `npm run miners` downloads the upstream mining pool lists. It does not touch `public/txt/mining-pools-configs-custom/`.
 

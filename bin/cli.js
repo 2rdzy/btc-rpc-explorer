@@ -76,6 +76,7 @@ const args = require('meow')(`
 	}
 ).flags;
 
+/** @param {string} k */
 const envify = k => k.replace(/([A-Z])/g, '_$1').toUpperCase();
 
 Object.keys(args).filter(k => k.length > 1).forEach(k => {

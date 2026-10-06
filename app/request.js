@@ -6,6 +6,12 @@
 
 // The value of query parameter `name` if it is a string (the first one, if it was repeated), or
 // `defaultValue` when it is missing or is an object.
+/**
+ * @param {any} query
+ * @param {string} name
+ * @param {any} [defaultValue]
+ * @returns {any}
+ */
 function queryString(query, name, defaultValue) {
 	const value = query ? query[name] : undefined;
 
@@ -21,6 +27,12 @@ function queryString(query, name, defaultValue) {
 }
 
 // The value of query parameter `name` as a whole number, or `defaultValue` when it is missing or is not a number.
+/**
+ * @param {any} query
+ * @param {string} name
+ * @param {any} [defaultValue]
+ * @returns {any}
+ */
 function queryInt(query, name, defaultValue) {
 	const value = queryString(query, name);
 
@@ -36,6 +48,11 @@ function queryInt(query, name, defaultValue) {
 // The values of query parameter `name` as a list of strings, for parameters sent as ?name[0]=a&name[1]=b.
 // A single ?name=a counts as a list of one. Anything that is not a string (an object, say) becomes null,
 // and a missing parameter gives an empty list.
+/**
+ * @param {any} query
+ * @param {string} name
+ * @returns {(string | null)[]}
+ */
 function queryStringList(query, name) {
 	const value = query ? query[name] : undefined;
 

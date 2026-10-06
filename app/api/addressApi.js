@@ -44,6 +44,13 @@ function getCurrentAddressApiFeatureSupport() {
 	}
 }
 
+/**
+ * @param {string} address
+ * @param {string} scriptPubkey
+ * @param {string} sort
+ * @param {number} limit
+ * @param {number} offset
+ */
 function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 	return new Promise(function(resolve, reject) {
 		var promises = [];

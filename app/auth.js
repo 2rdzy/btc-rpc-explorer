@@ -2,7 +2,8 @@
 
 const basicAuth = require('basic-auth');
 
-module.exports = pass => (req, res, next) => {
+/** @param {string} pass */
+module.exports = pass => (/** @type {import("express").Request} */ req, /** @type {import("express").Response} */ res, /** @type {import("express").NextFunction} */ next) => {
 	var cred = basicAuth(req);
 
 	if (cred && cred.pass === pass) {
