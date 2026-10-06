@@ -52,6 +52,29 @@ for (let i = 0; i < electrumServerUriStrings.length; i++) {
 	electrumServers.push({protocol:uri.protocol.substring(0, uri.protocol.length - 1), host:uri.hostname, port:parseInt(uri.port)});
 }
 
+// TLS settings for the Electrum servers. Certificates are verified: to trust a server with a
+// self-signed certificate, pin its fingerprint (best) or give the certificate as a CA.
+const electrumTls = {};
+
+if (process.env.BTCEXP_ELECTRUM_TLS_FINGERPRINT) {
+	electrumTls.fingerprint256 = process.env.BTCEXP_ELECTRUM_TLS_FINGERPRINT.trim();
+}
+
+if (process.env.BTCEXP_ELECTRUM_TLS_CA) {
+	try {
+		electrumTls.ca = fs.readFileSync(process.env.BTCEXP_ELECTRUM_TLS_CA);
+
+	} catch (err) {
+		throw new Error(`Unable to read BTCEXP_ELECTRUM_TLS_CA (${process.env.BTCEXP_ELECTRUM_TLS_CA}): ${err.message}`);
+	}
+}
+
+if (process.env.BTCEXP_ELECTRUM_TLS_ALLOW_UNVERIFIED == "true") {
+	electrumTls.rejectUnauthorized = false;
+
+	console.warn("WARNING: BTCEXP_ELECTRUM_TLS_ALLOW_UNVERIFIED=true: Electrum server certificates are not verified, so anyone on the network path can impersonate the server. Prefer BTCEXP_ELECTRUM_TLS_FINGERPRINT.");
+}
+
 // default=false env vars
 [
 	"BTCEXP_DEMO",
@@ -207,6 +230,7 @@ module.exports = {
 	addressApi: process.env.BTCEXP_ADDRESS_API,
 	electrumTxIndex: process.env.BTCEXP_ELECTRUM_TXINDEX != "false",
 	electrumServers: electrumServers,
+	electrumTls: electrumTls,
 
 	redisUrl:process.env.BTCEXP_REDIS_URL,
 
