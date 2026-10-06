@@ -6,7 +6,7 @@
 	"bin": "dist/bin/cli.js",
 	"scripts": {
 		"start": "node --enable-source-maps ./dist/bin/www.js",
-		"test": "node --test test/*.test.js",
+		"test": "node --import tsx --test test/*.test.js",
 		"miners": "node ./bin/refresh-mining-pool-configs.js",
 		"integrity": "node ./bin/frontend-resource-integrity.js",
 		"lint": "eslint .",
@@ -18,7 +18,7 @@
 		"css-dark": "sass --style compressed ./public/scss/dark.scss ./public/style/dark.min.css",
 		"css-dark-v1": "sass --style compressed ./public/scss/dark-v1.scss ./public/style/dark-v1.min.css",
 		"css": "npm run css-light && npm run css-dark && npm run css-dark-v1 && npm run integrity",
-		"typecheck": "node bin/typecheck.js",
+		"typecheck": "node bin/typecheck.js && tsc -p tsconfig.strict.json",
 		"build": "tsc -p tsconfig.build.json",
 		"clean": "rm -rf dist"
 	},
@@ -112,6 +112,8 @@
 		"eslint": "^9.34.0",
 		"globals": "^14.0.0",
 		"sass": "^1.90.0",
-		"typescript": "^5.9.3"
+		"tsx": "^4.23.15",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.71.1"
 	}
 }

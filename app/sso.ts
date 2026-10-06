@@ -8,15 +8,14 @@
 //
 // So before you change anything, please think twice about the consequences.
 
-"use strict";
-
-const crypto = require('crypto');
-const fs = require('fs');
-const utils = require("./utils.js");
+import crypto from "crypto";
+import fs from "fs";
+import type { NextFunction, Request, Response } from "express";
+import utils from "./utils.js";
 
 const authCookieName = "btcexp_auth";
 
-function generateToken() {
+function generateToken(): string {
 	// Normally we would use 16 => 128 bits of entropy which is sufficiennt
 	// But since we're going to base64 it and there would be padding (==),
 	// It's a wasted space, why not use padding for some additional entropy? :)
@@ -24,14 +23,13 @@ function generateToken() {
 	return crypto.randomBytes(18).toString("base64").replace(/\+/g, '-').replace(/\//g, '_')
 }
 
-/** @param {string} tokenFile */
-function updateToken(tokenFile) {
+function updateToken(tokenFile: string): string {
 	// This implements atomic update of the token file to avoid corrupted tokens causing trouble
 	// If first saves the token into a temporary file and then moves it over. The move is atomic.
 	// The token could also be synced but since the next boot overwrites it anyway, disk corruption
 	// is not an issue.
-	var newToken = generateToken();
-	var tmpFileName = tokenFile + ".tmp";
+	const newToken = generateToken();
+	const tmpFileName = tokenFile + ".tmp";
 	// It is important that we use the generated token, and NOT read back what was written.
 	// This avoids using predictable token if filesystem gets corrupted (e.g. in case of ENOSPC).
 	fs.writeFileSync(tmpFileName, newToken);
@@ -40,18 +38,14 @@ function updateToken(tokenFile) {
 	return newToken;
 }
 
-/**
- * @param {string} tokenFile
- * @param {string} loginRedirect
- */
-module.exports = (tokenFile, loginRedirect) => {
+export = (tokenFile: string, loginRedirect?: string | null) => {
 	// Reinitializing the token at start is important due to same reason we don't read it back.
 	// It also avoids races when another process binds the same port and reads the token in order to later use
 	// it to attack this app.
-	var token = updateToken(tokenFile);
-	var cookies = new Set();
+	let token = updateToken(tokenFile);
+	const cookies = new Set<string>();
 
-	return (/** @type {import("express").Request} */ req, /** @type {import("express").Response} */ res, /** @type {import("express").NextFunction} */ next) => {
+	return (req: Request, res: Response, next: NextFunction) => {
 		if (req.cookies && cookies.has(req.cookies[authCookieName])) {
 			req.authenticated = true;
 
@@ -76,7 +70,7 @@ module.exports = (tokenFile, loginRedirect) => {
 		if (matchingToken) {
 			req.authenticated = true;
 			token = updateToken(tokenFile);
-			let cookie = generateToken();
+			const cookie = generateToken();
 			cookies.add(cookie);
 			res.cookie(authCookieName, cookie);
 

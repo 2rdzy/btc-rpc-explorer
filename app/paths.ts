@@ -1,15 +1,12 @@
-"use strict";
+import fs from "fs";
+import path from "path";
 
 // The project root: the nearest directory above `startDir` that holds both package.json and views/.
 //
 // The code runs from dist/ (npm run build compiles it there), but views/, public/, the changelogs and
 // package.json stay at the project root, so code reaches them through this instead of __dirname.
 // Asking for views/ as well as package.json keeps a copy of package.json in dist/ from being taken for it.
-/** @param {string} startDir */
-function findProjectRoot(startDir) {
-	const fs = require("fs");
-	const path = require("path");
-
+export function findProjectRoot(startDir: string): string {
 	let dir = path.resolve(startDir);
 
 	for (;;) {
@@ -27,7 +24,4 @@ function findProjectRoot(startDir) {
 	}
 }
 
-module.exports = {
-	findProjectRoot: findProjectRoot,
-	projectRoot: findProjectRoot(__dirname)
-};
+export const projectRoot = findProjectRoot(__dirname);
