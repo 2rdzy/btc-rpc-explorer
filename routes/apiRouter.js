@@ -19,6 +19,7 @@ const markdown = require("markdown-it")();
 const coins = require("./../app/coins.js");
 const config = require("./../app/config.js");
 const utils = require('./../app/utils.js');
+const { queryInt, queryString } = require("./../app/request.js");
 const coreApi = require("./../app/api/coreApi.js");
 const addressApi = require("./../app/api/addressApi.js");
 const xyzpubApi = require("./../app/api/xyzpubApi.js");
@@ -375,15 +376,15 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 		
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		if (req.query.sort) {
-			sort = req.query.sort;
+			sort = queryString(req.query, "sort", sort);
 		}
 
 
@@ -532,12 +533,12 @@ router.get("/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
 		
 		let limit = 20;
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 		
 		let offset = 0;
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		
@@ -570,12 +571,12 @@ router.get("/xyzpub/txids/:extendedPubkey", asyncHandler(async (req, res, next) 
 
 		let gapLimit = 20;
 		if (req.query.gapLimit) {
-			gapLimit = parseInt(req.query.gapLimit);
+			gapLimit = queryInt(req.query, "gapLimit", gapLimit);
 		}
 
 		let limit = -1;
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 		
 		const searchResult = await xyzpubApi.searchXpubTxids(extendedPubkey, gapLimit, limit);
@@ -618,17 +619,17 @@ router.get("/xyzpub/addresses/:extendedPubkey", asyncHandler(async (req, res, ne
 
 		let receiveOrChange = 0;
 		if (req.query.receiveOrChange) {
-			receiveOrChange = parseInt(req.query.receiveOrChange);
+			receiveOrChange = queryInt(req.query, "receiveOrChange", receiveOrChange);
 		}
 
 		let limit = 10;
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 
 		let offset = 0;
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 		
 		const xyzpubResult = await xyzpubApi.getXpubAddresses(extendedPubkey, receiveOrChange, limit, offset);
@@ -662,7 +663,7 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 		let decimals = 3;
 
 		if (req.query.decimals) {
-			decimals = parseInt(req.query.decimals);
+			decimals = queryInt(req.query, "decimals", decimals);
 		}
 
 		let blocksPerDay = 24 * 60 * 60 / coinConfig.targetBlockTimeSeconds;
@@ -890,8 +891,8 @@ router.get("/mining/miner-summary", asyncHandler(async (req, res, next) => {
 			endHeight = getblockchaininfo.blocks;
 		}
 	} else if (req.query.startHeight && req.query.endHeight) {
-		startHeight = parseInt(req.query.startHeight);
-		endHeight = parseInt(req.query.endHeight);
+		startHeight = queryInt(req.query, "startHeight", startHeight);
+		endHeight = queryInt(req.query, "endHeight", endHeight);
 	}
 
 	if (startHeight == -1 || endHeight == -1) {
@@ -1111,7 +1112,7 @@ router.get("/holidays/all", function(req, res, next) {
 router.get("/holidays/today", function(req, res, next) {
 	let momentObj = moment.utc(new Date());
 	if (req.query.tzOffset) {
-		momentObj = momentObj.add(parseInt(req.query.tzOffset), "hours")
+		momentObj = momentObj.add(queryInt(req.query, "tzOffset", 0), "hours")
 	}
 
 	let day = momentObj.format("MM-DD");
