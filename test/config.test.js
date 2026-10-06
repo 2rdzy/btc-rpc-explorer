@@ -217,7 +217,8 @@ describe('RPC credentials', () => {
 		fs.writeFileSync(cookie, '__cookie__:first');
 
 		try {
-			const script = `(() => { const c = require('./app/credentials.ts'); const before = c.loadFreshRpcCredentials().password; require('fs').writeFileSync(${JSON.stringify(cookie)}, '__cookie__:second'); return [before, c.loadFreshRpcCredentials().password]; })()`;
+			// the cookie's path is already in the child's environment, so the script reads it from there instead of having it pasted in
+			const script = "(() => { const c = require('./app/credentials.ts'); const before = c.loadFreshRpcCredentials().password; require('fs').writeFileSync(process.env.BTCEXP_BITCOIND_COOKIE, '__cookie__:second'); return [before, c.loadFreshRpcCredentials().password]; })()";
 			const result = run({ BTCEXP_BITCOIND_COOKIE: cookie }, script);
 
 			assert.deepEqual(result.value, ['first', 'second']);
