@@ -8,7 +8,7 @@ const debugErrorLog = debug("btcexp:error");
 const debugErrorVerboseLog = debug("btcexp:errorVerbose");
 
 const { Decimal } = require("decimal.js");
-const axios = require("axios");
+const axios = require("axios").default;
 const qrcode = require("qrcode");
 const bs58check = require("bs58check");
 const ecc = require('tiny-secp256k1');
@@ -371,7 +371,7 @@ function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) 
 	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
 		let dec = new Decimal(amount);
 		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(2);
+		let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
 
 		return {
 			symbol: global.currencySymbols[exchangeType],
@@ -383,7 +383,7 @@ function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) 
 		if (global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(2);
+			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
 
 			return {
 				symbol: "AU",
@@ -400,7 +400,7 @@ function formatExchangedCurrency(amount, exchangeType, decimals=2) {
 	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
 		let dec = new Decimal(amount);
 		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(decimals);
+		let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(decimals);
 
 		return {
 			val: addThousandsSeparators(exchangedAmt),
@@ -412,7 +412,7 @@ function formatExchangedCurrency(amount, exchangeType, decimals=2) {
 		if (global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(decimals);
+			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(decimals);
 
 			return {
 				val: addThousandsSeparators(exchangedAmt),
@@ -1181,7 +1181,7 @@ const timePromise = async (name, promise, perfResults=null) => {
 		statTracker.trackPerformance(name, responseTimeMillis);
 
 		if (perfResults) {
-			perfResults[name] = Math.max(1, parseInt(responseTimeMillis));
+			perfResults[name] = Math.max(1, Math.trunc(responseTimeMillis));
 		}
 
 		return response;
@@ -1192,7 +1192,7 @@ const timePromise = async (name, promise, perfResults=null) => {
 		statTracker.trackPerformance(`${name}_error`, responseTimeMillis);
 
 		if (perfResults) {
-			perfResults[`${name}_error`] = Math.max(1, parseInt(responseTimeMillis));
+			perfResults[`${name}_error`] = Math.max(1, Math.trunc(responseTimeMillis));
 		}
 
 		throw e;
@@ -1426,7 +1426,7 @@ function expressRequestToJson(req) {
 }
 
 function difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader) {
-	let difficultyPeriod = parseInt(Math.floor(currentBlockHeader.height / coinConfig.difficultyAdjustmentBlockCount));
+	let difficultyPeriod = Math.trunc(Math.floor(currentBlockHeader.height / coinConfig.difficultyAdjustmentBlockCount));
 	let blocksUntilDifficultyAdjustment = ((difficultyPeriod + 1) * coinConfig.difficultyAdjustmentBlockCount) - currentBlockHeader.height;
 
 	let heightDiff = currentBlockHeader.height - eraStartBlockHeader.height;
@@ -1491,7 +1491,7 @@ function difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader) 
 function nextHalvingEstimates(eraStartBlockHeader, currentBlockHeader, difficultyAdjustmentDataArg=null) {
 	let blockCount = currentBlockHeader.height;
 	let halvingBlockInterval = coinConfig.halvingBlockIntervalsByNetwork[global.activeBlockchain];
-	let halvingCount = parseInt(blockCount / halvingBlockInterval);
+	let halvingCount = Math.trunc(blockCount / halvingBlockInterval);
 	let nextHalvingIndex = halvingCount + 1;
 	let targetBlockTimeSeconds = coinConfig.targetBlockTimeSeconds;
 	let nextHalvingBlock = (halvingBlockInterval * nextHalvingIndex);

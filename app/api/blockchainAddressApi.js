@@ -1,6 +1,6 @@
 "use strict";
 
-const axios = require("axios");
+const axios = require("axios").default;
 const utils = require("./../utils.js");
 
 
@@ -22,7 +22,7 @@ function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 				var blockchainJson = response.data;
 
 				var txCount = blockchainJson.n_tx;
-				var pageCount = parseInt(txCount / limit);
+				var pageCount = Math.trunc(txCount / limit);
 				var lastPageSize = limit;
 				if (pageCount * limit < txCount) {
 					lastPageSize = txCount - pageCount * limit;

@@ -96,7 +96,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 
 		res.locals.getblockchaininfo = getblockchaininfo;
 
-		res.locals.difficultyPeriod = parseInt(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 			
 
 		let blockHeights = [];
@@ -1691,7 +1691,7 @@ router.get("/next-halving", asyncHandler(async (req, res, next) => {
 		let promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
-		res.locals.difficultyPeriod = parseInt(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
 		let blockHeights = [];
 		if (getblockchaininfo.blocks) {

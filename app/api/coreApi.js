@@ -1746,7 +1746,7 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 					ageBucketLabels.push(rangeMinutesMax + "m");
 
 				} else {
-					ageBucketLabels.push(parseInt(rangeMax) + "s");
+					ageBucketLabels.push(Math.trunc(rangeMax) + "s");
 				}
 			}
 
@@ -1754,13 +1754,13 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 				sizeBucketTxCounts.push(0);
 
 				if (i == sizeBucketCount - 1) {
-					sizeBucketLabels.push(parseInt(i * maxSize / sizeBucketCount) + "+");
+					sizeBucketLabels.push(Math.trunc(i * maxSize / sizeBucketCount) + "+");
 
 				} else if (i == 0) {
-					sizeBucketLabels.push(parseInt(i * maxSize / sizeBucketCount) + " - " + parseInt((i + 1) * maxSize / sizeBucketCount));
+					sizeBucketLabels.push(Math.trunc(i * maxSize / sizeBucketCount) + " - " + Math.trunc((i + 1) * maxSize / sizeBucketCount));
 
 				} else {
-					sizeBucketLabels.push(parseInt((i + 1) * maxSize / sizeBucketCount));
+					sizeBucketLabels.push(Math.trunc((i + 1) * maxSize / sizeBucketCount));
 				}
 			}
 
@@ -1850,8 +1850,8 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 				summary["totalBytes"] += size;
 				summary["totalWeight"] += weight;
 
-				let ageBucketIndex = Math.min(ageBucketCount - 1, parseInt(age / (maxAge / ageBucketCount)));
-				let sizeBucketIndex = Math.min(sizeBucketCount - 1, parseInt(size / (maxSize / sizeBucketCount)));
+				let ageBucketIndex = Math.min(ageBucketCount - 1, Math.trunc(age / (maxAge / ageBucketCount)));
+				let sizeBucketIndex = Math.min(sizeBucketCount - 1, Math.trunc(size / (maxSize / sizeBucketCount)));
 
 				ageBucketTxCounts[ageBucketIndex]++;
 				sizeBucketTxCounts[sizeBucketIndex]++;

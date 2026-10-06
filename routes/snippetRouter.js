@@ -93,7 +93,7 @@ router.get("/index-halving-countdown", asyncHandler(async (req, res, next) => {
 		let promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
-		res.locals.difficultyPeriod = parseInt(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
 		let blockHeights = [];
 		if (getblockchaininfo.blocks) {
