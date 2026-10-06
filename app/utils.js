@@ -98,6 +98,7 @@ if (fs.existsSync(ipCacheFile)) {
 	}
 }
 
+// unref'd so that this timer alone does not keep a process alive (it matters for tests and scripts)
 setInterval(() => {
 	if (ipMemoryCacheNewItems) {
 		try {
@@ -115,7 +116,7 @@ setInterval(() => {
 
 		ipMemoryCacheNewItems = false;
 	}
-}, 60000);
+}, 60000).unref();
 
 const ipCache = {
 	get:function(key) {
@@ -869,6 +870,27 @@ function parseExponentStringDouble(val) {
 	return +pow <= 0 
 		? "0." + "0".repeat(Math.abs(pow)-1) + lead + decimal
 		: lead + ( +pow >= decimal.length ? (decimal + "0".repeat(+pow-decimal.length)) : (decimal.slice(0,+pow)+"."+decimal.slice(+pow)));
+}
+
+// Parse a node's subversion string ('/Satoshi:29.4.2/Knots:20260508/') into its version and a
+// semver (major.minor.patch) used to gate RPC calls. The fourth part of a 4-part version is a
+// bug fix release, irrelevant for RPC versioning, and is dropped. When the version cannot be
+// read, the semver is one that passes every version check, which may cause unexpected results.
+function parseNodeVersion(subversion) {
+	const match = /\/Satoshi:([^\/]*)\//.exec(subversion);
+
+	if (!match) {
+		return { version: null, semver: "1000.1000.0" };
+	}
+
+	const version = match[1];
+	const parts = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.[0-9]+)?$/.exec(version);
+
+	if (!parts) {
+		return { version: version, semver: "1000.1000.0" };
+	}
+
+	return { version: version, semver: `${parts[1]}.${parts[2]}.${parts[3]}` };
 }
 
 // Knots reports "difficulty" for SHA256d blocks and "difficulty_blake2b" for BLAKE2b (header-v2) blocks.
@@ -1687,6 +1709,7 @@ module.exports = {
 	estimatedSupply: estimatedSupply,
 	refreshExchangeRates: refreshExchangeRates,
 	parseExponentStringDouble: parseExponentStringDouble,
+	parseNodeVersion: parseNodeVersion,
 	getDifficulty: getDifficulty,
 	isBlake2bDifficulty: isBlake2bDifficulty,
 	formatLargeNumber: formatLargeNumber,
