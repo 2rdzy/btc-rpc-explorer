@@ -41,20 +41,16 @@ router.get("/dashboard", function(req, res, next) {
 
 	res.locals.cacheSizes = {
 		misc: {
-			size: global.miscLruCache.size,
-			itemCount: global.miscLruCache.itemCount
+			size: global.miscLruCache.size
 		},
 		block: {
-			size: global.blockLruCache.size,
-			itemCount: global.blockLruCache.itemCount
+			size: global.blockLruCache.size
 		},
 		tx: {
-			size: global.txLruCache.size,
-			itemCount: global.txLruCache.itemCount
+			size: global.txLruCache.size
 		},
 		mining: {
-			size: global.miningSummaryLruCache.size,
-			itemCount: global.miningSummaryLruCache.itemCount
+			size: global.miningSummaryLruCache.size
 		}
 	};
 
