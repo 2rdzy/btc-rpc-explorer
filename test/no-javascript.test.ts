@@ -24,4 +24,12 @@ describe('the code base', () => {
 		assert.ok(fs.existsSync(path.join(root, 'app.ts')));
 		assert.ok(!fs.existsSync(path.join(root, 'app.js')));
 	});
+
+	test('has one lock file: npm-shrinkwrap.json', () => {
+		for (const other of ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']) {
+			assert.ok(!fs.existsSync(path.join(root, other)), `${other} would drift from npm-shrinkwrap.json: delete it`);
+		}
+
+		assert.ok(fs.existsSync(path.join(root, 'npm-shrinkwrap.json')));
+	});
 });
