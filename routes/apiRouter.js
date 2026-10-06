@@ -209,8 +209,8 @@ router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
 
 router.get("/tx/volume/24h", function(req, res, next) {
 	try {
-		if (networkVolume && networkVolume.d1 && networkVolume.d1.amt) {
-			let currencyValue = parseInt(networkVolume.d1.amt);
+		if (global.networkVolume && global.networkVolume.d1 && global.networkVolume.d1.amt) {
+			let currencyValue = parseInt(global.networkVolume.d1.amt);
 
 			res.json({"24h": currencyValue});
 
@@ -448,7 +448,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		if (global.specialAddresses[address] && global.specialAddresses[address].type == "fun") {
 			let funInfo = global.specialAddresses[address].addressInfo;
 
-			notes.push(funInfo);
+			result.notes.push(funInfo);
 		}
 
 		if (global.miningPoolsConfigs) {

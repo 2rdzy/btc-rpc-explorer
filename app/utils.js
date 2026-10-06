@@ -69,7 +69,7 @@ const crawlerBotUserAgentStrings = {
 	"scrapy": new RegExp("Scrapy", "i"),
 };
 
-const ipMemoryCache = {};
+let ipMemoryCache = {};
 
 let ipRedisCache = null;
 if (redisCache.active) {
@@ -877,7 +877,7 @@ function parseExponentStringDouble(val) {
 // bug fix release, irrelevant for RPC versioning, and is dropped. When the version cannot be
 // read, the semver is one that passes every version check, which may cause unexpected results.
 function parseNodeVersion(subversion) {
-	const match = /\/Satoshi:([^\/]*)\//.exec(subversion);
+	const match = /\/Satoshi:([^/]*)\//.exec(subversion);
 
 	if (!match) {
 		return { version: null, semver: "1000.1000.0" };

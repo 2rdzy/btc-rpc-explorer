@@ -48,7 +48,7 @@ function getAddressDetails(address, scriptPubkey, sort, limit, offset) {
 			} catch (err) {
 				utils.logError("we0f8hasd0fhas", err);
 
-				reject(fullError);
+				reject(err);
 			}
 		} else {
 			getAddressDetailsSortDesc(address, limit, offset).then(function(result) {

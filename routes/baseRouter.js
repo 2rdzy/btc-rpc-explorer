@@ -34,25 +34,6 @@ let noTxIndexMsg = "\n\nYour node does not have **txindex** enabled. Without it,
 
 router.get("/", asyncHandler(async (req, res, next) => {
 	try {
-		if (req.session.host == null || req.session.host.trim() == "") {
-			if (req.cookies['rpc-host']) {
-				res.locals.host = req.cookies['rpc-host'];
-			}
-
-			if (req.cookies['rpc-port']) {
-				res.locals.port = req.cookies['rpc-port'];
-			}
-
-			if (req.cookies['rpc-username']) {
-				res.locals.username = req.cookies['rpc-username'];
-			}
-
-			res.render("connect");
-			res.end();
-
-			return;
-		}
-
 		const { perfId, perfResults } = utils.perfLogNewItem({action:"homepage"});
 		res.locals.perfId = perfId;
 
@@ -161,6 +142,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		let targetBlocksPerDay = 24 * 60 * 60 / global.coinConfig.targetBlockTimeSeconds;
 		res.locals.targetBlocksPerDay = targetBlocksPerDay;
 
+		// eslint-disable-next-line no-constant-condition, no-constant-binary-expression
 		if (false && getblockchaininfo.chain !== 'regtest') {
 			/*promises.push(new Promise(async (resolve, reject) => {
 				res.locals.txStats = await utils.timePromise("homepage.getTxStats", coreApi.getTxStats(targetBlocksPerDay / 4, -targetBlocksPerDay, "latest"));
@@ -371,57 +353,6 @@ router.get("/peers", asyncHandler(async (req, res, next) => {
 	}
 }));
 
-router.post("/connect", function(req, res, next) {
-	let host = req.body.host;
-	let port = req.body.port;
-	let username = req.body.username;
-	let password = req.body.password;
-
-	res.cookie('rpc-host', host);
-	res.cookie('rpc-port', port);
-	res.cookie('rpc-username', username);
-
-	req.session.host = host;
-	req.session.port = port;
-	req.session.username = username;
-
-	let newClient = new bitcoinCore({
-		host: host,
-		port: port,
-		username: username,
-		password: password,
-		timeout: 30000
-	});
-
-	debugLog("created new rpc client: " + newClient);
-
-	global.rpcClient = newClient;
-
-	req.session.userMessage = "<span class='font-weight-bold'>Connected via RPC</span>: " + username + " @ " + host + ":" + port;
-	req.session.userMessageType = "success";
-
-	res.redirect("/");
-});
-
-router.get("/disconnect", function(req, res, next) {
-	res.cookie('rpc-host', "");
-	res.cookie('rpc-port', "");
-	res.cookie('rpc-username', "");
-
-	req.session.host = "";
-	req.session.port = "";
-	req.session.username = "";
-
-	debugLog("destroyed rpc client.");
-
-	global.rpcClient = null;
-
-	req.session.userMessage = "Disconnected from node.";
-	req.session.userMessageType = "success";
-
-	res.redirect("/");
-});
-
 router.get("/changeSetting", function(req, res, next) {
 	if (req.query.name) {
 		if (!req.session.userSettings) {
@@ -435,7 +366,7 @@ router.get("/changeSetting", function(req, res, next) {
 		}
 
 		if (req.query.name == "userTzOffset") {
-			if (parseFloat(req.query.value) == NaN) {
+			if (Number.isNaN(parseFloat(req.query.value))) {
 				res.redirect(req.headers.referer);
 
 				return;
@@ -974,6 +905,8 @@ router.post("/search", function(req, res, next) {
 
 	let parseAddressData = utils.tryParseAddress(rawCaseQuery);
 
+	// disabled code, kept for reference
+	// eslint-disable-next-line no-constant-condition
 	if (false) {
 		if (parseAddressData.errors) {
 			parseAddressData.errors.forEach(err => {
@@ -1219,7 +1152,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		next();
 
 	} catch (err) {
-		res.locals.userMessageMarkdown = `Failed to load block: **${blockHash}**`;
+		res.locals.userMessageMarkdown = `Failed to load block: **${res.locals.blockHash || req.params.blockHash}**`;
 
 		res.locals.pageErrors.push(utils.logError("32824yhr2973t3d", err));
 
@@ -1477,7 +1410,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 			// No need for error userMessage.
 
 		} else {
-			res.locals.userMessageMarkdown = `Failed to load transaction: txid=**${txid}**`;
+			res.locals.userMessageMarkdown = `Failed to load transaction: txid=**${res.locals.txid || req.params.transactionId}**`;
 		}
 
 		

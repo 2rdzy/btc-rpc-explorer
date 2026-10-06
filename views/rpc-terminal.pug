@@ -7,11 +7,6 @@ block content
 	+pageTitle("RPC Terminal")
 
 
-	if (!config.demoSite && (!config.credentials.rpc || !config.credentials.rpc.rpc))
-		.mb-2
-			a.btn.btn-secondary(href="./disconnect") Disconnect from node
-
-
 	+dismissableInfoAlert("rpcTermPageNoteDismissed", "About RPC Terminal...")
 		.mb-2 This tool lets you send custom RPC commands to your node and will display the results below.
 		.mb-2 To browse all available RPC commands you can use the <a href="./rpc-browser">RPC Browser</a>.

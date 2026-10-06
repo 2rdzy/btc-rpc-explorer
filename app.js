@@ -374,7 +374,7 @@ function loadChangelog() {
 	});
 
 
-	var filename = "CHANGELOG-API.md";
+	filename = "CHANGELOG-API.md";
 	
 	fs.readFile(path.join(__dirname, filename), 'utf8', function(err, data) {
 		if (err) {
@@ -519,6 +519,8 @@ async function onRpcConnectionVerified(getnetworkinfo, getblockchaininfo) {
 
 
 
+	// disabled code, kept for reference
+	// eslint-disable-next-line no-constant-condition
 	if (false) {
 		monitorNewTransactions().catch(err => console.error(err));
 
@@ -756,6 +758,8 @@ expressApp.onStartup = async () => {
 
 
 	// dump "startup" heap after 5sec
+	// disabled code, kept for reference
+	// eslint-disable-next-line no-constant-condition
 	if (false) {
 		(function () {
 			var callback = function() {
@@ -987,7 +991,7 @@ expressApp.use(function(req, res, next) {
 	res.locals.browserTzOffset = userSettings.browserTzOffset || "0";
 
 
-	if (!["/", "/connect"].includes(req.originalUrl)) {
+	if (req.originalUrl != "/") {
 		if (utils.redirectToConnectPageIfNeeded(req, res)) {
 			return;
 		}
