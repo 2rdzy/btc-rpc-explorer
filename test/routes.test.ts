@@ -7,6 +7,8 @@ import apiRouter from "../routes/apiRouter.js";
 import type { Router } from "express";
 import type { RpcData } from "../app/api/rpcApi.js";
 import { fakeRpc } from "./helpers/setup.js";
+import coins from "../app/coins.js";
+import config from "../app/config.js";
 
 // express keeps the routes of a router in a stack that its types do not describe
 interface RouteLayer {
@@ -72,6 +74,96 @@ describe('terminal route', () => {
 		assert.deepEqual(await run({ cmd: 'nope' }), { Error: 'Unknown command' });
 		assert.deepEqual(await run({}), { Error: 'No command' });
 		assert.deepEqual(await run({ cmd: { a: 1 } }), { Error: 'No command' });
+	});
+});
+
+describe('transaction page', () => {
+	const handler = routeHandler(baseRouter, '/tx/:transactionId', 'get');
+
+	// call the route as express would; resolves with the status and the view that were used
+	const load = (txid: string) => new Promise<{ status: number, view: string, message: string | undefined }>((resolve, reject) => {
+		const res = {
+			locals: {} as RpcData,
+			statusCode: 200,
+			status(code: number) { this.statusCode = code; return this; },
+			render(view: string) { resolve({ status: this.statusCode, view, message: this.locals.userMessageMarkdown }); }
+		};
+
+		handler({ params: { transactionId: txid }, query: {}, session: {}, headers: {} }, res, (err?: unknown) => { if (err) reject(err); });
+	});
+
+	const unknownTxid = 'ab'.repeat(32);
+
+	test('an unknown transaction is a 404 with the message page', async () => {
+		fakeRpc({ getrawtransaction: () => ({ error: { code: -5, message: 'No such mempool or blockchain transaction' } }) });
+
+		const page = await load(unknownTxid);
+
+		assert.equal(page.status, 404);
+		assert.equal(page.view, 'transaction');
+		assert.match(page.message!, /Failed to load transaction: txid=\*\*ab/);
+	});
+
+	test('a page that could not be built (the node cannot be reached) is a 500', async () => {
+		fakeRpc({});
+		global.rpcConnected = false;
+
+		try {
+			assert.equal((await load(unknownTxid)).status, 500);
+
+		} finally {
+			global.rpcConnected = true;
+		}
+	});
+});
+
+const coinConfig = coins[config.coin];
+
+describe('the genesis transaction', () => {
+	const genesisTxid = coinConfig.genesisCoinbaseTransactionIdsByNetwork.main;
+	const handler = routeHandler(apiRouter, '/tx/:txid', 'get');
+
+	// the API answer for the transaction
+	const getTx = () => new Promise<RpcData>((resolve, reject) => handler({ params: { txid: genesisTxid }, query: {} }, { locals: {}, json: (body: RpcData) => resolve(body) }, (err?: unknown) => { if (err) reject(err); }));
+
+	test('is not changed by answering a request for it', async () => {
+		fakeRpc({ getblockchaininfo: () => ({ blocks: 960000 }) });
+		global.specialTransactions = { [genesisTxid]: { summary: 'The genesis transaction' } };
+
+		const before = JSON.stringify(coinConfig.genesisCoinbaseTransactionsByNetwork.main);
+
+		try {
+			const answer = await getTx();
+
+			assert.equal(answer.confirmations, 960000);
+			assert.deepEqual(answer.fee, { amount: -50, unit: 'BTC' });
+			assert.deepEqual(answer.fun, { summary: 'The genesis transaction' });
+
+		} finally {
+			delete global.specialTransactions;
+		}
+
+		assert.equal(JSON.stringify(coinConfig.genesisCoinbaseTransactionsByNetwork.main), before);
+	});
+});
+
+describe('the transaction API', () => {
+	const handler = routeHandler(apiRouter, '/tx/:txid', 'get');
+
+	test('does not change the transaction it was given (it may be the cached one)', async () => {
+		const spent = { txid: '11'.repeat(32), vout: [{ value: 2, n: 0, scriptPubKey: { type: 'pubkeyhash', address: 'addr' } }], vin: [{ coinbase: '00' }], time: 100, confirmations: 9 };
+		const tx = { txid: '22'.repeat(32), confirmations: 5, vin: [{ txid: spent.txid, vout: 0, scriptSig: {} }], vout: [{ value: 1.5 }] };
+		const before = JSON.stringify(tx);
+
+		// the same objects every time, as a cache gives them
+		fakeRpc({ getrawtransaction: params => (params[0] === tx.txid ? tx : spent) });
+
+		const answer = await new Promise<RpcData>((resolve, reject) => handler({ params: { txid: tx.txid }, query: {} }, { locals: {}, json: (body: RpcData) => resolve(body) }, (err?: unknown) => { if (err) reject(err); }));
+
+		assert.deepEqual(answer.fee, { amount: 0.5, unit: 'BTC' });
+		assert.equal(answer.vin[0].value, 2);
+		assert.equal(answer.vin[0].scriptSig.address, 'addr');
+		assert.equal(JSON.stringify(tx), before);
 	});
 });
 

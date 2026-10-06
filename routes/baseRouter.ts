@@ -1404,6 +1404,10 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 
 		} else {
 			res.locals.userMessageMarkdown = `Failed to load transaction: txid=**${res.locals.txid || req.params.transactionId}**`;
+
+			// the node answering that there is no such transaction is not an Error (rpcApi rejects with that answer, or
+			// with nothing); an Error means that the page could not be built
+			res.status(err instanceof Error ? 500 : 404);
 		}
 
 		

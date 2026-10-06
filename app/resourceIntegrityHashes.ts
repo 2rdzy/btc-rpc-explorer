@@ -12,7 +12,7 @@ const resourceIntegrityHashes: Record<string, string> = {
     "sentry.min.js": "sha384-da/Bo2Ah6Uw3mlhl6VINMblg2SyGbSnULKrukse3P5D9PTJi4np9HoKvR19D7zOL",
     "site.js": "sha384-G8o2io5zIdQiiVN+4CAGGXPO4UvV8jGkSMlfddSPbqIUd3x5Rv01pNH6ec8QOATu",
     "bootstrap-icons.css": "sha384-rJFhkIguED0Z4GX6r6ReHpTCkwWtiPHZnQtWVP0DQWcKHzeJAlYb1m/xdYkeEk+f",
-    "dark-v1.min.css": "sha384-R15C8GEw1lTdQtDVcZiWIxoSYc15fP/+yCA/YZIWfvGxHnQe5VXRaLUQrQYXbY6X",
+    "dark-v1.min.css": "sha384-rMTQmRyOCbJgRX2f68wn/LMAG1F0C3rjPOGozRhVHiiTr0c2xlSwTxM/+nEUX4JA",
     "dark.min.css": "sha384-4pPadFQ/Yidl33q8DTRk2LJZZgA5AzqIL8UVNV/19Ltr/W0rx6BTUEZym7uQYETW",
     "dataTables.bootstrap4.min.css": "sha384-EkHEUZ6lErauT712zSr0DZ2uuCmi3DoQj6ecNdHQXpMpFNGAQ48WjfXCE5n20W+R",
     "highlight.min.css": "sha384-s4RLYRjGGbVqKOyMGGwfxUTMOO6D7r2eom7hWZQ6BjK2Df4ZyfzLXEkonSm0KLIQ",

@@ -250,7 +250,8 @@ export async function getRawTransaction(txid: string, blockhash?: string): Promi
 		// copy the "confirmations" field from genesis block to the genesis-coinbase tx
 		const blockchainInfoResult = await getBlockchainInfo();
 
-		const result = coinConfig.genesisCoinbaseTransactionsByNetwork[global.activeBlockchain];
+		// a copy: the built-in transaction stays as it is
+		const result = structuredClone(coinConfig.genesisCoinbaseTransactionsByNetwork[global.activeBlockchain]);
 		result.confirmations = blockchainInfoResult.blocks;
 
 		// hack: default regtest node returns "0" for number of blocks, despite including a genesis block;

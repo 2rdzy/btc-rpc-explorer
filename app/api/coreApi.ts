@@ -866,13 +866,14 @@ function getRawTransactions(txids: string[], blockhash?: string | null): Promise
 	return Promise.all(txids.map(txid => getRawTransaction(txid, blockhash)));
 }
 
+// The transactions, each looked up in the block at its height (txids without a known height are looked up without one).
 async function getRawTransactionsByHeights(txids: string[], blockHeightsByTxid: RpcData): Promise<RpcData[]> {
 	return Promise.all(txids.map(async (txid: string) => {
 		const blockheight = blockHeightsByTxid[txid];
-		const blockhash = blockheight ? await getBlockByHeight(blockheight) : null;
-		
+		const blockhash = blockheight ? await getBlockHashByHeight(blockheight) : null;
+
 		return getRawTransaction(txid, blockhash);
-	}))
+	}));
 }
 
 function buildBlockAnalysisData(blockHeight: number, blockHash: string, txids: string[], txIndex: number, results: RpcData[], callback: (value?: undefined) => void): void {
@@ -1534,19 +1535,13 @@ async function buildMempoolSummary(statusId: string, ageBuckets: number, sizeBuc
 			ageBucketTxCounts.push(0);
 
 			if (maxAge > 60 * 60 * 24) {
-				const rangeMinutesMax = new Decimal(rangeMax / 60 / 60 / 24).toFixed(1);
-
-				ageBucketLabels.push(rangeMinutesMax + "d");
+				ageBucketLabels.push(new Decimal(rangeMax / 60 / 60 / 24).toFixed(1) + "d");
 
 			} else if (maxAge > 60 * 60) {
-				const rangeMinutesMax = new Decimal(rangeMax / 60 / 60).toFixed(1);
-
-				ageBucketLabels.push(rangeMinutesMax + "m");
+				ageBucketLabels.push(new Decimal(rangeMax / 60 / 60).toFixed(1) + "h");
 
 			} else if (maxAge > 60 * 10) {
-				const rangeMinutesMax = new Decimal(rangeMax / 60).toFixed(1);
-
-				ageBucketLabels.push(rangeMinutesMax + "m");
+				ageBucketLabels.push(new Decimal(rangeMax / 60).toFixed(1) + "m");
 
 			} else {
 				ageBucketLabels.push(Math.trunc(rangeMax) + "s");
