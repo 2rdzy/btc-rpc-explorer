@@ -29,6 +29,30 @@ const config = (env: Record<string, string>, property?: string) => {
 	return result.value;
 };
 
+describe('public URL', () => {
+	test('is not set by default', () => {
+		// (undefined cannot be sent between the processes as JSON: null stands for it)
+		const result = run({}, "require('./app/config.ts').publicUrl ?? null");
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.equal(result.value, null);
+	});
+
+	test('is the address that was given, without trailing slashes', () => {
+		assert.equal(config({ BTCEXP_PUBLIC_URL: 'https://explorer.example.com/' }, 'publicUrl'), 'https://explorer.example.com');
+		assert.equal(config({ BTCEXP_PUBLIC_URL: ' http://example.com/explorer// ' }, 'publicUrl'), 'http://example.com/explorer');
+	});
+
+	test('has to be an http(s) address', () => {
+		for (const bad of ['explorer.example.com', 'ftp://example.com', 'https://', 'https://exa mple.com']) {
+			const result = run({ BTCEXP_PUBLIC_URL: bad }, "require('./app/config.ts').publicUrl");
+
+			assert.notEqual(result.status, 0, bad);
+			assert.match(result.stderr, /Invalid BTCEXP_PUBLIC_URL/, bad);
+		}
+	});
+});
+
 describe('cookie secret', () => {
 	const legacyConstant = '0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f';
 

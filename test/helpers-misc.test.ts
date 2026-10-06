@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, test } from "node:test";
 
 import "./helpers/setup.js";
 import * as mining from "../app/helpers/mining.js";
+import type { RawVout } from "../app/helpers/mining.js";
 import * as timing from "../app/helpers/timing.js";
 import * as http from "../app/helpers/http.js";
 import { arrayFromHexString } from "../app/helpers/collections.js";
@@ -13,7 +14,7 @@ import * as utils from "../app/utils.js";
 import type { Request, Response } from "express";
 
 const hex = (s: string) => Buffer.from(s).toString('hex');
-const coinbase = (tag: string, vout: unknown[], blockhash?: string) => ({ vin: [{ coinbase: hex(tag) }], vout, blockhash });
+const coinbase = (tag: string, vout: RawVout[], blockhash?: string) => ({ vin: [{ coinbase: hex(tag) }], vout, blockhash });
 
 describe('identifyMiner', () => {
 	beforeEach(() => {

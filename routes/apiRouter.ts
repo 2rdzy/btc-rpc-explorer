@@ -22,6 +22,7 @@ import * as xyzpubApi from "../app/api/xyzpubApi.js";
 import apiDocs from "./../docs/api.js";
 import btcQuotes from "../app/coins/btcQuotes.js";
 import type { RpcData } from "../app/api/rpcApi.js";
+import type { ExchangedCurrency } from "../app/helpers/currency.js";
 
 
 
@@ -995,7 +996,8 @@ router.get("/price/marketcap", function(req, res, next) {
 
 		supportedCurrencies.forEach(currency => {
 			if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
-				const formatData = utils.formatExchangedCurrency(amount, currency);
+				// (there is a rate for this currency, so there is something to format)
+				const formatData = utils.formatExchangedCurrency(amount, currency) as ExchangedCurrency;
 				price = Number(parseFloat(formatData.valRaw).toFixed(2));
 
 			} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
@@ -1027,7 +1029,8 @@ router.get("/price", function(req, res, next) {
 	
 	supportedCurrencies.forEach(currency => {
 		if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
-			const formatData = utils.formatExchangedCurrency(amount, currency);
+			// (there is a rate for this currency, so there is something to format)
+				const formatData = utils.formatExchangedCurrency(amount, currency) as ExchangedCurrency;
 
 			if (format) {
 				result[currency] = formatData.val;

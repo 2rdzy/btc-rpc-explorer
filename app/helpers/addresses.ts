@@ -109,10 +109,15 @@ export function bip32Addresses(extPubkey: string, addressType: string, account: 
 	return addresses;
 }
 
-// The address decoded as base58, bech32 or bech32m, or the errors from each attempt. Hashes and data come back as hex.
-// The decoded shape differs by encoding, so it is loosely typed.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function tryParseAddress(address: string): any {
+// What the address decodes to (it differs by encoding, and the hashes and data are hex), or the errors of each attempt.
+export interface ParsedAddress {
+	encoding?: "base58" | "bech32" | "bech32m",
+	parsedAddress?: Record<string, unknown>,
+	errors?: unknown[]
+}
+
+// The address decoded as base58, bech32 or bech32m, or the errors from each attempt.
+export function tryParseAddress(address: string): ParsedAddress {
 	let base58Error: unknown = null;
 	let bech32Error: unknown = null;
 	let bech32mError: unknown = null;

@@ -901,16 +901,6 @@ router.post("/search", function(req, res) {
 
 	const parseAddressData = utils.tryParseAddress(rawCaseQuery);
 
-	// disabled code, kept for reference
-	// eslint-disable-next-line no-constant-condition
-	if (false) {
-		if (parseAddressData.errors) {
-			parseAddressData.errors.forEach((err: RpcData) => {
-				utils.logError("19238rfehdusd", err, {address:query});
-			});
-		}
-	}
-
 	if (parseAddressData.parsedAddress) {
 		res.redirect("./address/" + rawCaseQuery);
 
@@ -1288,12 +1278,12 @@ router.get("/block-analysis/:blockHashOrHeight", function(req, res, next) {
 		});
 	};
 
-	if (!isNaN(blockHashOrHeight)) {
-		coreApi.getBlockByHeight(parseInt(blockHashOrHeight)).then(function(blockByHeight) {
+	if (!isNaN(Number(blockHashOrHeight))) {
+		coreApi.getBlockByHeight(parseInt(String(blockHashOrHeight))).then(function(blockByHeight) {
 			goWithBlockHash(blockByHeight.hash);
 		});
 	} else {
-		goWithBlockHash(blockHashOrHeight);
+		goWithBlockHash(blockHashOrHeight as string);
 	}
 });
 

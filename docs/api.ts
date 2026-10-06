@@ -179,12 +179,12 @@ export = {
 		{
 			"category":"mempool",
 			"url":"/mempool/count",
-			"desc":"Returns the number of transactions in Bitcoin Core's mempool."
+			"desc":"Returns the number of transactions in the node's mempool."
 		},
 		{
 			"category":"mempool",
 			"url":"/mempool/summary",
-			"desc":"Returns a summary of Bitcoin Core's mempool (full output from 'getmempoolinfo')",
+			"desc":"Returns a summary of the node's mempool (full output from 'getmempoolinfo')",
 			"example": {"loaded":true,"size":225,"bytes":76209,"usage":410496,"total_fee":0.01763495,"maxmempool":15000000,"mempoolminfee":0.00001,"minrelaytxfee":0.00001,"unbroadcastcount":0}
 		},
 		{

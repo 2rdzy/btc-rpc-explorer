@@ -33,8 +33,7 @@ export const outputTypeName = (outputType: string): string => lookup(names, outp
 // Search input cleaned to what can be in a hash (hex digits), a height or hash, or an address.
 export const asHash = (value: string): string => value.replace(/[^a-f0-9]/gi, "");
 
-// a height (number) or a hash (string). Typed loosely because the JS callers still treat it as either.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const asHashOrHeight = (value: string): any => +value || asHash(value);
+// a height (number) or a hash (string)
+export const asHashOrHeight = (value: string): number | string => +value || asHash(value);
 
 export const asAddress = (value: string): string => value.replace(/[^a-z0-9]/gi, "");

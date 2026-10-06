@@ -208,10 +208,11 @@ function exchange(amount: Decimal.Value, exchangeType: string, decimals: number)
 	return null;
 }
 
-// {symbol, value, unit}, or "" when there is no rate for the currency. Typed loosely because the JS callers
-// read the fields without checking for "".
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getExchangedCurrencyFormatData(amount: Decimal.Value, exchangeType: string): any {
+export interface ExchangedFormatData { symbol: string, value: string, unit: string }
+
+// {symbol, value, unit}, or "" when there is no rate for the currency (the pages read the fields of the "" too, and get
+// nothing).
+export function getExchangedCurrencyFormatData(amount: Decimal.Value, exchangeType: string): ExchangedFormatData | "" {
 	const result = exchange(amount, exchangeType, 2);
 
 	if (result == null) {
@@ -223,9 +224,10 @@ export function getExchangedCurrencyFormatData(amount: Decimal.Value, exchangeTy
 		: { symbol: global.currencySymbols[exchangeType], value: addThousandsSeparators(result.exchangedAmt), unit: exchangeType };
 }
 
-// {val, symbol, unit, valRaw}, or "" when there is no rate for the currency. Typed loosely for the same reason.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function formatExchangedCurrency(amount: Decimal.Value, exchangeType: string, decimals = 2): any {
+export interface ExchangedCurrency { val: string, symbol: string, unit: string, valRaw: string }
+
+// {val, symbol, unit, valRaw}, or "" when there is no rate for the currency.
+export function formatExchangedCurrency(amount: Decimal.Value, exchangeType: string, decimals = 2): ExchangedCurrency | "" {
 	const result = exchange(amount, exchangeType, decimals);
 
 	if (result == null) {

@@ -60,8 +60,8 @@ describe('tryParseAddress', () => {
 	test('base58', () => {
 		const out = addresses.tryParseAddress('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2');
 		assert.equal(out.encoding, 'base58');
-		assert.equal(typeof out.parsedAddress.hash, 'string');
-		assert.equal(out.parsedAddress.version, 0);
+		assert.equal(typeof out.parsedAddress!.hash, 'string');
+		assert.equal(out.parsedAddress!.version, 0);
 	});
 
 	test('bech32 and taproot', () => {
@@ -74,13 +74,13 @@ describe('tryParseAddress', () => {
 		global.activeBlockchain = 'test';
 		const out = addresses.tryParseAddress('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2');
 		assert.equal(out.encoding, undefined);
-		assert.equal(out.errors.length, 2);
+		assert.equal(out.errors!.length, 2);
 	});
 
 	test('garbage gives the errors of each attempt', () => {
 		const out = addresses.tryParseAddress('xyz');
 		assert.equal(out.encoding, undefined);
-		assert.equal(out.errors.length, 2);
+		assert.equal(out.errors!.length, 2);
 	});
 });
 

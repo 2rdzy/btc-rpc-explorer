@@ -4,6 +4,7 @@ import { after, before, describe, test } from "node:test";
 import "./helpers/setup.js";
 import { Decimal } from "decimal.js";
 import * as utils from "../app/utils.js";
+import type { ExchangedCurrency } from "../app/helpers/currency.js";
 
 describe('exchanged currency formatting', () => {
 	before(() => {
@@ -28,7 +29,7 @@ describe('exchanged currency formatting', () => {
 
 	test('formatExchangedCurrency gives the formatted and the raw value, with the requested decimals', () => {
 		assert.deepEqual(utils.formatExchangedCurrency(new Decimal(12.3456789), 'usd'), { val: '755,982.31', symbol: '$', unit: 'usd', valRaw: '755982.31' });
-		assert.equal(utils.formatExchangedCurrency(new Decimal(1.005), 'eur', 3).val, '57,073.070');
+		assert.equal((utils.formatExchangedCurrency(new Decimal(1.005), 'eur', 3) as ExchangedCurrency).val, '57,073.070');
 	});
 
 	test('a currency with no exchange rate gives nothing', () => {
