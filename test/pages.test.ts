@@ -8,10 +8,11 @@ import type { RunningApp } from "./helpers/app.js";
 import { startFakeNode } from "./helpers/fakeNode.js";
 import type { Recorded } from "./helpers/fakeNode.js";
 import { pages } from "./fixtures/pages.js";
+import { nodeSpecific } from "./fixtures/nodeSpecific.js";
 
 // The whole explorer, as a user meets it: the built application runs as its own process, against a node that answers
-// from recorded answers of a real one (test/fixtures/rpc.json), and every page and endpoint of test/fixtures/pages.ts
-// is requested over HTTP. It covers what the other tests do not: the start-up code, the middleware, the routes and
+// from recorded chain data (blocks and transactions, test/fixtures/rpc.json) and made-up node data (peers, mempool, ...,
+// test/fixtures/nodeSpecific.ts), and every page and endpoint of test/fixtures/pages.ts is requested over HTTP. It covers what the other tests do not: the start-up code, the middleware, the routes and
 // the templates together.
 //
 // When a page makes a call that is not in the recording, the test says which: record again with
@@ -26,7 +27,12 @@ describe('the explorer against a recorded node', () => {
 
 		buildApp();
 
-		node = await startFakeNode(fixtures);
+		// the made-up answers follow the tip of the recorded chain
+		const info = (fixtures['getblockchaininfo []'] as { result: Record<string, unknown> }).result;
+		const difficultyKey = 'difficulty_blake2b' in info ? 'difficulty_blake2b' : 'difficulty';
+		const tip = { height: info.blocks as number, hash: info.bestblockhash as string, bits: info.bits as string, difficultyKey, difficulty: info[difficultyKey] as number, time: info.time as number };
+
+		node = await startFakeNode(fixtures, (method, params) => nodeSpecific(method, params, tip));
 		app = await startApp(node.port, { BTCEXP_BASIC_AUTH_PASSWORD: smokePassword });
 	}, { timeout: 240000 });
 

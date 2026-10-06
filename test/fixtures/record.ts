@@ -3,9 +3,9 @@
 //   BTCEXP_RECORD_COOKIE_FILE=~/.bitcoin/.cookie [BTCEXP_RECORD_NODE=127.0.0.1:8332] npm run record-fixtures
 //
 // It starts the explorer against a proxy that passes its calls on to your node, requests every page of
-// test/fixtures/pages.ts, and writes what the node answered to test/fixtures/rpc.json. The answers are made smaller
-// on the way (long lists are cut) and scrubbed of anything private (the addresses of peers, of your node, and
-// wallets). Read the file before you commit it.
+// test/fixtures/pages.ts, and writes what the node answered to test/fixtures/rpc.json. Only chain data is kept (blocks,
+// transactions, ...): what belongs to your node (peers, addresses, mempool, ...) is not recorded, the test makes it up
+// (test/fixtures/nodeSpecific.ts). Long lists are cut. Read the file before you commit it.
 
 import fs from "node:fs";
 import http from "node:http";
@@ -16,6 +16,7 @@ import path from "node:path";
 import { callKey } from "../helpers/fakeNode.js";
 import type { Recorded } from "../helpers/fakeNode.js";
 import { buildApp, requestPage, smokePassword, startApp } from "../helpers/app.js";
+import { nodeSpecific } from "./nodeSpecific.js";
 import { pages } from "./pages.js";
 
 const cookieFile = (process.env.BTCEXP_RECORD_COOKIE_FILE || path.join(os.homedir(), ".bitcoin", ".cookie")).replace(/^~/, os.homedir());
@@ -23,9 +24,6 @@ const [nodeHost, nodePort] = (process.env.BTCEXP_RECORD_NODE || "127.0.0.1:8332"
 const authorization = "Basic " + Buffer.from(fs.readFileSync(cookieFile, "utf8").trim()).toString("base64");
 
 const recorded: Record<string, Recorded> = {};
-
-// documentation addresses (RFC 5737) stand in for the real ones
-const documentationAddress = (i: number, port = 8333) => `192.0.2.${(i % 250) + 1}:${port}`;
 
 type Json = Record<string, unknown>;
 
@@ -35,38 +33,14 @@ function reduce(method: string, params: unknown[], result: unknown): unknown {
 		return { ...(result as Json), tx: ((result as Json).tx as unknown[]).slice(0, 20) };
 	}
 
-	if (method === "getrawmempool" && Array.isArray(result)) {
-		return result.slice(0, 30);
-	}
-
-	if (method === "getblocktemplate" && result) {
-		const transactions = ((result as Json).transactions as Json[]).slice(0, 40).map(tx => ({ ...tx, data: "" }));
-
-		return { ...(result as Json), transactions };
-	}
-
-	if (method === "getpeerinfo" && Array.isArray(result)) {
-		return (result as Json[]).slice(0, 12).map((peer, i) => ({
-			...peer,
-			addr: documentationAddress(i),
-			addrbind: documentationAddress(i, 40000 + i),
-			addrlocal: "198.51.100.1:8333"
-		}));
-	}
-
-	if (method === "getnetworkinfo" && result) {
-		return { ...(result as Json), localaddresses: [] };
-	}
-
-	if (method === "listwallets") {
-		return [];
-	}
-
-	if (method === "help" && params.length === 0 && typeof result === "string") {
-		return result.split("\n").slice(0, 60).join("\n");
-	}
-
 	return result;
+}
+
+// the tip of the chain, for the made-up answers
+let tip = { height: 0, hash: "", bits: "", difficultyKey: "difficulty", difficulty: 0, time: 0 };
+
+async function callNode(method: string, params: unknown[], id: unknown = 1): Promise<Json> {
+	return await (await fetch(`http://${nodeHost}:${nodePort}/`, { method: "POST", headers: { authorization, "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "1.0", id, method, params }) })).json() as Json;
 }
 
 const proxy = http.createServer((req, res) => {
@@ -75,7 +49,18 @@ const proxy = http.createServer((req, res) => {
 	req.on("data", chunk => { body += chunk; });
 	req.on("end", async () => {
 		const call = JSON.parse(body);
-		const answer = await (await fetch(`http://${nodeHost}:${nodePort}/`, { method: "POST", headers: { authorization, "content-type": "application/json" }, body })).json() as Json;
+
+		// what belongs to the node is answered as the test will answer it, and not kept
+		const madeUp = nodeSpecific(call.method, call.params ?? [], tip);
+
+		if (madeUp) {
+			res.setHeader("content-type", "application/json");
+			res.end(JSON.stringify({ jsonrpc: "2.0", id: call.id, ...("error" in madeUp ? { error: madeUp.error } : { result: madeUp.result }) }));
+
+			return;
+		}
+
+		const answer = await callNode(call.method, call.params ?? [], call.id);
 
 		const entry: Recorded = answer.error
 			? { error: answer.error as { code: number, message: string } }
@@ -90,6 +75,11 @@ const proxy = http.createServer((req, res) => {
 
 async function main() {
 	buildApp();
+
+	const info = (await callNode("getblockchaininfo", [])).result as Json;
+	const difficultyKey = "difficulty_blake2b" in info ? "difficulty_blake2b" : "difficulty";
+
+	tip = { height: info.blocks as number, hash: info.bestblockhash as string, bits: info.bits as string, difficultyKey, difficulty: info[difficultyKey] as number, time: info.time as number };
 
 	await new Promise<void>(resolve => proxy.listen(0, "127.0.0.1", () => resolve()));
 
