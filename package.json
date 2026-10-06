@@ -28,6 +28,9 @@
 	],
 	"author": "Dan Janosik <dan@47.io>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=20"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/2rdzy/btc-rpc-explorer.git"
@@ -60,7 +63,7 @@
 		"express-async-handler": "^1.2.0",
 		"express-rate-limit": "^8.0.1",
 		"express-session": "^1.18.2",
-		"jayson": "^4.2.0",
+		"jayson": "^5.0.0",
 		"lru-cache": "^10.4.3",
 		"markdown-it": "^14.1.0",
 		"md5": "^2.3.0",
@@ -76,7 +79,7 @@
 		"redis": "^4.7.1",
 		"semver": "^7.7.2",
 		"serve-favicon": "^2.5.1",
-		"simple-git": "^3.28.0",
+		"simple-git": "^4.0.2",
 		"tiny-secp256k1": "^2.2.4",
 		"zeromq": "^6.5.0"
 	},
