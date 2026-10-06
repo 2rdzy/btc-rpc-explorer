@@ -7,6 +7,6 @@
 		"sourceMap": true,
 		"noImplicitAny": false
 	},
-	"include": ["types/**/*.d.ts", "app.js", "app/**/*.js", "app/**/*.ts", "routes/**/*.js", "routes/**/*.ts", "bin/www.js", "bin/cli.js", "bin/refresh-mining-pool-configs.js"],
+	"include": ["types/**/*.d.ts", "app.ts", "app/**/*.js", "app/**/*.ts", "routes/**/*.js", "routes/**/*.ts", "bin/www.ts", "bin/cli.ts", "bin/refresh-mining-pool-configs.js"],
 	"exclude": ["node_modules", "public", "dist", "test"]
 }

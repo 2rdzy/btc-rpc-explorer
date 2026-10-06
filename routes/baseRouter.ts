@@ -1,35 +1,31 @@
-"use strict";
-
-const debug = require("debug");
+import debug from "debug";
 const debugLog = debug("btcexp:router");
 
-const express = require('express');
-const { forceCsrf } = require('./../app/csrf.js');
+import express from "express";
+import { forceCsrf } from "../app/csrf.js";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const qrcode = require('qrcode');
-const bitcoinjs = require('bitcoinjs-lib');
-const bip32 = require('bip32');
-const bs58check = require('bs58check');
-const { bech32, bech32m } = require("bech32");
-const sha256 = require("crypto-js/sha256");
-const hexEnc = require("crypto-js/enc-hex");
-const { Decimal } = require("decimal.js");
-const semver = require("semver");
-const markdown = require("markdown-it")();
-const asyncHandler = require("express-async-handler");
+import qrcode from "qrcode";
+import * as bitcoinjs from "bitcoinjs-lib";
+import sha256 from "crypto-js/sha256";
+import hexEnc from "crypto-js/enc-hex";
+import { Decimal } from "decimal.js";
+import semver from "semver";
+import MarkdownIt from "markdown-it";
+const markdown = new MarkdownIt();
+import asyncHandler from "express-async-handler";
 
-const utils = require('./../app/utils.js');
-const { queryInt, queryString, queryStringList } = require("./../app/request.js");
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
-const rpcApi = require("./../app/api/rpcApi.js");
-const btcQuotes = require("./../app/coins/btcQuotes.js");
+import * as utils from "../app/utils.js";
+import { queryInt, queryString, queryStringList } from "../app/request.js";
+import coins from "../app/coins.js";
+import config from "../app/config.js";
+import * as coreApi from "../app/api/coreApi.js";
+import * as addressApi from "../app/api/addressApi.js";
+import * as rpcApi from "../app/api/rpcApi.js";
+import btcQuotes from "../app/coins/btcQuotes.js";
+import type { RpcData } from "../app/api/rpcApi.js";
+import type { AddressDetails } from "../app/api/addressDetails.js";
 
-let noTxIndexMsg = "\n\nYour node does not have **txindex** enabled. Without it, you can only lookup wallet, mempool, and recently confirmed transactions by their **txid**. Searching for non-wallet transactions that were confirmed more than "+config.noTxIndexSearchDepth+" blocks ago is only possible if the confirmed block height is available.";
+const noTxIndexMsg = "\n\nYour node does not have **txindex** enabled. Without it, you can only lookup wallet, mempool, and recently confirmed transactions by their **txid**. Searching for non-wallet transactions that were confirmed more than "+config.noTxIndexSearchDepth+" blocks ago is only possible if the confirmed block height is available.";
 
 router.get("/", asyncHandler(async (req, res, next) => {
 	try {
@@ -46,11 +42,11 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		res.locals.offset = 0;
 		res.locals.sort = "desc";
 
-		let feeConfTargets = [1, 6, 144, 1008];
+		const feeConfTargets = [1, 6, 144, 1008];
 		res.locals.feeConfTargets = feeConfTargets;
 
 
-		let promises = [];
+		const promises = [];
 
 		promises.push(utils.timePromise("homepage.getMempoolInfo", async () => {
 			res.locals.mempoolInfo = await coreApi.getMempoolInfo();
@@ -63,10 +59,10 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		promises.push(utils.timePromise("homepage.getSmartFeeEstimates", async () => {
 			const rawSmartFeeEstimates = await coreApi.getSmartFeeEstimates("CONSERVATIVE", feeConfTargets);
 
-			let smartFeeEstimates = {};
+			const smartFeeEstimates: Record<number, string | number> = {};
 
 			for (let i = 0; i < feeConfTargets.length; i++) {
-				let rawSmartFeeEstimate = rawSmartFeeEstimates[i];
+				const rawSmartFeeEstimate = rawSmartFeeEstimates[i];
 
 				if (rawSmartFeeEstimate.errors) {
 					smartFeeEstimates[feeConfTargets[i]] = "?";
@@ -99,7 +95,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 			
 
-		let blockHeights = [];
+		const blockHeights: number[] = [];
 		if (getblockchaininfo.blocks) {
 			// +1 to page size here so we have the next block to calculate T.T.M.
 			for (let i = 0; i < (config.site.homepage.recentBlocksCount + 1); i++) {
@@ -118,7 +114,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 				res.locals.blockstatsByHeight = {};
 
 				for (let i = 0; i < rawblockstats.length; i++) {
-					let blockstats = rawblockstats[i];
+					const blockstats = rawblockstats[i];
 
 					res.locals.blockstatsByHeight[blockstats.height] = blockstats;
 				}
@@ -126,7 +122,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		}, perfResults));
 
 		promises.push(utils.timePromise("homepage.getBlockHeaderByHeight", async () => {
-			let h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
+			const h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
 			res.locals.difficultyPeriodFirstBlockHeader = await coreApi.getBlockHeaderByHeight(h);
 		}, perfResults));
 
@@ -138,7 +134,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 		}));
 
 		
-		let targetBlocksPerDay = 24 * 60 * 60 / global.coinConfig.targetBlockTimeSeconds;
+		const targetBlocksPerDay = 24 * 60 * 60 / global.coinConfig.targetBlockTimeSeconds;
 		res.locals.targetBlocksPerDay = targetBlocksPerDay;
 
 		// eslint-disable-next-line no-constant-condition, no-constant-binary-expression
@@ -149,7 +145,7 @@ router.get("/", asyncHandler(async (req, res, next) => {
 				resolve();
 			}));*/
 
-			let chainTxStatsIntervals = [ [targetBlocksPerDay, "24 hours"], [7 * targetBlocksPerDay, "7 days"], [30 * targetBlocksPerDay, "30 days"] ]
+			const chainTxStatsIntervals = [ [targetBlocksPerDay, "24 hours"], [7 * targetBlocksPerDay, "7 days"], [30 * targetBlocksPerDay, "30 days"] ]
 				.filter(dat => dat[0] <= getblockchaininfo.blocks);
 
 			res.locals.chainTxStats = {};
@@ -190,8 +186,8 @@ router.get("/", asyncHandler(async (req, res, next) => {
 
 
 
-		let eraStartBlockHeader = res.locals.difficultyPeriodFirstBlockHeader;
-		let currentBlock = res.locals.latestBlocks[0];
+		const eraStartBlockHeader = res.locals.difficultyPeriodFirstBlockHeader;
+		const currentBlock = res.locals.latestBlocks[0];
 
 		res.locals.difficultyAdjustmentData = utils.difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlock);
 
@@ -311,13 +307,13 @@ router.get("/peers", asyncHandler(async (req, res, next) => {
 		
 		await utils.awaitPromises(promises);
 
-		let peerSummary = res.locals.peerSummary;
+		const peerSummary = res.locals.peerSummary;
 
-		let peerIps = [];
+		const peerIps: string[] = [];
 		for (let i = 0; i < peerSummary.getpeerinfo.length; i++) {
-			let ipWithPort = peerSummary.getpeerinfo[i].addr;
+			const ipWithPort = peerSummary.getpeerinfo[i].addr;
 			if (ipWithPort.lastIndexOf(":") >= 0) {
-				let ip = ipWithPort.substring(0, ipWithPort.lastIndexOf(":"));
+				const ip = ipWithPort.substring(0, ipWithPort.lastIndexOf(":"));
 				if (ip.trim().length > 0) {
 					peerIps.push(ip.trim());
 				}
@@ -352,21 +348,21 @@ router.get("/peers", asyncHandler(async (req, res, next) => {
 	}
 }));
 
-router.get("/changeSetting", function(req, res, next) {
+router.get("/changeSetting", function(req, res) {
 	if (req.query.name) {
 		if (!req.session.userSettings) {
 			req.session.userSettings = Object.create(null);
 		}
 
 		if (typeof req.query.name !== "string" || typeof req.query.value !== "string") {
-			res.redirect(req.headers.referer);
+			res.redirect(req.headers.referer || "/");
 
 			return;
 		}
 
 		if (req.query.name == "userTzOffset") {
 			if (Number.isNaN(parseFloat(req.query.value))) {
-				res.redirect(req.headers.referer);
+				res.redirect(req.headers.referer || "/");
 
 				return;
 			}
@@ -374,19 +370,19 @@ router.get("/changeSetting", function(req, res, next) {
 
 		req.session.userSettings[req.query.name.toString()] = req.query.value.toString();
 
-		let userSettings = JSON.parse(req.cookies["user-settings"] || "{}");
+		const userSettings = JSON.parse(req.cookies["user-settings"] || "{}");
 		userSettings[req.query.name] = req.query.value;
 
 		res.cookie("user-settings", JSON.stringify(userSettings));
 	}
 
-	res.redirect(req.headers.referer);
+	res.redirect(req.headers.referer || "/");
 });
 
-router.get("/session-data", function(req, res, next) {
+router.get("/session-data", function(req, res) {
 	if (req.query.action && req.query.data) {
-		let action = req.query.action;
-		let data = req.query.data;
+		const action = req.query.action;
+		const data = req.query.data;
 
 		if (action == "add-rpc-favorite") {
 			if (!req.session.favoriteRpcCommands) {
@@ -411,7 +407,7 @@ router.get("/session-data", function(req, res, next) {
 		}
 	}
 
-	res.redirect(req.headers.referer);
+	res.redirect(req.headers.referer || "/");
 });
 
 router.get("/user-settings", asyncHandler(async (req, res, next) => {
@@ -451,7 +447,7 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 		// if pruning is active, global.pruneHeight is used when displaying this page
 		// global.pruneHeight is updated whenever we send a getblockchaininfo RPC to the node
 
-		let getblockchaininfo = await utils.timePromise("blocks.geoLocateIpAddresses", coreApi.getBlockchainInfo, perfResults);
+		const getblockchaininfo = await utils.timePromise("blocks.geoLocateIpAddresses", coreApi.getBlockchainInfo, perfResults);
 
 		res.locals.blockCount = getblockchaininfo.blocks;
 		res.locals.blockOffset = offset;
@@ -476,7 +472,7 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 		});
 
 
-		let promises = [];
+		const promises = [];
 
 		promises.push(utils.timePromise("blocks.getBlocksByHeight", async () => {
 			res.locals.blocks = await coreApi.getBlocksByHeight(blockHeights);
@@ -485,13 +481,13 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 		
 		promises.push(utils.timePromise("blocks.getBlocksByHeight", async () => {
 			try {
-				let rawblockstats = await coreApi.getBlocksStatsByHeight(blockHeights);
+				const rawblockstats = await coreApi.getBlocksStatsByHeight(blockHeights);
 
 				if (rawblockstats != null && rawblockstats.length > 0 && rawblockstats[0] != null) {
 					res.locals.blockstatsByHeight = {};
 
 					for (let i = 0; i < rawblockstats.length; i++) {
-						let blockstats = rawblockstats[i];
+						const blockstats = rawblockstats[i];
 
 						res.locals.blockstatsByHeight[blockstats.height] = blockstats;
 					}
@@ -531,7 +527,7 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 
 router.get("/mining-summary", asyncHandler(async (req, res, next) => {
 	try {
-		let getblockchaininfo = await utils.timePromise("mining-summary.getBlockchainInfo", coreApi.getBlockchainInfo);
+		const getblockchaininfo = await utils.timePromise("mining-summary.getBlockchainInfo", coreApi.getBlockchainInfo);
 
 		res.locals.currentBlockHeight = getblockchaininfo.blocks;
 
@@ -717,12 +713,12 @@ router.get("/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
 		res.locals.balanceSat = 0;
 
 		// Loop over the 2 types addresses (first receive and then change)
-		let allAddresses = [res.locals.receiveAddresses, res.locals.changeAddresses];
+		const allAddresses = [res.locals.receiveAddresses, res.locals.changeAddresses];
 		res.locals.receiveAddresses = [];
 		res.locals.changeAddresses = [];
 		for (let i = 0; i < allAddresses.length; i++) {
 			// Duplicate addresses and change them to addressDetails objects with 3 properties (address, balanceSat, txCount)
-			let addresses = [...allAddresses[i]];
+			const addresses = [...allAddresses[i]];
 			for (let j = 0; j < addresses.length; j++) {
 				const address = addresses[j];
 				const validateaddressResult = await coreApi.getAddress(address);
@@ -732,7 +728,7 @@ router.get("/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
 
 				// In case of errors, we just skip this address result
 				if (Array.isArray(addressDetailsResult.errors) && addressDetailsResult.errors.length == 0) {
-					res.locals.balanceSat += addressDetailsResult.addressDetails.balanceSat;
+					res.locals.balanceSat += (addressDetailsResult.addressDetails as AddressDetails).balanceSat;
 					const addressDetails = { ...addressDetailsResult.addressDetails, address};
 					if (i == 0)
 						res.locals.receiveAddresses.push(addressDetails);
@@ -787,7 +783,7 @@ router.get("/block-stats", asyncHandler(async (req, res, next) => {
 	};
 }));
 
-router.get("/mining-template", asyncHandler(async (req, res, next) => {
+router.get("/mining-template", asyncHandler(async (req, res) => {
 	// url changed
 	res.redirect(301, "./next-block");
 }));
@@ -804,24 +800,24 @@ router.get("/next-block", asyncHandler(async (req, res, next) => {
 	res.locals.medianFeeRate = -1;
 
 	const parentTxIndexes = new Set();
-	blockTemplate.transactions.forEach(tx => {
+	blockTemplate.transactions.forEach((tx: RpcData) => {
 		if (tx.depends && tx.depends.length > 0) {
-			tx.depends.forEach(index => {
+			tx.depends.forEach((index: number) => {
 				parentTxIndexes.add(index);
 			});
 		}
 	});
 
 	let txIndex = 1;
-	let feeRates = [];
-	blockTemplate.transactions.forEach(tx => {
-		let feeRate = tx.fee / tx.weight * 4;
+	const feeRates: number[] = [];
+	blockTemplate.transactions.forEach((tx: RpcData) => {
+		const feeRate = tx.fee / tx.weight * 4;
 
 		if (tx.depends && tx.depends.length > 0) {
 			let totalFee = tx.fee;
 			let totalWeight = tx.weight;
 
-			tx.depends.forEach(index => {
+			tx.depends.forEach((index: number) => {
 				totalFee += blockTemplate.transactions[index - 1].fee;
 				totalWeight += blockTemplate.transactions[index - 1].weight;
 			});
@@ -868,7 +864,7 @@ router.get("/search", function(req, res, next) {
 	next();
 });
 
-router.post("/search", function(req, res, next) {
+router.post("/search", function(req, res) {
 	if (!req.body.query) {
 		req.session.userMessage = "Enter a block height, block hash, or transaction id.";
 
@@ -877,8 +873,8 @@ router.post("/search", function(req, res, next) {
 		return;
 	}
 
-	let query = req.body.query.toLowerCase().trim();
-	let rawCaseQuery = req.body.query.trim();
+	const query = req.body.query.toLowerCase().trim();
+	const rawCaseQuery = req.body.query.trim();
 
 	req.session.query = req.body.query;
 	
@@ -902,13 +898,13 @@ router.post("/search", function(req, res, next) {
 		return res.redirect("./tx/" + query);
 	}
 
-	let parseAddressData = utils.tryParseAddress(rawCaseQuery);
+	const parseAddressData = utils.tryParseAddress(rawCaseQuery);
 
 	// disabled code, kept for reference
 	// eslint-disable-next-line no-constant-condition
 	if (false) {
 		if (parseAddressData.errors) {
-			parseAddressData.errors.forEach(err => {
+			parseAddressData.errors.forEach((err: RpcData) => {
 				utils.logError("19238rfehdusd", err, {address:query});
 			});
 		}
@@ -918,14 +914,14 @@ router.post("/search", function(req, res, next) {
 		res.redirect("./address/" + rawCaseQuery);
 
 	} else if (query.length == 64) {
-		coreApi.getRawTransaction(query).then(function(tx) {
+		coreApi.getRawTransaction(query).then(function() {
 			res.redirect("./tx/" + query);
 
-		}).catch(function(err) {
-			coreApi.getBlockByHash(query).then(function(blockByHash) {
+		}).catch(function() {
+			coreApi.getBlockByHash(query).then(function() {
 				res.redirect("./block/" + query);
 
-			}).catch(function(err) {
+			}).catch(function() {
 				req.session.userMessage = "No results found for query: " + query;
 
 				if (!global.txindexAvailable) {
@@ -937,10 +933,10 @@ router.post("/search", function(req, res, next) {
 		});
 
 	} else if (!isNaN(query)) {
-		coreApi.getBlockByHeight(parseInt(query)).then(function(blockByHeight) {
+		coreApi.getBlockByHeight(parseInt(query)).then(function() {
 			res.redirect("./block-height/" + query);
 			
-		}).catch(function(err) {
+		}).catch(function() {
 			req.session.userMessage = "No results found for query: " + query;
 
 			res.redirect("./");
@@ -957,7 +953,7 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 		const { perfId, perfResults } = utils.perfLogNewItem({action:"block-height"});
 		res.locals.perfId = perfId;
 
-		let blockHeight = parseInt(req.params.blockHeight);
+		const blockHeight = parseInt(req.params.blockHeight);
 
 		res.locals.blockHeight = blockHeight;
 
@@ -994,7 +990,7 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 
 		res.locals.result.getblockbyheight = result;
 
-		let promises = [];
+		const promises = [];
 
 		promises.push(utils.timePromise("block-height.getBlockByHashWithTransactions", async () => {
 			const blockWithTransactions = await coreApi.getBlockByHashWithTransactions(result.hash, limit, offset);
@@ -1026,7 +1022,7 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 
 
 		if (global.specialBlocks && global.specialBlocks[res.locals.result.getblock.hash]) {
-			let funInfo = global.specialBlocks[res.locals.result.getblock.hash];
+			const funInfo = global.specialBlocks[res.locals.result.getblock.hash];
 
 			res.locals.metaTitle = funInfo.summary;
 
@@ -1066,7 +1062,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		const { perfId, perfResults } = utils.perfLogNewItem({action:"block"});
 		res.locals.perfId = perfId;
 
-		let blockHash = utils.asHash(req.params.blockHash);
+		const blockHash = utils.asHash(req.params.blockHash);
 
 		res.locals.blockHash = blockHash;
 
@@ -1096,7 +1092,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		res.locals.offset = offset;
 		res.locals.paginationBaseUrl = "./block/" + blockHash;
 
-		let promises = [];
+		const promises = [];
 
 		promises.push(utils.timePromise("block.getBlockByHashWithTransactions", async () => {
 			const blockWithTransactions = await coreApi.getBlockByHashWithTransactions(blockHash, limit, offset);
@@ -1127,7 +1123,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 
 
 		if (global.specialBlocks && global.specialBlocks[res.locals.result.getblock.hash]) {
-			let funInfo = global.specialBlocks[res.locals.result.getblock.hash];
+			const funInfo = global.specialBlocks[res.locals.result.getblock.hash];
 
 			res.locals.metaTitle = funInfo.summary;
 
@@ -1185,14 +1181,14 @@ router.get("/predicted-blocks", asyncHandler(async (req, res, next) => {
 router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
 	try {
 		const mempoolTxids = await utils.timePromise("predicted-blocks.getAllMempoolTxids", coreApi.getAllMempoolTxids);
-		let mempoolTxSummaries = await coreApi.getMempoolTxSummaries(mempoolTxids, Math.random().toString(36).substr(2, 5), (x) => {});
+		const mempoolTxSummaries = await coreApi.getMempoolTxSummaries(mempoolTxids, Math.random().toString(36).substr(2, 5), () => {});
 
-		const blockTemplate = {weight: 0, totalFees: new Decimal(0), vB: 0, txCount:0, txids: []};
+		const blockTemplate: RpcData = {weight: 0, totalFees: new Decimal(0), vB: 0, txCount:0, txids: []};
 		const blocks = [];
 		
 		mempoolTxSummaries.sort((a, b) => {
-			let aFeeRate = (a.f + a.af) / (a.w + a.asz * 4);
-			let bFeeRate = (b.f + b.af) / (b.w + b.asz * 4);
+			const aFeeRate = (a.f + a.af) / (a.w + a.asz * 4);
+			const bFeeRate = (b.f + b.af) / (b.w + b.asz * 4);
 
 			if (aFeeRate > bFeeRate) {
 				return -1;
@@ -1207,7 +1203,7 @@ router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
 
 		res.locals.topTxs = mempoolTxSummaries.slice(0, 20);
 
-		let currentBlock = Object.assign({}, blockTemplate);
+		let currentBlock: RpcData = Object.assign({}, blockTemplate);
 
 		for (let i = 0; i < mempoolTxSummaries.length; i++) {
 			const tx = mempoolTxSummaries[i];
@@ -1251,16 +1247,14 @@ router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/block-analysis/:blockHashOrHeight", function(req, res, next) {
-	let blockHashOrHeight = utils.asHashOrHeight(req.params.blockHashOrHeight);
+	const blockHashOrHeight = utils.asHashOrHeight(req.params.blockHashOrHeight);
 
-	let goWithBlockHash = function(blockHash) {
+	const goWithBlockHash = function(blockHash: string) {
 		res.locals.blockHash = blockHash;
 
 		res.locals.result = {};
 
-		let txResults = [];
 
-		let promises = [];
 
 		res.locals.result = {};
 
@@ -1309,7 +1303,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 		const { perfId, perfResults } = utils.perfLogNewItem({action:"transaction"});
 		res.locals.perfId = perfId;
 
-		let txid = utils.asHash(req.params.transactionId);
+		const txid = utils.asHash(req.params.transactionId);
 
 		let output = -1;
 		if (req.query.output) {
@@ -1329,9 +1323,9 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 
 		res.locals.result = {};
 
-		let txInputLimit = (res.locals.crawlerBot) ? 3 : -1;
+		const txInputLimit = (res.locals.crawlerBot) ? 3 : -1;
 
-		let txPromise = req.query.blockHeight ? 
+		const txPromise = req.query.blockHeight ? 
 				async () => {
 					const block = await coreApi.getBlockByHeight(queryInt(req.query, "blockHeight"));
 					res.locals.block = block;
@@ -1344,7 +1338,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 
 		const rawTxResult = await utils.timePromise("tx.getRawTransactionsWithInputs", txPromise, perfResults);
 
-		let tx = rawTxResult.transactions[0];
+		const tx = rawTxResult.transactions[0];
 
 		res.locals.tx = tx;
 		res.locals.isCoinbaseTx = tx.vin[0].coinbase;
@@ -1366,7 +1360,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 			
 		} else {
 			promises.push(utils.timePromise("tx.getblockheader", async () => {
-				let rpcResult = await rpcApi.getRpcDataWithParams({method:'getblockheader', parameters:[tx.blockhash]});
+				const rpcResult = await rpcApi.getRpcDataWithParams({method:'getblockheader', parameters:[tx.blockhash]});
 				res.locals.result.getblock = rpcResult;
 			}, perfResults));
 		}
@@ -1374,7 +1368,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 		await utils.awaitPromises(promises);
 
 		if (global.specialTransactions && global.specialTransactions[txid]) {
-			let funInfo = global.specialTransactions[txid];
+			const funInfo = global.specialTransactions[txid];
 
 			res.locals.metaTitle = funInfo.summary;
 
@@ -1425,7 +1419,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/address/:address", asyncHandler(async (req, res, next) => {
-	let address = utils.asAddress(req.params.address);
+	const address = utils.asAddress(req.params.address);
 
 	try {
 		const { perfId, perfResults } = utils.perfLogNewItem({action:"address"});
@@ -1470,7 +1464,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		
 		res.locals.result = {};
 
-		let parseAddressData = utils.tryParseAddress(address);
+		const parseAddressData = utils.tryParseAddress(address);
 
 		if (parseAddressData.parsedAddress) {
 			//console.log("address.parse: " + JSON.stringify(parseAddressData));
@@ -1479,7 +1473,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 			res.locals.addressEncoding = parseAddressData.encoding;
 
 		} else if (parseAddressData.errors) {
-			parseAddressData.errors.forEach(err => {
+			parseAddressData.errors.forEach((err: RpcData) => {
 				res.locals.pageErrors.push(utils.logError("ParseAddressError", err));
 			});
 		}
@@ -1498,17 +1492,17 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		const validateaddressResult = await coreApi.getAddress(address);
 		res.locals.result.validateaddress = validateaddressResult;
 
-		let promises = [];
+		const promises = [];
 
 		if (!res.locals.crawlerBot) {
 			let addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(validateaddressResult.scriptPubKey)));
-			addrScripthash = addrScripthash.match(/.{2}/g).reverse().join("");
+			addrScripthash = (addrScripthash.match(/.{2}/g) as string[]).reverse().join("");
 
 			res.locals.electrumScripthash = addrScripthash;
 
 			promises.push(utils.timePromise("address.getAddressDetails", async () => {
 				const addressDetailsResult = await addressApi.getAddressDetails(address, validateaddressResult.scriptPubKey, sort, limit, offset);
-				let addressDetails = addressDetailsResult.addressDetails;
+				const addressDetails = addressDetailsResult.addressDetails;
 
 				if (addressDetailsResult.errors) {
 					res.locals.addressDetailsErrors = addressDetailsResult.errors;
@@ -1528,17 +1522,17 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 					}
 
 					if (addressDetails.txids) {
-						let txids = addressDetails.txids;
+						const txids = addressDetails.txids;
 
 						// if the active addressApi gives us blockHeightsByTxid, it saves us work, so try to use it
-						let blockHeightsByTxid = {};
+						let blockHeightsByTxid: Record<string, number> = {};
 						if (addressDetails.blockHeightsByTxid) {
 							blockHeightsByTxid = addressDetails.blockHeightsByTxid;
 						}
 
 						res.locals.txids = txids;
 
-						const rawTxResult = await (global.txindexAvailable
+						const rawTxResult: { transactions: RpcData[], txInputsByTransaction: Record<string, RpcData> } = await (global.txindexAvailable
 							? coreApi.getRawTransactionsWithInputs(txids, 5)
 							: coreApi.getRawTransactionsByHeights(txids, blockHeightsByTxid)
 								.then(transactions => ({ transactions, txInputsByTransaction: {} }))
@@ -1549,9 +1543,9 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 						
 						// for coinbase txs, we need the block height in order to calculate subsidy to display
-						let coinbaseTxs = [];
+						const coinbaseTxs: RpcData[] = [];
 						for (let i = 0; i < rawTxResult.transactions.length; i++) {
-							let tx = rawTxResult.transactions[i];
+							const tx = rawTxResult.transactions[i];
 
 							for (let j = 0; j < tx.vin.length; j++) {
 								if (tx.vin[j].coinbase) {
@@ -1564,20 +1558,20 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 						}
 
 
-						let coinbaseTxBlockHashes = [];
-						let blockHashesByTxid = {};
-						coinbaseTxs.forEach(function(tx) {
+						const coinbaseTxBlockHashes: string[] = [];
+						const blockHashesByTxid: Record<string, string> = {};
+						coinbaseTxs.forEach(function(tx: RpcData) {
 							coinbaseTxBlockHashes.push(tx.blockhash);
 							blockHashesByTxid[tx.txid] = tx.blockhash;
 						});
 
-						let blockHeightsPromises = [];
+						const blockHeightsPromises = [];
 						if (coinbaseTxs.length > 0) {
 							// we need to query some blockHeights by hash for some coinbase txs
 							blockHeightsPromises.push(utils.timePromise("address.getBlocksByHash", async () => {
 								const blocksByHashResult = await coreApi.getBlocksByHash(coinbaseTxBlockHashes);
-								for (let txid in blockHashesByTxid) {
-									if (blockHashesByTxid.hasOwnProperty(txid)) {
+								for (const txid in blockHashesByTxid) {
+									if (Object.prototype.hasOwnProperty.call(blockHashesByTxid, txid)) {
 										blockHeightsByTxid[txid] = blocksByHashResult[blockHashesByTxid[txid]].height;
 									}
 								}
@@ -1586,17 +1580,17 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 						await utils.awaitPromises(blockHeightsPromises);
 
-						let addrGainsByTx = {};
-						let addrLossesByTx = {};
+						const addrGainsByTx: Record<string, Decimal> = {};
+						const addrLossesByTx: Record<string, Decimal> = {};
 
 						res.locals.addrGainsByTx = addrGainsByTx;
 						res.locals.addrLossesByTx = addrLossesByTx;
 
-						let handledTxids = [];
+						const handledTxids: string[] = [];
 
 						for (let i = 0; i < rawTxResult.transactions.length; i++) {
-							let tx = rawTxResult.transactions[i];
-							let txInputs = rawTxResult.txInputsByTransaction[tx.txid] || {};
+							const tx = rawTxResult.transactions[i];
+							const txInputs = rawTxResult.txInputsByTransaction[tx.txid] || {};
 							
 							if (handledTxids.includes(tx.txid)) {
 								continue;
@@ -1617,8 +1611,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 							}
 
 							for (let j = 0; j < tx.vin.length; j++) {
-								let txInput = txInputs[j];
-								let vinJ = tx.vin[j];
+								const txInput = txInputs[j];
 
 								if (txInput != null) {
 									if (txInput && txInput.scriptPubKey) {
@@ -1688,12 +1681,12 @@ router.get("/next-halving", asyncHandler(async (req, res, next) => {
 			return await coreApi.getBlockchainInfo();
 		}, perfResults);
 
-		let promises = [];
+		const promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
 		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
-		let blockHeights = [];
+		const blockHeights: number[] = [];
 		if (getblockchaininfo.blocks) {
 			for (let i = 0; i < 1; i++) {
 				blockHeights.push(getblockchaininfo.blocks - i);
@@ -1705,7 +1698,7 @@ router.get("/next-halving", asyncHandler(async (req, res, next) => {
 		}
 
 		promises.push(utils.timePromise("homepage.getBlockHeaderByHeight", async () => {
-			let h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
+			const h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
 			res.locals.difficultyPeriodFirstBlockHeader = await coreApi.getBlockHeaderByHeight(h);
 		}, perfResults));
 
@@ -1718,7 +1711,7 @@ router.get("/next-halving", asyncHandler(async (req, res, next) => {
 		await utils.awaitPromises(promises);
 
 
-		let nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
+		const nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
 
 		res.locals.nextHalvingData = nextHalvingData;
 
@@ -1762,15 +1755,15 @@ router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
 		return;
 	}
 
-	let params = req.body.cmd.trim().split(/\s+/);
-	let cmd = params.shift();
-	let parsedParams = [];
+	const params = req.body.cmd.trim().split(/\s+/);
+	const cmd = params.shift();
+	const parsedParams: unknown[] = [];
 
-	params.forEach((param, i) => {
+	params.forEach((param: string) => {
 		try {
 			parsedParams.push(JSON.parse(param));
 
-		} catch (e) {
+		} catch {
 			// add as string
 			parsedParams.push(param);
 		}
@@ -1823,7 +1816,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 	}
 
 	let method = "unknown";
-	let argValues = [];
+	const argValues = [];
 
 	try {
 		const helpContent = await coreApi.getHelp();
@@ -1853,7 +1846,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 			res.locals.methodhelp = methodHelp;
 
 			if (req.query.execute) {
-				let argDetails = methodHelp.args;
+				const argDetails = methodHelp.args;
 				
 				// the arguments, as strings: ?args[0]=1&args[1]=abc (a single ?args=x counts as one argument)
 				const queryArgs = queryStringList(req.query, "args");
@@ -1862,38 +1855,40 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 					debugLog("ARGS: " + JSON.stringify(queryArgs));
 
 					for (let i = 0; i < queryArgs.length; i++) {
-						let argProperties = argDetails[i].properties;
+						const argProperties = argDetails[i].properties;
+						// null when the argument was not given (the checks below treat that as empty)
+						const queryArg = queryArgs[i] as string;
 						debugLog(`ARG_PROPS[${i}]: ` + JSON.stringify(argProperties));
 
 						for (let j = 0; j < argProperties.length; j++) {
 							if (argProperties[j] === "numeric") {
-								if (queryArgs[i] == null || queryArgs[i] == "") {
+								if (queryArg == null || queryArg == "") {
 									argValues.push(null);
 
 								} else {
-									argValues.push(parseInt(queryArgs[i]));
+									argValues.push(parseInt(queryArg));
 								}
 
 								break;
 
 							} else if (argProperties[j] === "boolean") {
-								if (queryArgs[i]) {
-									argValues.push(queryArgs[i] == "true");
+								if (queryArg) {
+									argValues.push(queryArg == "true");
 								}
 
 								break;
 
 							} else if (argProperties[j] === "string") {
-								if (queryArgs[i]) {
-									argValues.push(queryArgs[i].replace(/[\r]/g, ''));
+								if (queryArg) {
+									argValues.push(queryArg.replace(/[\r]/g, ''));
 								}
 
 								break;
 
 							} else if (argProperties[j] === "numeric or string" || argProperties[j] === "string or numeric") {
-								if (queryArgs[i]) {
-									let stringVal = queryArgs[i].replace(/[\r]/g, '');
-									let numberVal = parseInt(stringVal);
+								if (queryArg) {
+									const stringVal = queryArg.replace(/[\r]/g, '');
+									const numberVal = parseInt(stringVal);
 
 									if (!Number.isNaN(numberVal)) {
 										argValues.push(numberVal);
@@ -1906,15 +1901,15 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 								break;
 
 							} else if (argProperties[j] === "array" || argProperties[j] === "json array") {
-								if (queryArgs[i]) {
-									argValues.push(JSON.parse(queryArgs[i]));
+								if (queryArg) {
+									argValues.push(JSON.parse(queryArg));
 								}
 								
 								break;
 
 							} else if (argProperties[j] === "json object") {
-								if (queryArgs[i]) {
-									argValues.push(JSON.parse(queryArgs[i]));
+								if (queryArg) {
+									argValues.push(JSON.parse(queryArg));
 								}
 								
 								break;
@@ -1940,8 +1935,8 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 
 				//let csrfPromise = 
 
-				await new Promise((resolve, reject) => {
-					forceCsrf(req, res, async (err) => {
+				await new Promise<void>((resolve, reject) => {
+					forceCsrf(req, res, async (err?: unknown) => {
 						if (err) {
 							reject(err);
 
@@ -2011,7 +2006,7 @@ router.get("/terminal", function(req, res, next) {
 });
 
 router.post("/terminal", function(req, res, next) {
-	const reply = (body) => {
+	const reply = (body: unknown) => {
 		res.write(JSON.stringify(body, null, 4), function() {
 			res.end();
 		});
@@ -2023,9 +2018,9 @@ router.post("/terminal", function(req, res, next) {
 		return reply({"Error":"No command"});
 	}
 
-	let params = req.body.cmd.trim().split(/\s+/);
-	let cmd = params.shift();
-	let paramsStr = req.body.cmd.trim().substring(cmd.length).trim();
+	const params = req.body.cmd.trim().split(/\s+/);
+	const cmd = params.shift();
+	const paramsStr = req.body.cmd.trim().substring(cmd.length).trim();
 
 	if (cmd == "parsescript") {
 		if (!/^([0-9a-fA-F]{2})+$/.test(paramsStr)) {
@@ -2036,7 +2031,7 @@ router.post("/terminal", function(req, res, next) {
 			return reply({"parsed":{"asm":bitcoinjs.script.toASM(Buffer.from(paramsStr, "hex"))}});
 
 		} catch (err) {
-			return reply({"Error":`Unable to parse the script: ${err.message}`});
+			return reply({"Error":`Unable to parse the script: ${(err as Error).message}`});
 		}
 
 	} else {
@@ -2124,11 +2119,11 @@ router.get("/tx-stats", asyncHandler(async (req, res, next) => {
 	const perfResults = {};
 
 	res.locals.getblockchaininfo = await coreApi.getBlockchainInfo();
-	let tipHeight = res.locals.getblockchaininfo.blocks;
+	const tipHeight = res.locals.getblockchaininfo.blocks;
 
 	// only re-calculate tx-stats every X blocks since it's data heavy
-	let heightInterval = 6;
-	let height = heightInterval * Math.floor(tipHeight / heightInterval);
+	const heightInterval = 6;
+	const height = heightInterval * Math.floor(tipHeight / heightInterval);
 
 	promises.push(utils.timePromise("tx-stats.getTxStats-all", async () => {
 		const statsAll = await coreApi.getTxStats(250, 0, height);
@@ -2217,7 +2212,7 @@ router.get("/fun", function(req, res, next) {
 		viewType = queryString(req.query, "viewType", viewType);
 	}
 
-	let listNewFirst = coins[config.coin].historicalData;
+	const listNewFirst: RpcData[] = coins[config.coin].historicalData;
 	
 	listNewFirst.sort(function(a, b) {
 		if (a.date > b.date) {
@@ -2227,7 +2222,7 @@ router.get("/fun", function(req, res, next) {
 			return 1;
 
 		} else {
-			let x = a.type.localeCompare(b.type);
+			const x = a.type.localeCompare(b.type);
 
 			if (x == 0) {
 				if (a.type == "blockheight") {
@@ -2242,14 +2237,14 @@ router.get("/fun", function(req, res, next) {
 		}
 	});
 
-	let listOldFirst = [...listNewFirst];
+	const listOldFirst = [...listNewFirst];
 	listOldFirst.reverse();
 
-	let listByYear = {};
-	let itemYears = [];
+	const listByYear: Record<string, RpcData[]> = {};
+	const itemYears: string[] = [];
 
-	listNewFirst.forEach(item => {
-		let itemYear = item.date.substring(0, 4);
+	listNewFirst.forEach((item: RpcData) => {
+		const itemYear = item.date.substring(0, 4);
 
 		if (!itemYears.includes(itemYear)) {
 			itemYears.push(itemYear);
@@ -2259,11 +2254,11 @@ router.get("/fun", function(req, res, next) {
 		listByYear[itemYear].push(item);
 	});
 
-	let listByMonth = {};
-	let itemMonths = [];
+	const listByMonth: Record<string, RpcData[]> = {};
+	const itemMonths: string[] = [];
 
-	listNewFirst.forEach(item => {
-		let itemMonth = item.date.substring(5, 7);
+	listNewFirst.forEach((item: RpcData) => {
+		const itemMonth = item.date.substring(5, 7);
 
 		if (!itemMonths.includes(itemMonth)) {
 			itemMonths.push(itemMonth);
@@ -2294,20 +2289,20 @@ router.get("/quotes", function(req, res, next) {
 		viewType = queryString(req.query, "viewType", viewType);
 	}
 
-	let listNewFirst = btcQuotes.items;
+	let listNewFirst: RpcData[] = btcQuotes.items;
 	for (let i = 0; i < listNewFirst.length; i++) {
 		listNewFirst[i].quoteIndex = i;
 	}
 	listNewFirst = listNewFirst.filter(x => { return !x.duplicateIndex; });
 	
 	listNewFirst.sort(function(a, b) {
-		let dateCompare = b.date.localeCompare(a.date);
+		const dateCompare = b.date.localeCompare(a.date);
 
 		if (dateCompare != 0) {
 			return dateCompare;
 		}
 
-		let speakerCompare = a.speaker.localeCompare(b.speaker);
+		const speakerCompare = a.speaker.localeCompare(b.speaker);
 
 		if (speakerCompare != 0) {
 			return speakerCompare;
@@ -2316,14 +2311,14 @@ router.get("/quotes", function(req, res, next) {
 		return a.text.localeCompare(b.text);
 	});
 
-	let listOldFirst = [...listNewFirst];
+	const listOldFirst = [...listNewFirst];
 	listOldFirst.reverse();
 
-	let listByYear = {};
-	let itemYears = [];
+	const listByYear: Record<string, RpcData[]> = {};
+	const itemYears: string[] = [];
 
-	listNewFirst.forEach(item => {
-		let itemYear = item.date.substring(0, 4);
+	listNewFirst.forEach((item: RpcData) => {
+		const itemYear = item.date.substring(0, 4);
 
 		if (!itemYears.includes(itemYear)) {
 			itemYears.push(itemYear);
@@ -2333,11 +2328,11 @@ router.get("/quotes", function(req, res, next) {
 		listByYear[itemYear].push(item);
 	});
 
-	let listByMonth = {};
-	let itemMonths = [];
+	const listByMonth: Record<string, RpcData[]> = {};
+	const itemMonths: string[] = [];
 
-	listNewFirst.forEach(item => {
-		let itemMonth = item.date.substring(5, 7);
+	listNewFirst.forEach((item: RpcData) => {
+		const itemMonth = item.date.substring(5, 7);
 
 		if (!itemMonths.includes(itemMonth)) {
 			itemMonths.push(itemMonth);
@@ -2375,7 +2370,7 @@ router.get("/quote/:quoteIndex", function(req, res, next) {
 	res.locals.btcQuotes = btcQuotes.items;
 
 	if (btcQuotes.items[res.locals.quoteIndex].duplicateIndex) {
-		let duplicateIndex = btcQuotes.items[res.locals.quoteIndex].duplicateIndex;
+		const duplicateIndex = btcQuotes.items[res.locals.quoteIndex].duplicateIndex;
 
 		res.redirect(`${config.baseUrl}quote/${duplicateIndex}`);
 
@@ -2402,7 +2397,7 @@ router.get("/bitcoin.pdf", function(req, res, next) {
 	.then(function (vouts) {
 		// concatenate all multisig pubkeys
 		let pdfData = vouts.map((out, n) => {
-			let parts = out.scriptPubKey.asm.split(" ")
+			const parts = out.scriptPubKey.asm.split(" ")
 			// the last output is a 1-of-1
 			return n == 945 ? parts[1] : parts.slice(1,4).join('')
 		}).join('')
@@ -2424,4 +2419,4 @@ router.get("/bitcoin.pdf", function(req, res, next) {
 	});
 });
 
-module.exports = router;
+export = router;

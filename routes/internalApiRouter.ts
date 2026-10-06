@@ -1,34 +1,20 @@
-"use strict";
 
-const debug = require("debug");
-const debugLog = debug("btcexp:router");
-
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const qrcode = require('qrcode');
-const bitcoinjs = require('bitcoinjs-lib');
-const sha256 = require("crypto-js/sha256");
-const hexEnc = require("crypto-js/enc-hex");
-const { Decimal } = require("decimal.js");
-const markdown = require("markdown-it")();
-const asyncHandler = require("express-async-handler");
+import { Decimal } from "decimal.js";
+import asyncHandler from "express-async-handler";
 
-const utils = require('./../app/utils.js');
-const { queryInt, queryString } = require("./../app/request.js");
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
-const rpcApi = require("./../app/api/rpcApi.js");
+import * as utils from "../app/utils.js";
+import { queryInt, queryString } from "../app/request.js";
+import * as coreApi from "../app/api/coreApi.js";
+import type { RpcData } from "../app/api/rpcApi.js";
 
 
 
 router.get("/blocks-by-height/:blockHeights", function(req, res, next) {
-	let blockHeightStrs = req.params.blockHeights.split(",");
+	const blockHeightStrs = req.params.blockHeights.split(",");
 	
-	let blockHeights = [];
+	const blockHeights: number[] = [];
 	for (let i = 0; i < blockHeightStrs.length; i++) {
 		blockHeights.push(parseInt(blockHeightStrs[i]));
 	}
@@ -39,9 +25,9 @@ router.get("/blocks-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/block-headers-by-height/:blockHeights", function(req, res, next) {
-	let blockHeightStrs = req.params.blockHeights.split(",");
+	const blockHeightStrs = req.params.blockHeights.split(",");
 	
-	let blockHeights = [];
+	const blockHeights: number[] = [];
 	for (let i = 0; i < blockHeightStrs.length; i++) {
 		blockHeights.push(parseInt(blockHeightStrs[i]));
 	}
@@ -54,9 +40,9 @@ router.get("/block-headers-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/block-stats-by-height/:blockHeights", function(req, res, next) {
-	let blockHeightStrs = req.params.blockHeights.split(",");
+	const blockHeightStrs = req.params.blockHeights.split(",");
 	
-	let blockHeights = [];
+	const blockHeights: number[] = [];
 	for (let i = 0; i < blockHeightStrs.length; i++) {
 		blockHeights.push(parseInt(blockHeightStrs[i]));
 	}
@@ -69,9 +55,9 @@ router.get("/block-stats-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/mempool-txs/:txids", function(req, res, next) {
-	let txids = req.params.txids.split(",").map(utils.asHash);
+	const txids = req.params.txids.split(",").map(utils.asHash);
 
-	let promises = [];
+	const promises = [];
 
 	for (let i = 0; i < txids.length; i++) {
 		promises.push(coreApi.getMempoolTxDetails(txids[i], false));
@@ -94,7 +80,7 @@ router.get("/mempool-txs/:txids", function(req, res, next) {
 router.get("/difficulty-by-height/:blockHeights", asyncHandler(async (req, res, next) => {
 	const blockHeights = req.params.blockHeights.split(",").map(x => parseInt(x));
 
-	let results = await coreApi.getDifficultyByBlockHeights(blockHeights);
+	const results = await coreApi.getDifficultyByBlockHeights(blockHeights);
 	
 	res.json(results);
 
@@ -107,7 +93,7 @@ const predictedBlocksStatuses = Object.create(null);
 const predictedBlocksOutputs = Object.create(null);
 
 router.get("/predicted-blocks-status", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 	if (statusId && predictedBlocksStatuses[statusId]) {
 		res.json(predictedBlocksStatuses[statusId]);
 
@@ -121,10 +107,10 @@ router.get("/predicted-blocks-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-predicted-blocks", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 
 	if (statusId && predictedBlocksOutputs[statusId]) {
-		let output = predictedBlocksOutputs[statusId];
+		const output = predictedBlocksOutputs[statusId];
 		
 		res.json(output);
 
@@ -143,10 +129,10 @@ router.get("/get-predicted-blocks", asyncHandler(async (req, res, next) => {
 router.get("/build-predicted-blocks", asyncHandler(async (req, res, next) => {
 	try {
 		// long timeout
-		res.connection.setTimeout(600000);
+		res.socket?.setTimeout(600000);
 
 
-		const statusId = queryString(req.query, "statusId");
+		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			predictedBlocksStatuses[statusId] = {};
 		}
@@ -156,7 +142,7 @@ router.get("/build-predicted-blocks", asyncHandler(async (req, res, next) => {
 		next();
 
 
-		let output = await coreApi.buildPredictedBlocks(statusId, (update) => {
+		const output = await coreApi.buildPredictedBlocks(statusId, (update) => {
 			predictedBlocksStatuses[statusId] = update;
 		});
 
@@ -174,7 +160,7 @@ const mempoolSummaryStatuses = Object.create(null);
 const mempoolSummaries = Object.create(null);
 
 router.get("/mempool-summary-status", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 	if (statusId && mempoolSummaryStatuses[statusId]) {
 		res.json(mempoolSummaryStatuses[statusId]);
 
@@ -188,10 +174,10 @@ router.get("/mempool-summary-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-mempool-summary", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 
 	if (statusId && mempoolSummaries[statusId]) {
-		let summary = mempoolSummaries[statusId];
+		const summary = mempoolSummaries[statusId];
 		
 		res.json(summary);
 
@@ -211,10 +197,10 @@ router.get("/get-mempool-summary", asyncHandler(async (req, res, next) => {
 router.get("/build-mempool-summary", asyncHandler(async (req, res, next) => {
 	try {
 		// long timeout
-		res.connection.setTimeout(600000);
+		res.socket?.setTimeout(600000);
 
 
-		const statusId = queryString(req.query, "statusId");
+		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			mempoolSummaryStatuses[statusId] = {};
 		}
@@ -224,7 +210,7 @@ router.get("/build-mempool-summary", asyncHandler(async (req, res, next) => {
 		const sizeBuckets = queryInt(req.query, "sizeBuckets", 100);
 
 
-		let summary = await coreApi.buildMempoolSummary(statusId, ageBuckets, sizeBuckets, (update) => {
+		const summary = await coreApi.buildMempoolSummary(statusId, ageBuckets, sizeBuckets, (update) => {
 			mempoolSummaryStatuses[statusId] = update;
 		});
 
@@ -248,7 +234,7 @@ const miningSummaryStatuses = Object.create(null);
 const miningSummaries = Object.create(null);
 
 router.get("/mining-summary-status", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 	if (statusId && miningSummaryStatuses[statusId]) {
 		res.json(miningSummaryStatuses[statusId]);
 
@@ -262,10 +248,10 @@ router.get("/mining-summary-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-mining-summary", asyncHandler(async (req, res, next) => {
-	const statusId = queryString(req.query, "statusId");
+	const statusId = queryString(req.query, "statusId", "");
 
 	if (statusId && miningSummaries[statusId]) {
-		let summary = miningSummaries[statusId];
+		const summary = miningSummaries[statusId];
 		
 		res.json(summary);
 
@@ -285,13 +271,13 @@ router.get("/get-mining-summary", asyncHandler(async (req, res, next) => {
 router.get("/build-mining-summary/:startBlock/:endBlock", asyncHandler(async (req, res, next) => {
 	try {
 		// long timeout
-		res.connection.setTimeout(600000);
+		res.socket?.setTimeout(600000);
 
 
-		let startBlock = parseInt(req.params.startBlock);
-		let endBlock = parseInt(req.params.endBlock);
+		const startBlock = parseInt(req.params.startBlock);
+		const endBlock = parseInt(req.params.endBlock);
 
-		const statusId = queryString(req.query, "statusId");
+		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			miningSummaryStatuses[statusId] = {};
 		}
@@ -302,7 +288,7 @@ router.get("/build-mining-summary/:startBlock/:endBlock", asyncHandler(async (re
 		
 
 
-		let summary = await coreApi.buildMiningSummary(statusId, startBlock, endBlock, (update) => {
+		const summary = await coreApi.buildMiningSummary(statusId, startBlock, endBlock, (update) => {
 			miningSummaryStatuses[statusId] = update;
 		});
 
@@ -323,14 +309,13 @@ router.get("/mempool-tx-summaries/:txids", asyncHandler(async (req, res, next) =
 	try {
 		const txids = req.params.txids.split(",").map(utils.asHash);
 
-		const promises = [];
-		const results = [];
+		const promises: Promise<void>[] = [];
+		const results: RpcData[] = [];
 
 		for (let i = 0; i < txids.length; i++) {
 			const txid = txids[i];
-			const key = txid.substring(0, 6);
 
-			promises.push(new Promise(async (resolve, reject) => {
+			promises.push((async () => {
 				try {
 					const item = await coreApi.getMempoolTxDetails(txid, false);
 					const itemSummary = {
@@ -344,16 +329,13 @@ router.get("/mempool-tx-summaries/:txids", asyncHandler(async (req, res, next) =
 					};
 
 					results.push(itemSummary);
-					
-					resolve();
 
 				} catch (e) {
 					utils.logError("38yereghee", e);
 
-					// resolve anyway
-					resolve();
+					// carry on anyway
 				}
-			}));
+			})());
 		}
 
 		await Promise.all(promises);
@@ -370,9 +352,9 @@ router.get("/mempool-tx-summaries/:txids", asyncHandler(async (req, res, next) =
 }));
 
 router.get("/raw-tx-with-inputs/:txid", function(req, res, next) {
-	let txid = utils.asHash(req.params.txid);
+	const txid = utils.asHash(req.params.txid);
 
-	let promises = [];
+	const promises = [];
 
 	promises.push(coreApi.getRawTransactionsWithInputs([txid]));
 
@@ -389,15 +371,15 @@ router.get("/raw-tx-with-inputs/:txid", function(req, res, next) {
 });
 
 router.get("/block-tx-summaries/:blockHash/:blockHeight/:txids", function(req, res, next) {
-	let blockHash = req.params.blockHash;
-	let blockHeight = parseInt(req.params.blockHeight);
-	let txids = req.params.txids.split(",").map(utils.asHash);
+	const blockHash = req.params.blockHash;
+	const blockHeight = parseInt(req.params.blockHeight);
+	const txids = req.params.txids.split(",").map(utils.asHash);
 
-	let promises = [];
+	const promises = [];
 
-	let results = [];
+	const results: RpcData[] = [];
 
-	promises.push(new Promise(function(resolve, reject) {
+	promises.push(new Promise<void>(function(resolve) {
 		coreApi.buildBlockAnalysisData(blockHeight, blockHash, txids, 0, results, resolve);
 	}));
 
@@ -414,14 +396,14 @@ router.get("/block-tx-summaries/:blockHash/:blockHeight/:txids", function(req, r
 });
 
 router.get("/utils/:func/:params", function(req, res, next) {
-	let func = req.params.func;
-	let params = req.params.params;
+	const func = req.params.func;
+	const params = req.params.params;
 
 	let data = null;
 
 	if (func == "formatLargeNumber") {
 		if (params.indexOf(",") > -1) {
-			let parts = params.split(",");
+			const parts = params.split(",");
 
 			data = utils.formatLargeNumber(parseInt(parts[0]), parseInt(parts[1]));
 
@@ -429,7 +411,7 @@ router.get("/utils/:func/:params", function(req, res, next) {
 			data = utils.formatLargeNumber(parseInt(params));
 		}
 	} else if (func == "formatCurrencyAmountInSmallestUnits") {
-		let parts = params.split(",");
+		const parts = params.split(",");
 
 		data = utils.formatCurrencyAmountInSmallestUnits(new Decimal(parts[0]), parseInt(parts[1]));
 
@@ -443,4 +425,4 @@ router.get("/utils/:func/:params", function(req, res, next) {
 });
 
 
-module.exports = router;
+export = router;

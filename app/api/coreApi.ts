@@ -1099,7 +1099,7 @@ const miningPromiseQueue = async.queue<{ run: (callback: () => void) => Promise<
 
 }, 30);
 
-async function buildMiningSummary(statusId: string, startBlock: number, endBlock: number, statusFunc?: StatusFunc): Promise<RpcData> {
+async function buildMiningSummary(statusId: string | null, startBlock: number, endBlock: number, statusFunc?: StatusFunc | null): Promise<RpcData> {
 	try {
 		const blockCount = (endBlock - startBlock + 1);
 		let doneCount = 0;

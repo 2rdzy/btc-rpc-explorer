@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-var debug = require("debug");
-var debugLog = debug("btcexp:config");
+import debug from "debug";
+import meow from "meow";
+
+const debugLog = debug("btcexp:config");
 
 // to debug arg settings, enable the below line:
 //debug.enable("btcexp:*");
 
-const args = require('meow')(`
+const args = meow(`
 	Usage
 	  $ btc-rpc-explorer [options]
 
@@ -76,8 +78,7 @@ const args = require('meow')(`
 	}
 ).flags;
 
-/** @param {string} k */
-const envify = k => k.replace(/([A-Z])/g, '_$1').toUpperCase();
+const envify = (k: string) => k.replace(/([A-Z])/g, '_$1').toUpperCase();
 
 Object.keys(args).filter(k => k.length > 1).forEach(k => {
 	if (args[k] === false) {
@@ -92,4 +93,5 @@ Object.keys(args).filter(k => k.length > 1).forEach(k => {
 	}
 });
 
-require('./www.js');
+// loaded last: the settings above have to be in the environment before the app reads it
+import "./www.js";
