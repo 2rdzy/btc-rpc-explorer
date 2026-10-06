@@ -1,0 +1,114 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const { afterEach, beforeEach, describe, mock, test } = require('node:test');
+
+require('./helpers/setup.js');
+const xyzpubApi = require('../app/api/xyzpubApi.js');
+const coreApi = require('../app/api/coreApi.js');
+const addressApi = require('../app/api/addressApi.js');
+const { xpubChangeVersionBytes } = require('../app/helpers/addresses.js');
+
+// BIP84 test vector (account 0 of the "abandon ... about" mnemonic)
+const zpub = 'zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs';
+const xpub = xpubChangeVersionBytes(zpub, 'xpub');
+const ypub = xpubChangeVersionBytes(zpub, 'ypub');
+const receive = ['bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu', 'bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g'];
+
+beforeEach(() => { global.activeBlockchain = 'main'; });
+afterEach(() => mock.restoreAll());
+
+describe('getKeyDetails', () => {
+	test('zpub', () => {
+		const out = xyzpubApi.getKeyDetails(zpub);
+		assert.equal(out.keyType, 'zpub');
+		assert.equal(out.outputType, 'P2WPKH');
+		assert.equal(out.bip32Path, "m/84'/0'");
+		assert.deepEqual(out.relatedKeys.map(k => k.keyType), ['xpub', 'ypub']);
+		assert.equal(out.relatedKeys[0].key, xpub);
+		assert.match(out.relatedKeys[0].firstAddress, /^1/);
+		assert.match(out.relatedKeys[1].firstAddress, /^3/);
+	});
+
+	test('xpub lists the other two formats', () => {
+		const out = xyzpubApi.getKeyDetails(xpub);
+		assert.equal(out.outputType, 'P2PKH');
+		assert.deepEqual(out.relatedKeys.map(k => k.keyType), ['ypub', 'zpub']);
+		assert.equal(out.relatedKeys[1].key, zpub);
+		assert.equal(out.relatedKeys[1].firstAddress, receive[0]);
+	});
+
+	test('ypub', () => {
+		const out = xyzpubApi.getKeyDetails(ypub);
+		assert.equal(out.outputType, 'P2WPKH in P2SH');
+		assert.deepEqual(out.relatedKeys.map(k => k.keyType), ['xpub', 'zpub']);
+	});
+
+	test('multi-sig keys have no related keys', () => {
+		assert.equal(xyzpubApi.getKeyDetails('Zpub-anything').outputType, 'Multi-Sig P2WSH');
+		assert.equal(xyzpubApi.getKeyDetails('Ypub-anything').outputType, 'Multi-Sig P2WSH in P2SH');
+		assert.deepEqual(xyzpubApi.getKeyDetails('Zpub-anything').relatedKeys, []);
+	});
+});
+
+describe('getXpubAddresses', () => {
+	test('derives the receive addresses for any single-sig format', () => {
+		assert.deepEqual(xyzpubApi.getXpubAddresses(zpub, 0, 2, 0), receive);
+		assert.deepEqual(xyzpubApi.getXpubAddresses(zpub, 0, 1, 1), [receive[1]]);
+	});
+
+	test('receive and change differ', () => {
+		assert.notDeepEqual(xyzpubApi.getXpubAddresses(zpub, 1, 2, 0), receive);
+	});
+
+	test('p2pkh and p2sh-p2wpkh for xpub and ypub', () => {
+		assert.match(xyzpubApi.getXpubAddresses(xpub, 0, 1, 0)[0], /^1/);
+		assert.match(xyzpubApi.getXpubAddresses(ypub, 0, 1, 0)[0], /^3/);
+	});
+
+	test('other keys give no addresses', () => {
+		assert.deepEqual(xyzpubApi.getXpubAddresses('Zpub-anything'), []);
+	});
+});
+
+describe('searchXpubTxids', () => {
+	const axios = require('axios').default;
+	const config = require('../app/config.js');
+	const originalApi = config.addressApi;
+
+	// the blockchair.com API answers from a map of address to transactions, by offset
+	const answer = pages => async url => {
+		const [, address, offset] = /address\/([^/]+)\/\?offset=(\d+)/.exec(url);
+		const txids = (pages[address] || {})[offset] || [];
+		return { data: { data: { [address]: { transactions: txids, address: { transaction_count: txids.length, received: 0, spent: 0, balance: 0 } } } } };
+	};
+
+	beforeEach(() => { config.addressApi = 'blockchair.com'; });
+	afterEach(() => { config.addressApi = originalApi; });
+
+	test('stops after the gap, and reports used and empty addresses', async () => {
+		mock.method(coreApi, 'getAddress', async address => ({ address, scriptPubKey: '00' }));
+		const get = mock.method(axios, 'get', answer({ [receive[0]]: { 0: ['t1', 't2'] } }));
+
+		const out = await xyzpubApi.searchXpubTxids(zpub, 3);
+
+		assert.deepEqual(out.usedAddresses, [{ addressIndex: 0, address: receive[0], type: 'receive', txids: ['t1', 't2'], priorGap: 0 }]);
+		assert.equal(out.emptyAddresses.receive.length, 3);
+		assert.equal(out.emptyAddresses.change.length, 3);
+		assert.equal(out.emptyAddresses.receive[0], receive[1]);
+		assert.ok(get.mock.calls.length >= 7);
+	});
+
+	test('pages through an address with more transactions than one page', async () => {
+		mock.method(coreApi, 'getAddress', async address => ({ address, scriptPubKey: '00' }));
+		const full = Array.from({ length: 20 }, (_, i) => 'a' + i);
+		const get = mock.method(axios, 'get', answer({ [receive[0]]: { 0: full, 20: ['last'] } }));
+
+		const out = await xyzpubApi.searchXpubTxids(zpub, 1);
+
+		const offsets = get.mock.calls.map(c => c.arguments[0]).filter(u => u.includes(receive[0])).map(u => u.split('offset=')[1]);
+		assert.deepEqual(offsets, ['0', '20']);
+		assert.equal(out.usedAddresses.length, 2);
+		assert.equal(out.usedAddresses[1].txids[0], 'last');
+	});
+});
