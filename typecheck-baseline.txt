@@ -128,7 +128,6 @@ routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
 routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
 routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
-routes/apiRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
 routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
 routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
 routes/apiRouter.js: TS2339: Property 'abbreviation' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
@@ -156,19 +155,6 @@ routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to para
 routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
@@ -176,11 +162,6 @@ routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must 
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
 routes/apiRouter.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
-routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
-routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
-routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
-routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
-routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
 routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
@@ -215,77 +196,6 @@ routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Se
 routes/baseRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
 routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
 routes/baseRouter.js: TS2365: Operator '<' cannot be applied to types 'number' and 'string | number | ParsedQs | (string | ParsedQs)[]'.
 routes/baseRouter.js: TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
-routes/internalApiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/internalApiRouter.js: TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type '(string | ParsedQs)[]' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
-routes/internalApiRouter.js: TS2538: Type 'ParsedQs' cannot be used as an index type.
 routes/snippetRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.

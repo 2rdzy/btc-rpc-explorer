@@ -21,6 +21,7 @@ const markdown = require("markdown-it")();
 const asyncHandler = require("express-async-handler");
 
 const utils = require('./../app/utils.js');
+const { queryInt, queryString } = require("./../app/request.js");
 const coins = require("./../app/coins.js");
 const config = require("./../app/config.js");
 const coreApi = require("./../app/api/coreApi.js");
@@ -431,15 +432,15 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 		let sort = "desc";
 
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		if (req.query.sort) {
-			sort = req.query.sort;
+			sort = queryString(req.query, "sort", sort);
 		}
 
 		res.locals.limit = limit;
@@ -559,13 +560,13 @@ router.get("/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
 		
 		let limit = 20;
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 		res.locals.limit = limit;
 
 		let offset = 0;
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 		res.locals.offset = offset;
 
@@ -968,7 +969,7 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 		res.locals.maxTxOutputDisplayCount = 15;
 
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 
 			// for demo sites, limit page sizes
 			if (config.demoSite && limit > config.site.blockTxPageSize) {
@@ -979,7 +980,7 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		res.locals.limit = limit;
@@ -1077,7 +1078,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		res.locals.maxTxOutputDisplayCount = 15;
 
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 
 			// for demo sites, limit page sizes
 			if (config.demoSite && limit > config.site.blockTxPageSize) {
@@ -1088,7 +1089,7 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		res.locals.limit = limit;
@@ -1312,7 +1313,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 
 		let output = -1;
 		if (req.query.output) {
-			output = parseInt(req.query.output);
+			output = queryInt(req.query, "output", output);
 		}
 
 		res.locals.txid = txid;
@@ -1323,7 +1324,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 		const promises = [];
 
 		if (req.query.blockHeight) {
-			res.locals.blockHeight = parseInt(req.query.blockHeight);
+			res.locals.blockHeight = queryInt(req.query, "blockHeight");
 		}
 
 		res.locals.result = {};
@@ -1332,7 +1333,7 @@ router.get("/tx/:transactionId", asyncHandler(async (req, res, next) => {
 
 		let txPromise = req.query.blockHeight ? 
 				async () => {
-					const block = await coreApi.getBlockByHeight(parseInt(req.query.blockHeight));
+					const block = await coreApi.getBlockByHeight(queryInt(req.query, "blockHeight"));
 					res.locals.block = block;
 					return await coreApi.getRawTransactionsWithInputs([txid], txInputLimit, block.hash);
 				}
@@ -1438,7 +1439,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 		
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 
 			// for demo sites, limit page sizes
 			if (config.demoSite && limit > config.site.addressTxPageSize) {
@@ -1449,11 +1450,11 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		if (req.query.sort) {
-			sort = req.query.sort;
+			sort = queryString(req.query, "sort", sort);
 		}
 
 
@@ -2045,15 +2046,15 @@ router.get("/mempool-transactions", asyncHandler(async (req, res, next) => {
 		let sort = "desc";
 
 		if (req.query.limit) {
-			limit = parseInt(req.query.limit);
+			limit = queryInt(req.query, "limit", limit);
 		}
 
 		if (req.query.offset) {
-			offset = parseInt(req.query.offset);
+			offset = queryInt(req.query, "offset", offset);
 		}
 
 		if (req.query.sort) {
-			sort = req.query.sort;
+			sort = queryString(req.query, "sort", sort);
 		}
 
 		res.locals.limit = limit;
@@ -2208,7 +2209,7 @@ router.get("/changelog", function(req, res, next) {
 router.get("/fun", function(req, res, next) {
 	let viewType = "new-first";
 	if (req.query.viewType) {
-		viewType = req.query.viewType;
+		viewType = queryString(req.query, "viewType", viewType);
 	}
 
 	let listNewFirst = coins[config.coin].historicalData;
@@ -2285,7 +2286,7 @@ router.get("/fun", function(req, res, next) {
 router.get("/quotes", function(req, res, next) {
 	let viewType = "new-first";
 	if (req.query.viewType) {
-		viewType = req.query.viewType;
+		viewType = queryString(req.query, "viewType", viewType);
 	}
 
 	let listNewFirst = btcQuotes.items;

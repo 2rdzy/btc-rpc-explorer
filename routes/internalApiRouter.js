@@ -16,6 +16,7 @@ const markdown = require("markdown-it")();
 const asyncHandler = require("express-async-handler");
 
 const utils = require('./../app/utils.js');
+const { queryInt, queryString } = require("./../app/request.js");
 const coins = require("./../app/coins.js");
 const config = require("./../app/config.js");
 const coreApi = require("./../app/api/coreApi.js");
@@ -106,7 +107,7 @@ const predictedBlocksStatuses = Object.create(null);
 const predictedBlocksOutputs = Object.create(null);
 
 router.get("/predicted-blocks-status", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 	if (statusId && predictedBlocksStatuses[statusId]) {
 		res.json(predictedBlocksStatuses[statusId]);
 
@@ -120,7 +121,7 @@ router.get("/predicted-blocks-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-predicted-blocks", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 
 	if (statusId && predictedBlocksOutputs[statusId]) {
 		let output = predictedBlocksOutputs[statusId];
@@ -145,7 +146,7 @@ router.get("/build-predicted-blocks", asyncHandler(async (req, res, next) => {
 		res.connection.setTimeout(600000);
 
 
-		const statusId = req.query.statusId;
+		const statusId = queryString(req.query, "statusId");
 		if (statusId) {
 			predictedBlocksStatuses[statusId] = {};
 		}
@@ -173,7 +174,7 @@ const mempoolSummaryStatuses = Object.create(null);
 const mempoolSummaries = Object.create(null);
 
 router.get("/mempool-summary-status", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 	if (statusId && mempoolSummaryStatuses[statusId]) {
 		res.json(mempoolSummaryStatuses[statusId]);
 
@@ -187,7 +188,7 @@ router.get("/mempool-summary-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-mempool-summary", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 
 	if (statusId && mempoolSummaries[statusId]) {
 		let summary = mempoolSummaries[statusId];
@@ -213,14 +214,14 @@ router.get("/build-mempool-summary", asyncHandler(async (req, res, next) => {
 		res.connection.setTimeout(600000);
 
 
-		const statusId = req.query.statusId;
+		const statusId = queryString(req.query, "statusId");
 		if (statusId) {
 			mempoolSummaryStatuses[statusId] = {};
 		}
 
 		
-		const ageBuckets = req.query.ageBuckets ? parseInt(req.query.ageBuckets) : 100;
-		const sizeBuckets = req.query.sizeBuckets ? parseInt(req.query.sizeBuckets) : 100;
+		const ageBuckets = queryInt(req.query, "ageBuckets", 100);
+		const sizeBuckets = queryInt(req.query, "sizeBuckets", 100);
 
 
 		let summary = await coreApi.buildMempoolSummary(statusId, ageBuckets, sizeBuckets, (update) => {
@@ -247,7 +248,7 @@ const miningSummaryStatuses = Object.create(null);
 const miningSummaries = Object.create(null);
 
 router.get("/mining-summary-status", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 	if (statusId && miningSummaryStatuses[statusId]) {
 		res.json(miningSummaryStatuses[statusId]);
 
@@ -261,7 +262,7 @@ router.get("/mining-summary-status", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/get-mining-summary", asyncHandler(async (req, res, next) => {
-	const statusId = req.query.statusId;
+	const statusId = queryString(req.query, "statusId");
 
 	if (statusId && miningSummaries[statusId]) {
 		let summary = miningSummaries[statusId];
@@ -290,7 +291,7 @@ router.get("/build-mining-summary/:startBlock/:endBlock", asyncHandler(async (re
 		let startBlock = parseInt(req.params.startBlock);
 		let endBlock = parseInt(req.params.endBlock);
 
-		const statusId = req.query.statusId;
+		const statusId = queryString(req.query, "statusId");
 		if (statusId) {
 			miningSummaryStatuses[statusId] = {};
 		}
