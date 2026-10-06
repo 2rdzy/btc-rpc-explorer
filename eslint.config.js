@@ -5,7 +5,7 @@ const globals = require('globals');
 const tseslint = require('typescript-eslint');
 
 module.exports = [
-	{ ignores: ['node_modules/**', 'public/**', 'cache/**', 'raw/**', 'dist/**'] },
+	{ ignores: ['node_modules/**', 'public/**', 'cache/**', 'raw/**', 'dist/**', '.test-build/**'] },
 	js.configs.recommended,
 	// the only JavaScript is this file (test/no-javascript.test.ts keeps it that way)
 	{
