@@ -298,7 +298,7 @@ async function getAddressBalance(addrScripthash: string): Promise<ServerResult |
 			for (let i = 0; i < results.length; i++) {
 				const coinbaseBlockReward = coinConfig.blockRewardFunction(0, global.activeBlockchain);
 
-				results[i].result.confirmed += (coinbaseBlockReward * coinConfig.baseCurrencyUnit.multiplier);
+				results[i].result.confirmed += (Number(coinbaseBlockReward) * Number(coinConfig.baseCurrencyUnit.multiplier));
 			}
 		}
 

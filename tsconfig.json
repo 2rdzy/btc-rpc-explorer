@@ -1,7 +1,5 @@
 {
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
 		"noEmit": true,
 		"target": "ES2022",
 		"module": "commonjs",
@@ -9,10 +7,9 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"strict": false,
-		"noImplicitAny": true,
+		"strict": true,
 		"types": ["node"]
 	},
-	"include": ["types/**/*.d.ts", "app.ts", "app/**/*.js", "app/**/*.ts", "routes/**/*.js", "routes/**/*.ts", "bin/**/*.js", "bin/**/*.ts"],
-	"exclude": ["node_modules", "public"]
+	"include": ["types/**/*.d.ts", "app.ts", "app/**/*.ts", "routes/**/*.ts", "bin/**/*.ts", "docs/**/*.ts", "test/**/*.ts"],
+	"exclude": ["node_modules", "public", "dist"]
 }

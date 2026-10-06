@@ -17,7 +17,7 @@ interface ActionMonitorConfig extends ActionMonitorOptions {
 	ignoredStartsWithActionsRegex: RegExp;
 }
 
-const onHeadersListener = (config: ActionMonitorConfig, req: Request, statusCode: number, startTimeNanos: bigint, statTracker: typeof StatTracker) => {
+const onHeadersListener = (config: ActionMonitorConfig, req: Request, statusCode: number, startTimeNanos: bigint, statTracker: Pick<typeof StatTracker, "trackPerformance" | "trackEvent">) => {
 	try {
 		const responseTimeNanos = process.hrtime.bigint() - startTimeNanos;
 		const responseTimeMillis = Number(responseTimeNanos) * 1e-6;
@@ -71,7 +71,7 @@ const validateConfig = (cfg?: ActionMonitorOptions): ActionMonitorConfig => {
 };
 
 // Express middleware that records how long each action took and its status, in the stat tracker.
-const middlewareWrapper = (statTracker: typeof StatTracker, cfg?: ActionMonitorOptions): RequestHandler & { middleware: RequestHandler } => {
+const middlewareWrapper = (statTracker: Pick<typeof StatTracker, "trackPerformance" | "trackEvent">, cfg?: ActionMonitorOptions): RequestHandler & { middleware: RequestHandler } => {
 	const config = validateConfig(cfg);
 
 	const middleware = (req: Request, res: Response, next: NextFunction) => {

@@ -6,7 +6,7 @@ import crypto from "crypto";
 // It is made from the node's address and how the explorer logs in to it, and nothing secret: it used to be
 // a hash of the whole credentials object, password included, so anyone who could list the Redis keys saw
 // a checksum of the RPC password.
-export function rpcCacheKeyComponent(rpcCredentials: { host?: string | number, port?: string | number, authType?: string }): string {
+export function rpcCacheKeyComponent(rpcCredentials: { host?: string | number, port?: string | number, authType?: string, [other: string]: unknown }): string {
 	const identity = `${rpcCredentials.host}:${rpcCredentials.port}:${rpcCredentials.authType}`;
 
 	return crypto.createHash("sha256").update(identity).digest("hex").substring(0, 8);
