@@ -18,10 +18,19 @@ html(lang="en")
 		+themeCss
 		
 
+		meta(property="og:type" content="website")
+		meta(property="og:site_name" content="Blake2b Explorer")
 		meta(property="og:title" content=(metaTitle != undefined ? metaTitle : "Blake2b Bitcoin Explorer"))
 		meta(property="og:description" content=(metaDesc != undefined ? metaDesc : "Open-source, easy-to-use, educational Bitcoin explorer whose only dependency is your Bitcoin Knots node."))
 
-		meta(property="twitter:card" content="summary_large_image")
+		if config.publicUrl
+			// the link preview image: social networks need its absolute address (BTCEXP_PUBLIC_URL)
+			meta(property="og:image" content=`${config.publicUrl}/img/social-preview.png`)
+			meta(property="og:image:width" content="1200")
+			meta(property="og:image:height" content="630")
+			meta(property="twitter:image" content=`${config.publicUrl}/img/social-preview.png`)
+
+		meta(property="twitter:card" content=(config.publicUrl ? "summary_large_image" : "summary"))
 		meta(property="twitter:title" content=(metaTitle != undefined ? metaTitle : "Blake2b Bitcoin Explorer"))
 		meta(property="twitter:description" content=(metaDesc != undefined ? metaDesc : "Open-source, easy-to-use, educational Bitcoin explorer whose only dependency is your Bitcoin Knots node."))
 

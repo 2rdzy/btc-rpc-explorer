@@ -16,6 +16,12 @@ if (!baseUrl.endsWith("/")) {
 	baseUrl += "/";
 }
 
+// where the explorer can be reached from outside (https://explorer.example.com): link previews need absolute addresses
+const publicUrl: string | undefined = (process.env.BTCEXP_PUBLIC_URL || "").trim().replace(/\/+$/, "") || undefined;
+if (publicUrl && !/^https?:\/\/[^\s/]+(\/\S*)?$/i.test(publicUrl)) {
+	throw new Error(`Invalid BTCEXP_PUBLIC_URL '${publicUrl}': it needs to be an http(s) address, for example https://explorer.example.com`);
+}
+
 
 
 
@@ -112,6 +118,7 @@ const config = {
 	secureSite: process.env.BTCEXP_SECURE_SITE == "true",
 
 	baseUrl: baseUrl,
+	publicUrl: publicUrl,
 	apiBaseUrl: apiDocs.baseUrl,
 
 	coin: currentCoin,

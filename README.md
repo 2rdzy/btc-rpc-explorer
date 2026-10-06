@@ -151,6 +151,18 @@ See [docs/nginx-reverse-proxy.md](docs/nginx-reverse-proxy.md) for nginx and cer
 * `npm run miners` downloads the upstream mining pool lists (it runs the built `dist/bin/refresh-mining-pool-configs.js`, so build first). It does not touch `public/txt/mining-pools-configs-custom/`.
 
 
+# Credits
+
+The explorer is the work of [Dan Janosik](https://github.com/janoside) and the contributors to [BTC RPC Explorer](https://github.com/janoside/btc-rpc-explorer), whose design, pages and most of the features are what you see here. This fork adds, among other things:
+
+* support for the BLAKE2b chain of Bitcoin Knots (see "What is different from upstream" above);
+* the red theme and the rebrand;
+* security work: CSRF protection with `csrf-sync`, a limit on failed logins, TLS verification and pinning for Electrum servers, no credentials in cache keys, dependency upgrades;
+* the whole code base in strict TypeScript, with a build step, around 460 tests, lint, CI and a Docker image that holds no settings.
+
+Fixes that apply to the upstream project too are welcome there as well.
+
+
 # License
 
-MIT. See [LICENSE](LICENSE). Original work by Dan Janosik.
+MIT. See [LICENSE](LICENSE). Original work by Dan Janosik; changes in this fork by its contributors.

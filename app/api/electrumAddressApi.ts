@@ -3,6 +3,8 @@ import debug from "debug";
 import sha256 from "crypto-js/sha256";
 import hexEnc from "crypto-js/enc-hex";
 import ElectrumClient from "electrum-client";
+type HistoryItem = { tx_hash: string, height: number };
+type Balance = { confirmed: number, unconfirmed?: number };
 
 import config from "../config.js";
 import coins from "../coins.js";
@@ -17,9 +19,8 @@ const debugLog = debug("btcexp:electrum");
 const coinConfig = coins[config.coin];
 
 // electrum-client has no type declarations (see types/electrum-client.d.ts), so what it returns is loose
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type Client = any;
-type ServerResult = { result: any, server: string };
+type Client = ElectrumClient;
+type ServerResult<T> = { result: T, server: string | null };
 
 const electrumClients: Client[] = [];
 
@@ -142,7 +143,7 @@ function connectToServer(host: string | null, port: number, protocol?: string | 
 	});
 }
 
-async function runOnServer(electrumClient: Client, f: (client: Client) => Promise<any>): Promise<ServerResult> {
+async function runOnServer<T>(electrumClient: Client, f: (client: Client) => Promise<T>): Promise<ServerResult<T>> {
 	try {
 		const result = await f(electrumClient);
 
@@ -155,8 +156,8 @@ async function runOnServer(electrumClient: Client, f: (client: Client) => Promis
 	}
 }
 
-function runOnAllServers(f: (client: Client) => Promise<any>): Promise<ServerResult[]> {
-	const promises: Promise<ServerResult>[] = [];
+function runOnAllServers<T>(f: (client: Client) => Promise<T>): Promise<ServerResult<T>[]> {
+	const promises: Promise<ServerResult<T>>[] = [];
 
 	for (let i = 0; i < electrumClients.length; i++) {
 		promises.push(runOnServer(electrumClients[i], f));
@@ -174,8 +175,9 @@ export async function getAddressDetails(address: string, scriptPubkey: string, s
 
 	const addrScripthash = (hexEnc.stringify(sha256(hexEnc.parse(scriptPubkey))).match(/.{2}/g) as string[]).reverse().join("");
 
-	let txidData: any = null;
-	let balanceData: any = null;
+	// set when the answers come in below (a conflict, or no answer, leaves them empty)
+	let txidData = null as HistoryItem[] | null | undefined;
+	let balanceData = null as Balance | null | undefined;
 
 	const promises: Promise<void>[] = [];
 
@@ -247,7 +249,7 @@ export async function getAddressDetails(address: string, scriptPubkey: string, s
 // {result, server} wrappers, which are never set, so different answers are never reported as conflicts and the
 // first server's answer is used. That is how it has always behaved, and is kept as it is.
 
-async function getAddressTxids(addrScripthash: string): Promise<ServerResult | { conflictedResults: ServerResult[] }> {
+async function getAddressTxids(addrScripthash: string): Promise<ServerResult<HistoryItem[]> | { conflictedResults: ServerResult<HistoryItem[]>[] }> {
 	const startTime = new Date().getTime();
 
 	try {
@@ -265,10 +267,10 @@ async function getAddressTxids(addrScripthash: string): Promise<ServerResult | {
 			}
 		}
 
-		const first: any = results[0];
+		const first = results[0] as { length?: number };
 
 		for (let i = 1; i < results.length; i++) {
-			if ((results[i] as any).length != first.length) {
+			if ((results[i] as { length?: number }).length != first.length) {
 				return {conflictedResults:results};
 			}
 		}
@@ -282,7 +284,7 @@ async function getAddressTxids(addrScripthash: string): Promise<ServerResult | {
 	}
 }
 
-async function getAddressBalance(addrScripthash: string): Promise<ServerResult | { conflictedResults: ServerResult[] }> {
+async function getAddressBalance(addrScripthash: string): Promise<ServerResult<Balance> | { conflictedResults: ServerResult<Balance>[] }> {
 	const startTime = new Date().getTime();
 
 	try {
@@ -302,10 +304,10 @@ async function getAddressBalance(addrScripthash: string): Promise<ServerResult |
 			}
 		}
 
-		const first: any = results[0];
+		const first = results[0] as { confirmed?: number };
 
 		for (let i = 1; i < results.length; i++) {
-			if ((results[i] as any).confirmed != first.confirmed) {
+			if ((results[i] as { confirmed?: number }).confirmed != first.confirmed) {
 				return {conflictedResults:results};
 			}
 		}
@@ -327,7 +329,7 @@ export async function lookupTxBlockHash(txid: string): Promise<string> {
 	}
 
 	const results = await runOnAllServers(function(electrumClient) {
-		return electrumClient.request('blockchain.transaction.get_confirmed_blockhash', [txid]);
+		return electrumClient.request('blockchain.transaction.get_confirmed_blockhash', [txid]) as Promise<string>;
 	});
 
 	const blockhash = results[0].result;

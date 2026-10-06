@@ -7,6 +7,19 @@ import { logError } from "./errors.js";
 
 const coinConfig = coins[config.coin];
 
+// the parts of a transaction (as the node gives it) that these functions read
+export interface RawVout {
+	value: number | string,
+	scriptPubKey?: { address?: string, addresses?: string[] }
+}
+
+export interface RawTx {
+	txid?: string,
+	blockhash?: string,
+	vin: { coinbase?: string, txid?: string, vout?: number }[],
+	vout: RawVout[]
+}
+
 export interface MinerInfo {
 	name?: string,
 	type?: string,
@@ -17,8 +30,7 @@ export interface MinerInfo {
 // Who mined a block, from its coinbase transaction: by payout address, coinbase tag, block hash or (on mainnet)
 // block height as listed in global.miningPoolsConfigs, else by the first paid address. Returns a copy of the entry
 // it finds in the pool config, with identifiedBy saying how (the config itself is not changed).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo | null {
+export function identifyMiner(coinbaseTx: Partial<RawTx> | null | undefined, blockHeight: number): MinerInfo | null {
 	if (coinbaseTx == null || coinbaseTx.vin == null || coinbaseTx.vin.length == 0) {
 		return null;
 	}
@@ -39,7 +51,7 @@ export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo |
 
 			for (const coinbaseTag in miningPoolsConfig.coinbase_tags) {
 				if (Object.prototype.hasOwnProperty.call(miningPoolsConfig.coinbase_tags, coinbaseTag)) {
-					if (formatHex(coinbaseTx.vin[0].coinbase, "utf8").indexOf(coinbaseTag) != -1) {
+					if (formatHex(coinbaseTx.vin[0].coinbase ?? "", "utf8").indexOf(coinbaseTag) != -1) {
 						return { ...miningPoolsConfig.coinbase_tags[coinbaseTag], identifiedBy: "coinbase tag '" + coinbaseTag + "'" };
 					}
 				}
@@ -86,8 +98,7 @@ export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo |
 }
 
 // The total value going into and out of a transaction (input is null when the inputs are not known).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | undefined, blockHeight: number): { input: Decimal | null, output: Decimal } {
+export function getTxTotalInputOutputValues(tx: RawTx & { txid?: string }, txInputs: (RawVout | null | undefined)[] | null | undefined, blockHeight: number): { input: Decimal | null, output: Decimal } {
 	let totalInputValue = new Decimal(0);
 	let totalOutputValue = new Decimal(0);
 
@@ -126,8 +137,7 @@ export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | un
 }
 
 // The fees a block collected: what its coinbase paid out, less the block reward. 0 when there is no coinbase.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getBlockTotalFeesFromCoinbaseTxAndBlockHeight(coinbaseTx: any, blockHeight: number): Decimal | 0 {
+export function getBlockTotalFeesFromCoinbaseTxAndBlockHeight(coinbaseTx: Pick<RawTx, "vout"> | null | undefined, blockHeight: number): Decimal | 0 {
 	if (coinbaseTx == null) {
 		return 0;
 	}
@@ -137,7 +147,7 @@ export function getBlockTotalFeesFromCoinbaseTxAndBlockHeight(coinbaseTx: any, b
 	let totalOutput = new Decimal(0);
 	for (let i = 0; i < coinbaseTx.vout.length; i++) {
 		const outputValue = coinbaseTx.vout[i].value;
-		if (outputValue > 0) {
+		if (Number(outputValue) > 0) {
 			totalOutput = totalOutput.plus(new Decimal(outputValue));
 		}
 	}

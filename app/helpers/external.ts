@@ -151,8 +151,9 @@ const ipCache = {
 
 // The location details of IPv4 addresses (not Tor or local ones), from ipstack.com. Resolves to {} when privacy mode is
 // on or there is no API key. An address that fails to look up is logged and left out.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function geoLocateIpAddresses(ipAddresses: string[]): Promise<any> {
+export interface IpLocations { ips?: string[], detailsByIp?: Record<string, unknown> }
+
+export function geoLocateIpAddresses(ipAddresses: string[]): Promise<IpLocations> {
 	return new Promise(function(resolve, reject) {
 		if (config.privacyMode || config.credentials.ipStackComApiAccessKey === undefined) {
 			resolve({});
