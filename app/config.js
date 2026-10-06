@@ -132,7 +132,10 @@ module.exports = {
 
 	rateLimiting: {
 		windowMinutes: Number(process.env.BTCEXP_RATE_LIMIT_WINDOW_MINUTES) || 15,
-		windowMaxRequests: Number(process.env.BTCEXP_RATE_LIMIT_WINDOW_MAX_REQUESTS) || 200
+		windowMaxRequests: Number(process.env.BTCEXP_RATE_LIMIT_WINDOW_MAX_REQUESTS) || 200,
+
+		// failed logins (Basic auth or SSO) one IP address may make per window; -1 turns this off
+		loginMaxFailures: Number(process.env.BTCEXP_RATE_LIMIT_LOGIN_FAILURES) || 20
 	},
 
 	rpcBlacklist:

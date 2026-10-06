@@ -94,6 +94,7 @@ const btcQuotes = require("./app/coins/btcQuotes.js");
 const btcHolidays = require("./app/coins/btcHolidays.js");
 const auth = require('./app/auth.js');
 const sso = require('./app/sso.js');
+const { createLoginRateLimiter } = require('./app/loginRateLimit.js');
 const markdown = require("markdown-it")();
 const v8 = require("v8");
 const compression = require("compression");
@@ -186,6 +187,15 @@ expressApp.use(cookieParser());
 
 expressApp.disable('x-powered-by');
 
+
+if ((process.env.BTCEXP_BASIC_AUTH_PASSWORD || process.env.BTCEXP_SSO_TOKEN_FILE) && config.rateLimiting.loginMaxFailures != -1) {
+	// before authentication, so that failed logins are counted (see app/loginRateLimit.js)
+	expressApp.use(createLoginRateLimiter({
+		windowMs: (config.rateLimiting.windowMinutes == -1 ? 15 : config.rateLimiting.windowMinutes) * 60 * 1000,
+		maxFailures: config.rateLimiting.loginMaxFailures,
+		loginRedirect: process.env.BTCEXP_SSO_TOKEN_FILE ? process.env.BTCEXP_SSO_LOGIN_REDIRECT_URL : null
+	}));
+}
 
 if (process.env.BTCEXP_BASIC_AUTH_PASSWORD) {
 	// basic http authentication
