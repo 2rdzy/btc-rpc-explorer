@@ -5,7 +5,7 @@ import "express-session";
 declare module "express-session" {
 	interface SessionData {
 		host: string;
-		port: string;
+		port: string | number;
 		username: string;
 		userSettings: any;
 		userMessage: string;

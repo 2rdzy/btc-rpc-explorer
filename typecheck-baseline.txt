@@ -1,7 +1,6 @@
 # Type errors that existed when type checking was added. Do not add to this file: fix the code instead.
 # Rewritten by: npm run typecheck -- --update
 app.js: TS2339: Property 'crawler' does not exist on type '{ path: any; }'.
-app.js: TS2339: Property 'headers' does not exist on type '{ host: any; port: any; username: any; password: any; timeout: number; }'.
 app.js: TS2339: Property 'store' does not exist on type '{ secret: string; resave: boolean; saveUninitialized: boolean; cookie: { secure: boolean; }; }'.
 app.js: TS7005: Variable 'configs' implicitly has an 'any[]' type.
 app.js: TS7006: Parameter 'a' implicitly has an 'any' type.
