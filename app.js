@@ -928,9 +928,6 @@ expressApp.continueStartup = function() {
 		setInterval(getSourcecodeProjectMetadata, 3600000);
 	}
 
-
-	utils.logMemoryUsage();
-	setInterval(utils.logMemoryUsage, 5000);
 };
 
 expressApp.use(function(req, res, next) {

@@ -1,6 +1,7 @@
 import { createClient } from "redis";
 
 import config from "./config.js";
+import { logError } from "./helpers/errors.js";
 import type { CachedValue, CacheEventHandler } from "./cacheUtils.js";
 
 let redisClient: ReturnType<typeof createClient> | null = null;
@@ -48,11 +49,7 @@ export function createCache(keyPrefix: string, onCacheEvent: CacheEventHandler) 
 			} catch (err) {
 				onCacheEvent("redis", "error", prefixedKey);
 
-				// loaded here and not at the top: utils loads this module (for its IP address cache), so importing it
-				// at the top would be a circular import that fails when this module happens to be loaded first
-				const { default: utils } = await import("./utils.js");
-
-				utils.logError("328rhwefghsdgsdss", err, {key:prefixedKey});
+				logError("328rhwefghsdgsdss", err, {key:prefixedKey});
 
 				throw err;
 			}

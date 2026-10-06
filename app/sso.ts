@@ -11,7 +11,7 @@
 import crypto from "crypto";
 import fs from "fs";
 import type { NextFunction, Request, Response } from "express";
-import utils from "./utils.js";
+import { logError } from "./helpers/errors.js";
 
 const authCookieName = "btcexp_auth";
 
@@ -63,7 +63,7 @@ export = (tokenFile: string, loginRedirect?: string | null) => {
 				matchingToken = crypto.timingSafeEqual(Buffer.from(queryToken, "utf8"), Buffer.from(token, "utf8"));
 
 			} catch (e) {
-				utils.logError("23rheuweesaa", e);
+				logError("23rheuweesaa", e);
 			}
 		}
 
