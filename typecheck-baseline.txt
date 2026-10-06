@@ -379,9 +379,6 @@ app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expre
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
 app/utils.js: TS7005: Variable 'perfLog' implicitly has an 'any[]' type.
-app/utils.js: TS7006: Parameter 'account' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'addressType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
@@ -392,15 +389,9 @@ app/utils.js: TS7006: Parameter 'cacheName' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'cacheType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'coinbaseTx' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'coinbaseTx' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'currentBlockHeader' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'currentBlockHeader' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'difficultyAdjustmentDataArg' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'e' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'eraStartBlockHeader' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'eraStartBlockHeader' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'eventType' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'expirationMillis' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'extPubkey' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'f' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'height' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'hexString' implicitly has an 'any' type.
@@ -426,7 +417,6 @@ app/utils.js: TS7006: Parameter 'startTimeNanos' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'str' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'strings' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'tags' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'targetFormat' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'txInputs' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'uid' implicitly has an 'any' type.
@@ -435,10 +425,6 @@ app/utils.js: TS7006: Parameter 'userAgentString' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'v' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'value' implicitly has an 'any' type.
 app/utils.js: TS7006: Parameter 'version' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
-app/utils.js: TS7006: Parameter 'xpub' implicitly has an 'any' type.
-app/utils.js: TS7018: Object literal's property 'errors' implicitly has an 'any[]' type.
 app/utils.js: TS7034: Variable 'perfLog' implicitly has type 'any[]' in some locations where its type cannot be determined.
 app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 app/utils.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
@@ -501,14 +487,6 @@ routes/apiRouter.js: TS7053: Element implicitly has an 'any' type because expres
 routes/apiRouter.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 routes/baseRouter.js: TS2339: Property 'avgFee' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; txids: any[]; }'.
 routes/baseRouter.js: TS2339: Property 'avgFeeRate' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; txids: any[]; }'.
-routes/baseRouter.js: TS2339: Property 'encoding' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'errors' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'errors' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'errors' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'errors' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'parsedAddress' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'parsedAddress' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
-routes/baseRouter.js: TS2339: Property 'parsedAddress' does not exist on type '{ errors: any[]; } | { encoding: string; parsedAddress: any; }'.
 routes/baseRouter.js: TS2339: Property 'quoteIndex' does not exist on type '{ text: string; speaker: string; url: string; date: string; context: string; duplicateIndex?: undefined; note?: undefined; } | { text: string; speaker: string; date: string; url: string; context?: undefined; duplicateIndex?: undefined; note?: undefined; } | { ...; }'.
 routes/baseRouter.js: TS7005: Variable 'coinbaseTxBlockHashes' implicitly has an 'any[]' type.
 routes/baseRouter.js: TS7005: Variable 'feeRates' implicitly has an 'any[]' type.

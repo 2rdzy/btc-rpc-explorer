@@ -7,20 +7,8 @@ const debugLog = debug("btcexp:utils");
 
 const { Decimal } = require("decimal.js");
 const axios = require("axios").default;
+
 const qrcode = require("qrcode");
-const bs58check = require("bs58check");
-const ecc = require('tiny-secp256k1');
-const { BIP32Factory } = require('bip32');
-const moment = require("moment");
-const { bech32, bech32m } = require("bech32");
-
-// You must wrap a tiny-secp256k1 compatible implementation
-const bip32 = BIP32Factory(ecc);
-
-const bitcoinjs = require('bitcoinjs-lib');
-
-
-
 
 const config = require("./config.js");
 const coins = require("./coins.js");
@@ -34,6 +22,8 @@ const { rgbToHsl, colorHexToRgb, colorHexToHsl } = require("./helpers/color.js")
 const { parseNodeVersion, getDifficulty, isBlake2bDifficulty } = require("./helpers/node.js");
 const { logError } = require("./helpers/errors.js");
 const { formatLargeNumber, formatLargeNumberSignificant, formatCurrencyAmountWithForcedDecimalPlaces, formatCurrencyAmount, formatCurrencyAmountInSmallestUnits, satoshisPerUnitOfLocalCurrency, getExchangedCurrencyFormatData, formatExchangedCurrency } = require("./helpers/currency.js");
+const { getVoutAddress, getVoutAddresses, xpubChangeVersionBytes, bip32Addresses, tryParseAddress } = require("./helpers/addresses.js");
+const { difficultyAdjustmentEstimates, nextHalvingEstimates } = require("./helpers/estimates.js");
 const { outputTypeAbbreviation, outputTypeName, asHash, asHashOrHeight, asAddress } = require("./helpers/outputTypes.js");
 
 
@@ -693,103 +683,11 @@ const dtMillis = (startTimeNanos) => {
 
 
 
-function getVoutAddress(vout) {
-	if (vout && vout.scriptPubKey) {
-		if (vout.scriptPubKey.address) {
-			return vout.scriptPubKey.address;
 
-		} else if (vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length > 0) {
-			return vout.scriptPubKey.addresses[0];
-		}
-	}
 
-	return null;
-}
 
-function getVoutAddresses(vout) {
-	if (vout && vout.scriptPubKey) {
-		if (vout.scriptPubKey.address) {
-			return [vout.scriptPubKey.address];
 
-		} else if (vout.scriptPubKey.addresses) {
-			return vout.scriptPubKey.addresses;
-		}
-	}
 
-	return [];
-}
-
-const xpubPrefixes = new Map([
-	['xpub', '0488b21e'],
-	['ypub', '049d7cb2'],
-	['Ypub', '0295b43f'],
-	['zpub', '04b24746'],
-	['Zpub', '02aa7ed3'],
-	['tpub', '043587cf'],
-	['upub', '044a5262'],
-	['Upub', '024289ef'],
-	['vpub', '045f1cf6'],
-	['Vpub', '02575483'],
-]);
-
-const bip32TestnetNetwork = {
-	messagePrefix: '\x18Bitcoin Signed Message:\n',
-	bech32: 'tb',
-	bip32: {
-		public: 0x043587cf,
-		private: 0x04358394,
-	},
-	pubKeyHash: 0x6f,
-	scriptHash: 0xc4,
-	wif: 0xEF,
-};
-
-// ref: https://github.com/ExodusMovement/xpub-converter/blob/master/src/index.js
-function xpubChangeVersionBytes(xpub, targetFormat) {
-	if (!xpubPrefixes.has(targetFormat)) {
-		throw new Error("Invalid target version");
-	}
-
-	// trim whitespace
-	xpub = xpub.trim();
-
-	let data = bs58check.default.decode(xpub);
-	data = data.slice(4);
-	data = Buffer.concat([Buffer.from(xpubPrefixes.get(targetFormat), 'hex'), data]);
-
-	return bs58check.default.encode(data);
-}
-
-// HD wallet addresses
-function bip32Addresses(extPubkey, addressType, account, limit=10, offset=0) {
-	let network = null;
-	if (!extPubkey.match(/^(xpub|ypub|zpub|Ypub|Zpub).*$/)) {
-		network = bip32TestnetNetwork;
-	}
-
-	let bip32object = bip32.fromBase58(extPubkey, network);
-
-	let addresses = [];
-	for (let i = offset; i < (offset + limit); i++) {
-		let bip32Child = bip32object.derive(account).derive(i);
-		let publicKey = bip32Child.publicKey;
-
-		if (addressType == "p2pkh") {
-			addresses.push(bitcoinjs.payments.p2pkh({ pubkey: publicKey, network: network }).address);
-
-		} else if (addressType == "p2sh(p2wpkh)") {
-			addresses.push(bitcoinjs.payments.p2sh({ redeem: bitcoinjs.payments.p2wpkh({ pubkey: publicKey, network: network })}).address);
-
-		} else if (addressType == "p2wpkh") {
-			addresses.push(bitcoinjs.payments.p2wpkh({ pubkey: publicKey, network: network }).address);
-
-		} else {
-			throw new Error(`Unknown address type: "${addressType}" (should be one of ["p2pkh", "p2sh(p2wpkh)", "p2wpkh"])`)
-		}
-	}
-
-	return addresses;
-}
 
 function expressRequestToJson(req) {
 	return {
@@ -811,186 +709,8 @@ function expressRequestToJson(req) {
 	};
 }
 
-function difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader) {
-	let difficultyPeriod = Math.trunc(Math.floor(currentBlockHeader.height / coinConfig.difficultyAdjustmentBlockCount));
-	let blocksUntilDifficultyAdjustment = ((difficultyPeriod + 1) * coinConfig.difficultyAdjustmentBlockCount) - currentBlockHeader.height;
-
-	let heightDiff = currentBlockHeader.height - eraStartBlockHeader.height;
-	let blockCount = heightDiff + 1;
-	let timeDiff = currentBlockHeader.mediantime - eraStartBlockHeader.mediantime;
-	let timePerBlock = timeDiff / heightDiff;
-	let timePerBlockDuration = moment.duration(timePerBlock * 1000);
-	let daysUntilAdjustment = new Decimal(blocksUntilDifficultyAdjustment).times(timePerBlock).dividedBy(60 * 60 * 24);
-	let hoursUntilAdjustment = new Decimal(blocksUntilDifficultyAdjustment).times(timePerBlock).dividedBy(60 * 60);
-	let duaDP1 = daysUntilAdjustment.toDP(1);
-	let daysUntilAdjustmentStr = daysUntilAdjustment.gt(1) ? `~${duaDP1} day${duaDP1.eq(1) ? "" : "s"}` : "< 1 day";
-	let hoursUntilAdjustmentStr = hoursUntilAdjustment.gt(1) ? `~${hoursUntilAdjustment.toDP(0)} hr${hoursUntilAdjustment.toDP(1).eq(1) ? "" : "s"}` : "< 1 hr";
-	let nowTime = new Date().getTime() / 1000;
-	let dt = nowTime - eraStartBlockHeader.time;
-	let timePerBlock2 = dt / heightDiff;
-	let predictedBlockCount = dt / coinConfig.targetBlockTimeSeconds;
-
-	let blockRatioPercent = new Decimal(blockCount / predictedBlockCount).times(100);
-	if (blockRatioPercent.gt(400)) {
-		blockRatioPercent = new Decimal(400);
-	}
-	if (blockRatioPercent.lt(25)) {
-		blockRatioPercent = new Decimal(25);
-	}
 
 
-	let diffAdjPercent = blockRatioPercent.minus(new Decimal(100));
-	let diffAdjText = `Blocks during the current difficulty epoch have taken this long, on average, to be mined. If this pace continues, then in ${blocksUntilDifficultyAdjustment.toLocaleString()} block${blocksUntilDifficultyAdjustment == 1 ? "" : "s"} (${daysUntilAdjustmentStr}) the difficulty will adjust upward: +${diffAdjPercent.toDP(1)}%`;
-	let diffAdjSign = "+";
-	let textColorClass = "text-success";
-
-	if (predictedBlockCount > blockCount) {
-		diffAdjPercent = new Decimal(100).minus(blockRatioPercent).times(-1);
-		diffAdjText = `Blocks during the current difficulty epoch have taken this long, on average, to be mined. If this pace continues, then in ${blocksUntilDifficultyAdjustment.toLocaleString()} block${blocksUntilDifficultyAdjustment == 1 ? "" : "s"} (${daysUntilAdjustmentStr}) the difficulty will adjust downward: -${diffAdjPercent.toDP(1)}%`;
-		diffAdjSign = "-";
-		textColorClass = "text-danger";
-	}
-
-	return {
-		estimateAvailable: blockCount > 30 && !diffAdjPercent.isNaN(),
-
-		blockCount: blockCount,
-		blocksLeft: blocksUntilDifficultyAdjustment,
-		daysLeftStr: daysUntilAdjustmentStr,
-		timeLeftStr: (daysUntilAdjustment.lt(1) ? hoursUntilAdjustmentStr : daysUntilAdjustmentStr),
-		calculationBlockCount: heightDiff,
-		currentEpoch: difficultyPeriod,
-
-		delta: diffAdjPercent,
-		sign: diffAdjSign,
-
-		timePerBlock: timePerBlock,
-		firstBlockTime: eraStartBlockHeader.time,
-		nowTime: nowTime,
-		dt: dt,
-		predictedBlockCount: predictedBlockCount,
-
-		//nameDesc: `Estimate for the difficulty adjustment that will occur in ${blocksUntilDifficultyAdjustment.toLocaleString()} block${blocksUntilDifficultyAdjustment == 1 ? "" : "s"} (${daysUntilAdjustmentStr}). This is calculated using the average block time over the last ${heightDiff} block(s). This estimate becomes more reliable as the difficulty epoch nears its end.`,
-	};
-}
-
-function nextHalvingEstimates(eraStartBlockHeader, currentBlockHeader, difficultyAdjustmentDataArg=null) {
-	let blockCount = currentBlockHeader.height;
-	let halvingBlockInterval = coinConfig.halvingBlockIntervalsByNetwork[global.activeBlockchain];
-	let halvingCount = Math.trunc(blockCount / halvingBlockInterval);
-	let nextHalvingIndex = halvingCount + 1;
-	let targetBlockTimeSeconds = coinConfig.targetBlockTimeSeconds;
-	let nextHalvingBlock = (halvingBlockInterval * nextHalvingIndex);
-	let blocksUntilNextHalving = nextHalvingBlock - blockCount;
-	
-	let terminalHalvingCount = coinConfig.terminalHalvingCountByNetwork[global.activeBlockchain];
-	if (nextHalvingIndex > terminalHalvingCount) {
-		halvingCount = terminalHalvingCount;
-		nextHalvingIndex = -1;
-
-		return {
-			halvingCount: terminalHalvingCount,
-			nextHalvingIndex: -1
-		};
-	}
-
-	let difficultyAdjustmentData = difficultyAdjustmentDataArg;
-	if (!difficultyAdjustmentData) {
-		difficultyAdjustmentData = difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader);
-	}
-
-	let blockCountAffectedByCurrentDifficultyDelta = Math.min(difficultyAdjustmentData.blocksLeft, blocksUntilNextHalving);
-	let currDifficultyEraTimeDifferential = (coinConfig.targetBlockTimeSeconds - difficultyAdjustmentData.timePerBlock) * blockCountAffectedByCurrentDifficultyDelta;
-
-
-	let secondsUntilNextHalving = blocksUntilNextHalving * targetBlockTimeSeconds - currDifficultyEraTimeDifferential;
-	let daysUntilNextHalving = secondsUntilNextHalving / 60 / 60 / 24;
-	let nextHalvingDate = new Date(new Date().getTime() + secondsUntilNextHalving * 1000);
-
-	return {
-		blockCount: blockCount,
-		halvingBlockInterval: halvingBlockInterval,
-		halvingCount: halvingCount,
-		nextHalvingIndex: nextHalvingIndex,
-		terminalHalvingCount: terminalHalvingCount,
-		nextHalvingBlock: nextHalvingBlock,
-		blocksUntilNextHalving: blocksUntilNextHalving,
-		targetBlockTimeSeconds: targetBlockTimeSeconds,
-		daysUntilNextHalving: daysUntilNextHalving,
-		nextHalvingDate: nextHalvingDate,
-
-		difficultyAdjustmentData: difficultyAdjustmentData
-	};
-}
-
-function tryParseAddress(address) {
-	let base58Error = null;
-	let bech32Error = null;
-	let bech32mError = null;
-
-	/** @type {any} */
-	let parsedAddress = null;
-
-	let b58prefix = (global.activeBlockchain == "main" ? /^[13].*$/ : /^[2mn].*$/);
-	if (address.match(b58prefix)) {
-		try {
-			parsedAddress = bitcoinjs.address.fromBase58Check(address);
-			parsedAddress.hash = parsedAddress.hash.toString("hex");
-
-			return {
-				encoding: "base58",
-				parsedAddress: parsedAddress
-			};
-
-		} catch (err) {
-			base58Error = err;
-		}
-	}
-
-	try {
-		parsedAddress = bitcoinjs.address.fromBech32(address);
-		parsedAddress.data = parsedAddress.data.toString("hex");
-
-		return {
-			encoding: "bech32",
-			parsedAddress: parsedAddress
-		};
-
-	} catch (err) {
-		bech32Error = err;
-	}
-
-
-	try {
-		parsedAddress = bech32m.decode(address);
-		parsedAddress.words = Buffer.from(parsedAddress.words).toString("hex");
-
-		return {
-			encoding: "bech32m",
-			parsedAddress: parsedAddress
-		};
-
-	} catch (err) {
-		bech32mError = err;
-	}
-	
-
-	let returnVal = {errors:[]};
-
-	if (base58Error) {
-		returnVal.errors.push(base58Error);
-	}
-
-	if (bech32Error) {
-		returnVal.errors.push(bech32Error);
-	}
-
-	if (bech32mError) {
-		returnVal.errors.push(bech32mError);
-	}
-
-	return returnVal;
-}
 
 
 
