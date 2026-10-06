@@ -30,7 +30,8 @@ const rpcCred = credentials.rpc;
 const cookieSecret = process.env.BTCEXP_COOKIE_SECRET
  || (rpcCred.password && crypto.createHmac('sha256', JSON.stringify(rpcCred))
                                .update('btc-rpc-explorer-cookie-secret').digest('hex'))
- || "0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+ // no RPC password to derive it from and none given: a secret of this run (the sessions live in memory anyway)
+ || crypto.randomBytes(32).toString('hex');
 
 
 const electrumServerUriStrings = (process.env.BTCEXP_ELECTRUM_SERVERS || process.env.BTCEXP_ELECTRUMX_SERVERS || "").split(',').filter(Boolean);

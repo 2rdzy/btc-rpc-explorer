@@ -55,6 +55,21 @@ describe('identifyMiner', () => {
 		assert.deepEqual(out, { name: 'w', type: 'address-only', identifiedBy: 'payout address w' });
 	});
 
+	test('the entries of the pool list are not changed: each answer is a copy', () => {
+		const before = JSON.stringify(global.miningPoolsConfigs);
+
+		const first = mining.identifyMiner(coinbase('x', []), 5)!;
+		const second = mining.identifyMiner(coinbase('x', []), 6)!;
+		mining.identifyMiner(coinbase('hi /TagB/ there', [{ value: 1, scriptPubKey: { address: 'z' } }]), 100);
+		mining.identifyMiner(coinbase('x', [{ value: 1, scriptPubKey: { address: 'addrA' } }]), 100);
+		mining.identifyMiner(coinbase('x', [], 'hh1'), 100);
+
+		assert.equal(first.identifiedBy, 'known block height #5');
+		assert.equal(second.identifiedBy, 'known block height #6');
+		assert.notEqual(first, second);
+		assert.equal(JSON.stringify(global.miningPoolsConfigs), before);
+	});
+
 	test('nothing to go on gives null', () => {
 		assert.equal(mining.identifyMiner(null, 1), null);
 		assert.equal(mining.identifyMiner({ vin: [] }, 1), null);

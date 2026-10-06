@@ -50,10 +50,11 @@ configPaths.forEach(path => {
 
 if (!configFileLoaded) {
 	debugLog("No config files found. Using all defaults.");
+}
 
-	if (!process.env.NODE_ENV) {
-		process.env.NODE_ENV = "production";
-	}
+// express shows stack traces on its error pages unless this is "production" (use "local" when developing)
+if (!process.env.NODE_ENV) {
+	process.env.NODE_ENV = "production";
 }
 
 // debug module is already loaded by the time we do dotenv.config
@@ -189,7 +190,7 @@ expressApp.disable('x-powered-by');
 
 
 if ((process.env.BTCEXP_BASIC_AUTH_PASSWORD || process.env.BTCEXP_SSO_TOKEN_FILE) && config.rateLimiting.loginMaxFailures != -1) {
-	// before authentication, so that failed logins are counted (see app/loginRateLimit.js)
+	// before authentication, so that failed logins are counted (see app/loginRateLimit.ts)
 	expressApp.use(createLoginRateLimiter({
 		windowMs: (config.rateLimiting.windowMinutes == -1 ? 15 : config.rateLimiting.windowMinutes) * 60 * 1000,
 		maxFailures: config.rateLimiting.loginMaxFailures,

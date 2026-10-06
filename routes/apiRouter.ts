@@ -916,12 +916,19 @@ router.get("/mempool/fees", asyncHandler(async (req, res) => {
 		"1day":smartFeeEstimates[144]
 	};
 
-	const nextBlockEstimate = await coreApi.getNextBlockEstimate();
-	if (nextBlockEstimate != undefined && nextBlockEstimate.minFeeRate != undefined) {
-		//console.log("nextBlockEstimate: " + JSON.stringify(nextBlockEstimate));
-		results.nextBlock.min = Math.trunc(nextBlockEstimate.minFeeRate);
-		results.nextBlock.max = Math.trunc(nextBlockEstimate.maxFeeRate);
-		results.nextBlock.median = Math.trunc(nextBlockEstimate.medianFeeRate);
+	// the node can be unable to give a block template (it is busy, or still syncing): the estimates of the fee
+	// rates of the next block are left out then, and the smart estimates are still answered
+	try {
+		const nextBlockEstimate = await coreApi.getNextBlockEstimate();
+
+		if (nextBlockEstimate != undefined && nextBlockEstimate.minFeeRate != undefined) {
+			results.nextBlock.min = Math.trunc(nextBlockEstimate.minFeeRate);
+			results.nextBlock.max = Math.trunc(nextBlockEstimate.maxFeeRate);
+			results.nextBlock.median = Math.trunc(nextBlockEstimate.medianFeeRate);
+		}
+
+	} catch (err) {
+		utils.logError("apiMempoolFeesNextBlock", err);
 	}
 
 	res.json(results);
