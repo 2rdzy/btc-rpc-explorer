@@ -28,7 +28,6 @@ app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ age: numbe
 app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ feePerByte: number; txidKey: any; }'.
 app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ size: number; txidKey: any; }'.
 app/api/coreApi.js: TS2339: Property 'weightRatio' does not exist on type '{ minFeeRate: number; maxFeeRate: number; totalWeight: number; txidCount: number; }'.
-app/api/coreApi.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
 app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/api/rpcApi.js: TS2339: Property 'rpcCode' does not exist on type 'Error'.
@@ -44,14 +43,6 @@ app/systemMonitor.js: TS2769: No overload matches this call.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'number[]'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'bigint' is not assignable to parameter of type 'string'.
@@ -61,14 +52,6 @@ app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of t
 app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
-app/utils.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
-app/utils.js: TS2367: This comparison appears to be unintentional because the types 'Decimal' and 'string' have no overlap.
-app/utils.js: TS2367: This comparison appears to be unintentional because the types 'Decimal' and 'string' have no overlap.
 bin/cli.js: TS2307: Cannot find module './www' or its corresponding type declarations.
 bin/cli.js: TS2322: Type 'boolean' is not assignable to type 'string'.
 bin/cli.js: TS2322: Type 'unknown' is not assignable to type 'string'.
@@ -79,8 +62,6 @@ routes/apiRouter.js: TS18048: 'currentBlock' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
-routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
-routes/apiRouter.js: TS2322: Type 'Decimal' is not assignable to type 'number'.
 routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
 routes/apiRouter.js: TS2322: Type 'string' is not assignable to type 'number'.
 routes/apiRouter.js: TS2339: Property 'abbreviation' does not exist on type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}'.
@@ -100,20 +81,16 @@ routes/apiRouter.js: TS2339: Property 'valRaw' does not exist on type 'string | 
 routes/apiRouter.js: TS2339: Property 'valRaw' does not exist on type 'string | { val: any; symbol: any; unit: any; valRaw: string; }'.
 routes/apiRouter.js: TS2339: Property 'version' does not exist on type 'Decoded'.
 routes/apiRouter.js: TS2345: Argument of type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
-routes/apiRouter.js: TS2365: Operator '<' cannot be applied to types 'Decimal' and 'number'.
-routes/apiRouter.js: TS2365: Operator '>' cannot be applied to types 'Decimal' and 'number'.
 routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to type 'string'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<{}, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'toLowerCase' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
 routes/baseRouter.js: TS2339: Property 'trim' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
-routes/baseRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
 routes/baseRouter.js: TS2365: Operator '<' cannot be applied to types 'number' and 'string | number | ParsedQs | (string | ParsedQs)[]'.
 routes/baseRouter.js: TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.

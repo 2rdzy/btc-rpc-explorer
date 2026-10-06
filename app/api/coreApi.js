@@ -1512,7 +1512,7 @@ function getMempoolTxSummaries(allTxids, statusId, statusFunc) {
 			const txidKeysForCachePurge = {};
 
 			const btcToSat = (btcFloat) => {
-				return parseInt(new Decimal(btcFloat).times(SATS_PER_BTC).toDP(0));
+				return new Decimal(btcFloat).times(SATS_PER_BTC).toDP(0).toNumber();
 			};
 
 			for (let i = 0; i < txids.length; i++) {

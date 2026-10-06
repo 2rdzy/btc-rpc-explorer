@@ -256,7 +256,7 @@ function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedD
 			// toFixed will keep trailing zeroes
 			let baseStr = addThousandsSeparators(dec.toFixed(decimalPlaces));
 
-			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:parseInt(dec)};
+			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
 
 		} else {
 			// toDP excludes trailing zeroes but doesn't "fix" numbers like 1e-8
@@ -281,7 +281,7 @@ function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedD
 
 			//let baseStr = addThousandsSeparators(dec.toDP(decimalPlaces)); // old version, failed to properly format "1e-8" (left unchanged)
 
-			let returnVal = {currencyUnit:currencyType.name, simpleVal:baseStr, intVal:parseInt(dec)};
+			let returnVal = {currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
 
 			// max digits in "val"
 			let maxValDigits = config.site.valueDisplayMaxLargeDigits;
@@ -310,7 +310,7 @@ function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedD
 
 			let baseStr = addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces));
 
-			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:parseInt(dec)};
+			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
 
 		} else {
 			return formatCurrencyAmountWithForcedDecimalPlaces(amount, coinConfig.defaultCurrencyUnit.name, forcedDecimalPlaces);
@@ -359,7 +359,7 @@ function satoshisPerUnitOfLocalCurrency(localCurrency) {
 		// BTC/USD -> sat/USD
 		dec = dec.times(satCurrencyType.multiplier);
 
-		let exchangedAmt = parseInt(dec);
+		let exchangedAmt = dec.trunc().toNumber();
 
 		return {amt:addThousandsSeparators(exchangedAmt),amtRaw:exchangedAmt, unit:`sat/${localCurrencyType.symbol}`}
 	}
@@ -613,7 +613,7 @@ function identifyMiner(coinbaseTx, blockHeight) {
 			const vout = coinbaseTx.vout[i];
 
 			const voutValue = new Decimal(vout.value);
-			if (voutValue > 0) {
+			if (voutValue.gt(0)) {
 				const address = getVoutAddress(vout);
 
 				if (address) {
@@ -908,7 +908,7 @@ function formatLargeNumber(n, decimalPlaces) {
 			let item = exponentScales[i];
 
 			let fraction = new Decimal(n / item.val);
-			if (Math.abs(fraction) >= 1) {
+			if (fraction.abs().gte(1)) {
 				return [fraction.toDP(decimalPlaces), item];
 			}
 		}
@@ -928,8 +928,8 @@ function formatLargeNumberSignificant(n, significantDigits) {
 			let item = exponentScales[i];
 
 			let fraction = new Decimal(n / item.val);
-			if (Math.abs(fraction) >= 1) {
-				return [fraction.toDP(Math.max(0, significantDigits - `${Math.floor(fraction)}`.length)), item];
+			if (fraction.abs().gte(1)) {
+				return [fraction.toDP(Math.max(0, significantDigits - `${fraction.floor()}`.length)), item];
 			}
 		}
 
@@ -1437,18 +1437,18 @@ function difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader) 
 	let daysUntilAdjustment = new Decimal(blocksUntilDifficultyAdjustment).times(timePerBlock).dividedBy(60 * 60 * 24);
 	let hoursUntilAdjustment = new Decimal(blocksUntilDifficultyAdjustment).times(timePerBlock).dividedBy(60 * 60);
 	let duaDP1 = daysUntilAdjustment.toDP(1);
-	let daysUntilAdjustmentStr = daysUntilAdjustment > 1 ? `~${duaDP1} day${duaDP1 == "1" ? "" : "s"}` : "< 1 day";
-	let hoursUntilAdjustmentStr = hoursUntilAdjustment > 1 ? `~${hoursUntilAdjustment.toDP(0)} hr${hoursUntilAdjustment.toDP(1) == "1" ? "" : "s"}` : "< 1 hr";
+	let daysUntilAdjustmentStr = daysUntilAdjustment.gt(1) ? `~${duaDP1} day${duaDP1.eq(1) ? "" : "s"}` : "< 1 day";
+	let hoursUntilAdjustmentStr = hoursUntilAdjustment.gt(1) ? `~${hoursUntilAdjustment.toDP(0)} hr${hoursUntilAdjustment.toDP(1).eq(1) ? "" : "s"}` : "< 1 hr";
 	let nowTime = new Date().getTime() / 1000;
 	let dt = nowTime - eraStartBlockHeader.time;
 	let timePerBlock2 = dt / heightDiff;
 	let predictedBlockCount = dt / coinConfig.targetBlockTimeSeconds;
 
 	let blockRatioPercent = new Decimal(blockCount / predictedBlockCount).times(100);
-	if (blockRatioPercent > 400) {
+	if (blockRatioPercent.gt(400)) {
 		blockRatioPercent = new Decimal(400);
 	}
-	if (blockRatioPercent < 25) {
+	if (blockRatioPercent.lt(25)) {
 		blockRatioPercent = new Decimal(25);
 	}
 
@@ -1466,12 +1466,12 @@ function difficultyAdjustmentEstimates(eraStartBlockHeader, currentBlockHeader) 
 	}
 
 	return {
-		estimateAvailable: blockCount > 30 && !isNaN(diffAdjPercent),
+		estimateAvailable: blockCount > 30 && !diffAdjPercent.isNaN(),
 
 		blockCount: blockCount,
 		blocksLeft: blocksUntilDifficultyAdjustment,
 		daysLeftStr: daysUntilAdjustmentStr,
-		timeLeftStr: (daysUntilAdjustment < 1 ? hoursUntilAdjustmentStr : daysUntilAdjustmentStr),
+		timeLeftStr: (daysUntilAdjustment.lt(1) ? hoursUntilAdjustmentStr : daysUntilAdjustmentStr),
 		calculationBlockCount: heightDiff,
 		currentEpoch: difficultyPeriod,
 
