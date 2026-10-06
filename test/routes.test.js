@@ -60,3 +60,36 @@ describe('terminal route', () => {
 		assert.deepEqual(await run({ cmd: { a: 1 } }), { Error: 'No command' });
 	});
 });
+
+describe('price routes with exchange rates disabled (the default)', () => {
+	const apiRouter = require('../routes/apiRouter.js');
+
+	function handlerFor(path) {
+		return apiRouter.stack.find(layer => layer.route && layer.route.path === path && layer.route.methods.get).route.stack[0].handle;
+	}
+
+	// call a route as express would; resolves with what it sent as JSON
+	function getJson(path) {
+		return new Promise((resolve, reject) => {
+			const res = { json: body => resolve(body) };
+
+			try {
+				handlerFor(path)({ query: {} }, res, () => {});
+
+			} catch (err) {
+				reject(err);
+			}
+		});
+	}
+
+	for (const path of ['/price', '/price/sats', '/price/marketcap']) {
+		test(`${path} says that exchange rates are disabled`, async () => {
+			delete global.exchangeRates;
+
+			const body = await getJson(path);
+
+			assert.equal(body.success, false);
+			assert.match(body.error, /exchange-rate requests disabled/);
+		});
+	}
+});
