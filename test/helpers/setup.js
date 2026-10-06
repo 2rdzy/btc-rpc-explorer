@@ -28,7 +28,7 @@ function fakeRpc(handlers) {
 		request: async (method, params) => {
 			calls.push({ method, params });
 
-			if (!handlers[method]) {
+			if (!Object.hasOwn(handlers, method)) {
 				return { result: null, error: { code: -32601, message: `Method not found: ${method}` } };
 			}
 
