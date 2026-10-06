@@ -838,6 +838,7 @@ function connectToRpcServer() {
 	let usernamePassword = `${rpcCred.username}:${rpcCred.password}`;
 	let authorizationHeader = `Basic ${btoa(usernamePassword)}`; // basic auth header format (base64 of "username:password")
 
+	/** @type {{host: string, port: string | number, username: string, password: string, timeout: number, headers?: Record<string, string>}} */
 	let rpcClientProperties = {
 		host: rpcCred.host,
 		port: rpcCred.port,
