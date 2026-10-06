@@ -71,3 +71,12 @@ export function logError(errorId: string, err: unknown, optionalUserData: Record
 
 	return returnVal;
 }
+
+// Something that was asked for does not exist (a block, a transaction): the pages answer 404 for it.
+export class NotFoundError extends Error {
+	constructor(message: string) {
+		super(message);
+
+		this.name = "NotFoundError";
+	}
+}

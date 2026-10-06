@@ -1,0 +1,11 @@
+# kept out of the image: secrets, caches, and everything that is built or installed inside it
+.env
+.env.*
+!.env-sample
+node_modules
+dist
+cache
+raw
+test
+*.log
+.github

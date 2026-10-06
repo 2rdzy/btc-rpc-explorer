@@ -5,7 +5,7 @@ import semver from "semver";
 import config from "../config.js";
 import coins from "../coins.js";
 import * as statTracker from "../statTracker.js";
-import { logError } from "../helpers/errors.js";
+import { logError, NotFoundError } from "../helpers/errors.js";
 import { getBlockTotalFeesFromCoinbaseTxAndBlockHeight, identifyMiner } from "../helpers/mining.js";
 
 const debugLog = debug("btcexp:rpc");
@@ -196,6 +196,10 @@ export function getChainTxStats(blockCount: number, blockhashEnd: string | null 
 export async function getBlockByHeight(blockHeight: number): Promise<RpcData> {
 	const blockhash = await getRpcDataWithParams({method:"getblockhash", parameters:[blockHeight]});
 
+	if (blockhash == null) {
+		throw new NotFoundError(`No block at height ${blockHeight}`);
+	}
+
 	return await getBlockByHash(blockhash);
 }
 
@@ -205,6 +209,10 @@ export function getBlockHeaderByHash(blockhash: string): Promise<RpcData> {
 
 export async function getBlockHeaderByHeight(blockHeight: number): Promise<RpcData> {
 	const blockhash = await getRpcDataWithParams({method:"getblockhash", parameters:[blockHeight]});
+
+	if (blockhash == null) {
+		throw new NotFoundError(`No block at height ${blockHeight}`);
+	}
 
 	return await getBlockHeaderByHash(blockhash);
 }
@@ -231,6 +239,12 @@ export async function getBlockByHash(blockHash: string): Promise<RpcData> {
 		debugLog('getblock failed, falling back to getblockheader', blockHash, err);
 
 		block = await getRpcDataWithParams({method:"getblockheader", parameters:[blockHash]});
+
+		if (block == null) {
+			// not even the header: there is no such block
+			throw new NotFoundError(`Block not found: ${blockHash}`);
+		}
+
 		block.tx = [];
 	}
 

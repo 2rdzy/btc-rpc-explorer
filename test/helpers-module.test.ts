@@ -104,7 +104,51 @@ describe('random helpers', () => {
 	});
 });
 
+describe('random helpers (the spread)', () => {
+	test('randomInt reaches every value of its range', () => {
+		const seen = new Set<number>();
+
+		for (let i = 0; i < 400; i++) {
+			seen.add(random.randomInt(5, 4));
+		}
+
+		assert.deepEqual([...seen].sort(), [5, 6, 7, 8]);
+	});
+});
+
 describe('color helpers', () => {
+	test('colorHexToRgb expands the short form', () => {
+		assert.deepEqual(color.colorHexToRgb('03F'), { r: 0, g: 51, b: 255 });
+		assert.deepEqual(color.colorHexToRgb('#0033ff'), { r: 0, g: 51, b: 255 });
+	});
+
+	test('rgbToHsl: hue by the strongest channel, saturation by the lightness', () => {
+		// [r, g, b, expected h (in turns), s, l]
+		const cases: [number, number, number, number, number, number][] = [
+			[255, 0, 0, 0, 1, 0.5],
+			[0, 255, 0, 1 / 3, 1, 0.5],
+			[64, 255, 0, (2 - 64 / 255) / 6, 1, 0.5],
+			[0, 0, 255, 2 / 3, 1, 0.5],
+			[255, 0, 128, (6 - 128 / 255) / 6, 1, 0.5],
+			[128, 128, 128, 0, 0, 128 / 255],
+			[191, 64, 64, 0, 127 / 255, 127.5 / 255],
+			[255, 128, 128, 0, 1, 191.5 / 255],
+			[64, 0, 0, 0, 1, 64 / 510]
+		];
+
+		for (const [r, g, b, h, s, l] of cases) {
+			const hsl = color.rgbToHsl(r, g, b);
+
+			assert.ok(Math.abs(hsl.h - h) < 0.002, `h of ${r},${g},${b}: ${hsl.h}`);
+			assert.ok(Math.abs(hsl.s - s) < 0.001, `s of ${r},${g},${b}: ${hsl.s}`);
+			assert.ok(Math.abs(hsl.l - l) < 0.001, `l of ${r},${g},${b}: ${hsl.l}`);
+		}
+	});
+
+	test('colorHexToHsl rejects what is not a colour', () => {
+		assert.throws(() => color.colorHexToHsl('nope'), /Not a hex colour/);
+	});
+
 	test('colorHexToRgb', () => {
 		assert.deepEqual(color.colorHexToRgb('#ff0000'), { r: 255, g: 0, b: 0 });
 		assert.deepEqual(color.colorHexToRgb('00ff00'), { r: 0, g: 255, b: 0 });

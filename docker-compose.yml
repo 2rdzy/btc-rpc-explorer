@@ -23,4 +23,6 @@ services:
     image: btc-rpc-explorer:latest
     #restart: "no"
     ports:
-      - "3002:3002"
+      # only this machine can reach the explorer: put a reverse proxy (docs/nginx-reverse-proxy.md) in front of it,
+      # or remove "127.0.0.1:" to serve it on every address of this machine
+      - "127.0.0.1:3002:3002"

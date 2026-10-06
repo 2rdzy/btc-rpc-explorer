@@ -15,6 +15,7 @@ const markdown = new MarkdownIt();
 import asyncHandler from "express-async-handler";
 
 import * as utils from "../app/utils.js";
+import { NotFoundError } from "../app/helpers/errors.js";
 import { queryInt, queryString, queryStringList } from "../app/request.js";
 import coins from "../app/coins.js";
 import config from "../app/config.js";
@@ -497,8 +498,8 @@ router.get("/blocks", asyncHandler(async (req, res, next) => {
 					throw err;
 
 				} else {
-					// failure may be due to pruning, let it pass
-					// TODO: be more discerning here...consider throwing something
+					// failure may be due to pruning, let it pass (the block stats are left out of the page)
+					utils.logError("blocksBlockStatsPruned", err);
 				}
 			}
 		}, perfResults));
@@ -1018,8 +1019,12 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 			}
 		}, perfResults));
 
-		await utils.awaitPromises(promises);
+		const settled = await utils.awaitPromises(promises);
 
+		// without the block there is no page to build: the reason (a block that does not exist, say) is the error
+		if (settled[0].status == "rejected") {
+			throw settled[0].reason;
+		}
 
 		if (global.specialBlocks && global.specialBlocks[res.locals.result.getblock.hash]) {
 			const funInfo = global.specialBlocks[res.locals.result.getblock.hash];
@@ -1048,6 +1053,8 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 		res.locals.userMessageMarkdown = `Failed loading block: height=**${req.params.blockHeight}**`;
 
 		res.locals.pageErrors.push(utils.logError("389wer07eghdd", err));
+
+		res.status(err instanceof NotFoundError ? 404 : 500);
 
 		await utils.timePromise("block-height.render", async () => {
 			res.render("block");
@@ -1119,8 +1126,12 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 			}
 		}, perfResults));
 
-		await utils.awaitPromises(promises);
+		const settled = await utils.awaitPromises(promises);
 
+		// without the block there is no page to build: the reason (a block that does not exist, say) is the error
+		if (settled[0].status == "rejected") {
+			throw settled[0].reason;
+		}
 
 		if (global.specialBlocks && global.specialBlocks[res.locals.result.getblock.hash]) {
 			const funInfo = global.specialBlocks[res.locals.result.getblock.hash];
@@ -1150,6 +1161,9 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		res.locals.userMessageMarkdown = `Failed to load block: **${res.locals.blockHash || req.params.blockHash}**`;
 
 		res.locals.pageErrors.push(utils.logError("32824yhr2973t3d", err));
+
+		// a block that does not exist is a 404; anything else means that the page could not be built
+		res.status(err instanceof NotFoundError ? 404 : 500);
 
 		await utils.timePromise("block.render", async () => {
 			res.render("block");
@@ -1221,7 +1235,6 @@ router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
 
 				// ...and start a new block
 				currentBlock = Object.assign({}, blockTemplate);
-				console.log(JSON.stringify(currentBlock));
 			}
 
 			currentBlock.txCount++;

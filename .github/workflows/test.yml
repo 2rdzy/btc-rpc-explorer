@@ -23,3 +23,14 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: node dist/bin/cli.js --help
+
+  # the image has to keep building, and has to start (the command line help runs without a node)
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t btc-rpc-explorer .
+      - run: docker run --rm btc-rpc-explorer node dist/bin/cli.js --help
+      - name: the image holds no settings
+        run: docker run --rm --entrypoint sh btc-rpc-explorer -c 'test ! -e /workspace/.env && test "$(id -u)" != 0'
+

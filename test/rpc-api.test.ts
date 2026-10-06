@@ -5,6 +5,7 @@ import { fakeRpc } from "./helpers/setup.js";
 import config from "../app/config.js";
 import coins from "../app/coins.js";
 import * as rpcApi from "../app/api/rpcApi.js";
+import { NotFoundError } from "../app/helpers/errors.js";
 
 const coinConfig = coins[config.coin];
 const txid = 'ab'.repeat(32);
@@ -118,6 +119,24 @@ describe('blocks', () => {
 		assert.deepEqual(block.tx, []);
 		assert.equal(block.height, 5);
 		assert.equal(block.subsidy.toString(), '50');
+	});
+
+	test('a block that does not exist (not even its header) is a NotFoundError', async () => {
+		const none = { error: { code: -5, message: 'Block not found' } };
+		fakeRpc({ getblock: () => none, getblockheader: () => none, getblockhash: () => ({ error: { code: -8, message: 'Block height out of range' } }) });
+
+		await assert.rejects(rpcApi.getBlockByHash(blockhash), NotFoundError);
+		await assert.rejects(rpcApi.getBlockByHeight(99999999), NotFoundError);
+		await assert.rejects(rpcApi.getBlockHeaderByHeight(99999999), NotFoundError);
+	});
+
+	test('a reply that is itself an RpcError rejects', async () => {
+		fakeRpc({ plain: () => ({ name: 'RpcError' }), wrapped: () => [{ name: 'RpcError' }] });
+
+		await assert.rejects(rpcApi.getRpcData('plain'), /errorResponse-02/);
+		await assert.rejects(rpcApi.getRpcData('wrapped'), /errorResponse-01/);
+		await assert.rejects(rpcApi.getRpcDataWithParams({ method: 'plain', parameters: [] }), /errorResponse-04/);
+		await assert.rejects(rpcApi.getRpcDataWithParams({ method: 'wrapped', parameters: [] }), /errorResponse-03/);
 	});
 
 	test('the header by height', async () => {

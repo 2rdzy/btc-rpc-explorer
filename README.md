@@ -131,9 +131,9 @@ After successful access with the token, a cookie is set for authentication. To r
 ## Run via Docker
 
 1. `docker build -t btc-rpc-explorer .`
-2. `docker run -it -p 3002:3002 -e BTCEXP_HOST=0.0.0.0 btc-rpc-explorer`
+2. `docker run -d --name btc-rpc-explorer --network host --env-file .env -v /path/to/.cookie:/path/to/.cookie:ro btc-rpc-explorer` (with `--network host` the explorer reaches a node on the same machine as `127.0.0.1`; otherwise publish the port with `-p 127.0.0.1:3002:3002` and point `BTCEXP_BITCOIND_HOST` at an address the container can reach)
 
-See also [docker-compose.yml](docker-compose.yml) and [docs/Server-Setup-Docker.md](docs/Server-Setup-Docker.md).
+The image holds no settings: they come from `--env-file` (`.env` and the caches are left out of the build by `.dockerignore`). It runs as the unprivileged user `node`, so the cookie file has to be readable by user id 1000. See also [docker-compose.yml](docker-compose.yml) and [docs/Server-Setup-Docker.md](docs/Server-Setup-Docker.md).
 
 
 ## Reverse proxy with HTTPS

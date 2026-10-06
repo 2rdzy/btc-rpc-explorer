@@ -259,7 +259,51 @@ describe('transactions by height', () => {
 	});
 });
 
-describe('next block, difficulty and chain stats', () => {
+describe('next block, difficulty and chain stats (the fee groups and the range)', () => {
+	test('a transaction with unconfirmed parents counts with its effective fee rate', async () => {
+		fakeRpc({
+			getblocktemplate: () => ({
+				height: 5,
+				weightlimit: 4000000,
+				coinbasevalue: 5000010000,
+				transactions: [
+					{ txid: 'low', fee: 1000, weight: 400, depends: [] },
+					{ txid: 'high', fee: 3000, weight: 400, depends: [] },
+					{ txid: 'parent', fee: 1000, weight: 400, depends: [] },
+					{ txid: 'child', fee: 4000, weight: 400, depends: [3] }
+				]
+			})
+		});
+
+		const out = await coreApi.getNextBlockEstimate();
+
+		// 'low' (10) and 'high' (30) are the extremes: the parent and the child do not count for them
+		assert.equal(out.minFeeRate, 10);
+		assert.equal(out.maxFeeRate, 30);
+		assert.equal(out.medianFeeRate, 30);
+
+		// ten groups of 2: the child's fee together with its parent's is 5000 for 800 weight = 25, in [24, 26)
+		assert.equal(out.feeRateGroups[7].minFeeRate, 24);
+		assert.equal(out.feeRateGroups[7].txidCount, 1);
+		assert.equal(out.feeRateGroups[7].totalWeight, 400);
+		// 'low' and the parent (10 each) are in the first group, and nothing is at or above 30
+		assert.equal(out.feeRateGroups[0].txidCount, 2);
+		assert.equal(out.feeRateGroups.reduce((n: number, group: RpcData) => n + group.txidCount, 0), 3);
+	});
+
+	test('getTxStats asks for one window per block when the range is shorter than the number of windows', async () => {
+		const calls = fakeRpc({
+			getblockchaininfo: () => ({ blocks: 1000 }),
+			getblockhash: params => hash(params[0]),
+			getchaintxstats: () => ({ window_tx_count: 10, txrate: 1, window_interval: 600 })
+		});
+
+		const out = await coreApi.getTxStats(250, 50, 100);
+
+		assert.equal(calls.filter(c => c.method === 'getchaintxstats').length, 50);
+		assert.equal(out.blocksPerPoint, 1);
+	});
+
 	test('getNextBlockEstimate groups the template by fee rate', async () => {
 		fakeRpc({
 			getblocktemplate: () => ({
@@ -414,6 +458,36 @@ describe('mempool and mining summaries', () => {
 		}
 	});
 
+	test('the size and fee rate labels of the mempool summary', async () => {
+		const now = Math.floor(Date.now() / 1000);
+		const ids = ['kkkkkkkkkk01', 'llllllllll02', 'mmmmmmmmmm03'];
+		const entries: Record<string, ReturnType<typeof entry>> = {
+			[ids[0]]: entry(0.0001, 300, now - 600),
+			[ids[1]]: entry(0.0003, 200, now - 600),
+			[ids[2]]: entry(0.00004, 100, now - 600)
+		};
+		fakeRpc({ getrawmempool: () => ids, getmempoolentry: params => entries[params[0]] });
+
+		const summary = await coreApi.buildMempoolSummary('s', 5, 5, () => {});
+
+		// the largest is 300: five buckets of 60
+		assert.deepEqual(summary.sizeBucketLabels, ['0 - 60', 120, 180, 240, '240+']);
+		assert.deepEqual(summary.sizeBucketTxCounts, [0, 1, 0, 1, 1]);
+
+		// fee rates of 8.33, 10 and 37.5 sats per weight unit: buckets of 1, and everything above the top 0.25% of
+		// the weight in one bucket labelled by where it starts
+		assert.equal(summary.satoshiPerByteBucketLabels.length, 38);
+		assert.equal(summary.satoshiPerByteBucketLabels[0], '[0 - 1)');
+		assert.equal(summary.satoshiPerByteBucketLabels[36], '[36 - 37)');
+		assert.equal(summary.satoshiPerByteBucketLabels[37], '37+');
+		assert.equal(summary.satoshiPerByteBucketCounts.length, 38);
+		assert.deepEqual([8, 10, 37].map(i => summary.satoshiPerByteBucketCounts[i]), [1, 1, 1]);
+		assert.equal(summary.satoshiPerByteBucketCounts.reduce((a: number, b: number) => a + b, 0), 3);
+
+		// ten minutes old at most: the age is given in minutes
+		assert.ok(summary.ageBucketLabels.every((label: string) => label.endsWith('m')), summary.ageBucketLabels);
+	});
+
 	test('the oldest, largest and highest fee transactions are listed in order', async () => {
 		fakeRpc({ getrawmempool: () => orderedIds, getmempoolentry: params => orderedEntries[params[0]] });
 
@@ -428,7 +502,8 @@ describe('mempool and mining summaries', () => {
 		fakeRpc({ getrawmempool: () => orderedIds, getmempoolentry: params => orderedEntries[params[0]] });
 
 		const log = console.log;
-		console.log = () => {};
+		const printed: unknown[][] = [];
+		console.log = (...args: unknown[]) => { printed.push(args); };
 		try {
 			const blocks = await coreApi.buildPredictedBlocks('s', () => {});
 
@@ -437,6 +512,9 @@ describe('mempool and mining summaries', () => {
 		} finally {
 			console.log = log;
 		}
+
+		// it used to print every block it built, on every request (it uses the debug log now)
+		assert.deepEqual(printed, []);
 	});
 
 	test('buildMiningSummary groups blocks by miner', async () => {
