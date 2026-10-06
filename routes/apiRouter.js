@@ -992,13 +992,15 @@ router.get("/price/sats", function(req, res, next) {
 });
 
 router.get("/price/marketcap", function(req, res, next) {
-	let result = 0;
-
 	if (!global.exchangeRates) {
-		result.success = false;
-		result.error = "You have exchange-rate requests disabled (this is the default state; in your server configuration, you must set BTCEXP_NO_RATES to 'false', and ensure that BTCEXP_PRIVACY_MODE is also still its default value of 'false')"
+		res.json({
+			success: false,
+			error: "You have exchange-rate requests disabled (this is the default state; in your server configuration, you must set BTCEXP_NO_RATES to 'false', and ensure that BTCEXP_PRIVACY_MODE is also still its default value of 'false')"
+		});
+
+		return next();
 	}
-	
+
 	coreApi.getBlockchainInfo().then(function(getblockchaininfo){
 		let estimatedSupply = utils.estimatedSupply(getblockchaininfo.blocks);
 		let price = 0;
