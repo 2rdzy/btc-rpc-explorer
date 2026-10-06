@@ -1,25 +1,12 @@
-"use strict";
 
-const debug = require("debug");
-const debugLog = debug("btcexp:router");
-
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const qrcode = require('qrcode');
-const bitcoinjs = require('bitcoinjs-lib');
-const sha256 = require("crypto-js/sha256");
-const hexEnc = require("crypto-js/enc-hex");
-const { Decimal } = require("decimal.js");
-const asyncHandler = require("express-async-handler");
+import asyncHandler from "express-async-handler";
 
-const utils = require('./../app/utils.js');
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
-const btcQuotes = require("./../app/coins/btcQuotes.js");
+import * as utils from "../app/utils.js";
+import * as coreApi from "../app/api/coreApi.js";
+import btcQuotes from "../app/coins/btcQuotes.js";
+import type { RpcData } from "../app/api/rpcApi.js";
 
 
 
@@ -48,13 +35,13 @@ router.get("/quote/random", function(req, res, next) {
 	next();
 });
 
-router.get("/next-block", asyncHandler(async (req, res, next) => {
+router.get("/next-block", asyncHandler(async (req, res) => {
 	const promises = [];
 
-	const result = {};
+	const result: RpcData = {};
 
 	promises.push(utils.timePromise("api/next-block/getblocktemplate", async () => {
-		let nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
+		const nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
 			return await coreApi.getNextBlockEstimate();
 		});
 
@@ -84,18 +71,18 @@ router.get("/next-block", asyncHandler(async (req, res, next) => {
 	res.render("snippets/index-next-block");
 }));
 
-router.get("/index-halving-countdown", asyncHandler(async (req, res, next) => {
+router.get("/index-halving-countdown", asyncHandler(async (req, res) => {
 	try {
 		const getblockchaininfo = await utils.timePromise("snippet.index-halving-countdown.getBlockchainInfo", async () => {
 			return await coreApi.getBlockchainInfo();
 		});
 
-		let promises = [];
+		const promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
 		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
-		let blockHeights = [];
+		const blockHeights: number[] = [];
 		if (getblockchaininfo.blocks) {
 			for (let i = 0; i < 1; i++) {
 				blockHeights.push(getblockchaininfo.blocks - i);
@@ -107,7 +94,7 @@ router.get("/index-halving-countdown", asyncHandler(async (req, res, next) => {
 		}
 
 		promises.push(utils.timePromise("snippet.index-halving-countdown.getBlockHeaderByHeight", async () => {
-			let h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
+			const h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
 			res.locals.difficultyPeriodFirstBlockHeader = await coreApi.getBlockHeaderByHeight(h);
 		}));
 
@@ -120,7 +107,7 @@ router.get("/index-halving-countdown", asyncHandler(async (req, res, next) => {
 		await utils.awaitPromises(promises);
 
 
-		let nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
+		const nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
 
 		res.locals.nextHalvingData = nextHalvingData;
 
@@ -137,7 +124,7 @@ router.get("/index-halving-countdown", asyncHandler(async (req, res, next) => {
 	}
 }));
 
-router.get("/utxo-set", asyncHandler(async (req, res, next) => {
+router.get("/utxo-set", asyncHandler(async (req, res) => {
 	const promises = [];
 
 	promises.push(utils.timePromise("api/utxo-set", async () => {
@@ -154,12 +141,12 @@ router.get("/utxo-set", asyncHandler(async (req, res, next) => {
 	res.render("snippets/utxo-set");
 }));
 
-router.get("/timezone-refresh-toast", asyncHandler(async (req, res, next) => {
+router.get("/timezone-refresh-toast", asyncHandler(async (req, res) => {
 	res.render("snippets/tz-update-toast");
 }));
 
 
-router.get("/timestamp", asyncHandler(async (req, res, next) => {
+router.get("/timestamp", asyncHandler(async (req, res) => {
 	res.locals.timestamp = req.query.timestamp;
 	res.locals.includeAgo = req.query.includeAgo ? (req.query.includeAgo == "true") : true;
 	res.locals.formatString = req.query.formatString;
@@ -170,4 +157,4 @@ router.get("/timestamp", asyncHandler(async (req, res, next) => {
 
 
 
-module.exports = router;
+export = router;

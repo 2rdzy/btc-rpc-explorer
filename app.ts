@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-"use strict";
+// The order of the code below matters: the .env files are loaded before the modules that read the environment
+// (config and the others) are required, and tsc keeps the require calls where the imports are written.
+import os from "os";
+import path from "path";
+import dotenv from "dotenv";
+import fs from "fs";
 
-const os = require('os');
-const path = require('path');
-const dotenv = require("dotenv");
-const fs = require('fs');
-
-const debug = require("debug");
+import debug from "debug";
 
 
 // start with this, we will update after loading any .env files
@@ -17,7 +17,6 @@ debug.enable(debugDefaultCategories);
 
 const debugLog = debug("btcexp:app");
 const debugErrorLog = debug("btcexp:error");
-const debugPerfLog = debug("btcexp:actionPerformace");
 const debugAccessLog = debug("btcexp:access");
 
 const configPaths = [
@@ -67,44 +66,45 @@ global.appEventStats = {};
 
 
 
-const express = require('express');
-const favicon = require('serve-favicon');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const session = require("express-session");
-const MemoryStore = require('memorystore')(session);
-const csrf = require("./app/csrf.js");
-const config = require("./app/config.js");
-const { simpleGit } = require('simple-git');
-const utils = require("./app/utils.js");
-const moment = require("moment");
-const { Decimal } = require('decimal.js');
-const pug = require("pug");
-const momentDurationFormat = require("moment-duration-format");
-const coreApi = require("./app/api/coreApi.js");
-const rpcApi = require("./app/api/rpcApi.js");
-const coins = require("./app/coins.js");
-const axios = require("axios").default;
-const qrcode = require("qrcode");
-const addressApi = require("./app/api/addressApi.js");
-const electrumAddressApi = require("./app/api/electrumAddressApi.js");
-const appStats = require("./app/appStats.js");
-const btcQuotes = require("./app/coins/btcQuotes.js");
-const btcHolidays = require("./app/coins/btcHolidays.js");
-const auth = require('./app/auth.js');
-const sso = require('./app/sso.js');
-const { createLoginRateLimiter } = require('./app/loginRateLimit.js');
-const markdown = require("markdown-it")();
-const v8 = require("v8");
-const compression = require("compression");
-const jayson = require('jayson/promise');
-const { rateLimit } = require("express-rate-limit");
+import express from "express";
+import type { Express, Request, Response, NextFunction } from "express";
+import type { RpcData } from "./app/api/rpcApi.js";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+import session from "express-session";
+import memorystore from "memorystore";
+const MemoryStore = memorystore(session);
+import * as csrf from "./app/csrf.js";
+import config from "./app/config.js";
+import { simpleGit } from "simple-git";
+import * as utils from "./app/utils.js";
+import moment from "moment";
+// adds format() to moment durations (the pages use it); nothing is imported from it
+import "moment-duration-format";
+import { Decimal } from "decimal.js";
+import pug from "pug";
+import * as coreApi from "./app/api/coreApi.js";
+import * as rpcApi from "./app/api/rpcApi.js";
+import coins from "./app/coins.js";
+import axios from "axios";
+import * as addressApi from "./app/api/addressApi.js";
+import * as electrumAddressApi from "./app/api/electrumAddressApi.js";
+import * as appStats from "./app/appStats.js";
+import btcHolidays from "./app/coins/btcHolidays.js";
+import auth from "./app/auth.js";
+import sso from "./app/sso.js";
+import { createLoginRateLimiter } from "./app/loginRateLimit.js";
+import MarkdownIt from "markdown-it";
+const markdown = new MarkdownIt();
+import v8 from "v8";
+import compression from "compression";
+import jayson from "jayson/promise";
+import { rateLimit } from "express-rate-limit";
 
 
-require("./app/currencies.js");
+import "./app/currencies.js";
 
-const { projectRoot } = require('./app/paths.js');
+import { projectRoot } from "./app/paths.js";
 const package_json = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
 global.appVersion = package_json.version;
 global.cacheId = global.appVersion;
@@ -113,28 +113,28 @@ debugLog(`Default cacheId '${global.cacheId}'`);
 global.btcNodeSemver = "0.0.0";
 
 
-const cleanupRouter = require('./routes/cleanupRouter.js');
-const baseActionsRouter = require('./routes/baseRouter.js');
-const internalApiActionsRouter = require('./routes/internalApiRouter.js');
-const apiActionsRouter = require('./routes/apiRouter.js');
-const snippetActionsRouter = require('./routes/snippetRouter.js');
-const adminActionsRouter = require('./routes/adminRouter.js');
-const testActionsRouter = require('./routes/testRouter.js');
+import cleanupRouter from "./routes/cleanupRouter.js";
+import baseActionsRouter from "./routes/baseRouter.js";
+import internalApiActionsRouter from "./routes/internalApiRouter.js";
+import apiActionsRouter from "./routes/apiRouter.js";
+import snippetActionsRouter from "./routes/snippetRouter.js";
+import adminActionsRouter from "./routes/adminRouter.js";
+import testActionsRouter from "./routes/testRouter.js";
 
-const expressApp = /** @type {import("express").Express & {onStartup?: any, continueStartup?: any}} */ (express());
+const expressApp: Express & { onStartup?: () => Promise<void>, continueStartup?: () => void } = express();
 
 
-const statTracker = require("./app/statTracker.js");
+import * as statTracker from "./app/statTracker.js";
 
-const statsProcessFunction = (name, stats) => {
+const statsProcessFunction = (name: string, stats: { count?: number, max?: number }) => {
 	appStats.trackAppStats(name, stats);
 	
 	if (process.env.STATS_API_URL) {
-		const data = Object.assign({}, stats);
+		const data: Record<string, unknown> = Object.assign({}, stats);
 		data.name = name;
 
 		axios.post(process.env.STATS_API_URL, data)
-		.then(res => { /*console.log(res.data);*/ })
+		.then(() => { /* the reply is not needed */ })
 		.catch(error => {
 			utils.logError("38974wrg9w7dsgfe", error);
 		});
@@ -154,13 +154,13 @@ processStatsInterval.unref();
 
 
 
-const systemMonitor = require("./app/systemMonitor.js");
 
-const normalizeActions = require("./app/normalizeActions.js");
-expressApp.use(require("./app/actionPerformanceMonitor.js")(statTracker, {
+import normalizeActions from "./app/normalizeActions.js";
+import actionPerformanceMonitor from "./app/actionPerformanceMonitor.js";
+expressApp.use(actionPerformanceMonitor(statTracker, {
 	ignoredEndsWithActions: /\.js|\.css|\.svg|\.png|\.woff2/,
 	ignoredStartsWithActions: `${config.baseUrl}snippet`,
-	normalizeAction: (action) => {
+	normalizeAction: (action: string) => {
 		return normalizeActions(config.baseUrl, action);
 	},
 }));
@@ -169,9 +169,9 @@ expressApp.use(require("./app/actionPerformanceMonitor.js")(statTracker, {
 expressApp.set('views', path.join(projectRoot, 'views'));
 
 // ref: https://blog.stigok.com/post/disable-pug-debug-output-with-expressjs-web-app
-expressApp.engine('pug', (path, /** @type {any} */ options, fn) => {
+expressApp.engine('pug', (path: string, options: RpcData, fn: (e: Error | null, rendered?: string) => void) => {
 	options.debug = false;
-	return /** @type {any} */ (pug).__express.call(null, path, options, fn);
+	return (pug as RpcData).__express.call(null, path, options, fn);
 });
 
 expressApp.set('view engine', 'pug');
@@ -213,7 +213,7 @@ expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({ extended: false }));
 
 
-const sessionConfig = {
+const sessionConfig: session.SessionOptions = {
 	secret: config.cookieSecret,
 	resave: false,
 	saveUninitialized: true,
@@ -259,7 +259,7 @@ if (rateLimitWindowMinutes == -1) {
 		limit: rateLimitWindowMaxRequests, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
 		standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 		legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-		skip: function (req, res) {
+		skip: function (req) {
 			// tor traffic all comes in via tor proxy showing 127.0.0.1
 			// for now, until we identify it as a serious problem, let it pass
 			if (req.hostname.includes(".onion")) {
@@ -278,7 +278,7 @@ if (rateLimitWindowMinutes == -1) {
 
 			return false;
 		},
-		handler: function (req, res, next) {
+		handler: function (req, res) {
 			debugErrorLog(`Rate-limiting request: req=${JSON.stringify(utils.expressRequestToJson(req))}`);
 
 			utils.trackAppEvent("rateLimitedRequest");
@@ -300,12 +300,12 @@ if (config.baseUrl != '/') {
 
 
 process.on("unhandledRejection", (reason, p) => {
-	debugLog("Unhandled Rejection at: Promise", p, "reason:", reason, "stack:", (reason != null ? /** @type {any} */ (reason).stack : "null"));
+	debugLog("Unhandled Rejection at: Promise", p, "reason:", reason, "stack:", (reason != null ? (reason as { stack?: string }).stack : "null"));
 });
 
 function loadCustomMiningPoolConfigs() {
 	const customConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs-custom", global.coinConfig.ticker);
-	const configs = [];
+	const configs: unknown[] = [];
 
 	try {
 		fs.readdirSync(customConfigDir).filter(file => file.endsWith(".json")).forEach(file => {
@@ -313,7 +313,7 @@ function loadCustomMiningPoolConfigs() {
 		});
 
 	} catch (err) {
-		if (err.code != "ENOENT") {
+		if ((err as NodeJS.ErrnoException).code != "ENOENT") {
 			utils.logError("customMiningPoolConfigs", err, {configDir:customConfigDir});
 		}
 	}
@@ -328,7 +328,7 @@ function loadMiningPoolConfigs() {
 	// replaces) and come first, so they take precedence.
 	global.miningPoolsConfigs = loadCustomMiningPoolConfigs();
 
-	var miningPoolsConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs", global.coinConfig.ticker);
+	const miningPoolsConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs", global.coinConfig.ticker);
 
 	fs.readdir(miningPoolsConfigDir, function(err, files) {
 		if (err) {
@@ -338,16 +338,16 @@ function loadMiningPoolConfigs() {
 		}
 
 		files.forEach(function(file) {
-			var filepath = path.join(miningPoolsConfigDir, file);
+			const filepath = path.join(miningPoolsConfigDir, file);
 
-			var contents = fs.readFileSync(filepath, 'utf8');
+			const contents = fs.readFileSync(filepath, 'utf8');
 
 			global.miningPoolsConfigs.push(JSON.parse(contents));
 		});
 
-		for (var i = 0; i < global.miningPoolsConfigs.length; i++) {
-			for (var x in global.miningPoolsConfigs[i].payout_addresses) {
-				if (global.miningPoolsConfigs[i].payout_addresses.hasOwnProperty(x)) {
+		for (let i = 0; i < global.miningPoolsConfigs.length; i++) {
+			for (const x in global.miningPoolsConfigs[i].payout_addresses) {
+				if (Object.prototype.hasOwnProperty.call(global.miningPoolsConfigs[i].payout_addresses, x)) {
 					global.specialAddresses[x] = {type:"minerPayout", minerInfo:global.miningPoolsConfigs[i].payout_addresses[x]};
 				}
 			}
@@ -356,7 +356,7 @@ function loadMiningPoolConfigs() {
 }
 
 async function getSourcecodeProjectMetadata() {
-	var options = {
+	const options = {
 		url: "https://api.github.com/repos/2rdzy/btc-rpc-explorer",
 		headers: {
 			'User-Agent': 'request'
@@ -373,7 +373,7 @@ async function getSourcecodeProjectMetadata() {
 }
 
 function loadChangelog() {
-	var filename = "CHANGELOG.md";
+	let filename = "CHANGELOG.md";
 	
 	fs.readFile(path.join(projectRoot, filename), 'utf8', function(err, data) {
 		if (err) {
@@ -397,11 +397,11 @@ function loadChangelog() {
 	});
 }
 
-function loadHistoricalDataForChain(chain) {
+function loadHistoricalDataForChain(chain: string) {
 	debugLog(`Loading historical data for chain=${chain}`);
 
 	if (global.coinConfig.historicalData) {
-		global.coinConfig.historicalData.forEach(function(item) {
+		global.coinConfig.historicalData.forEach(function(item: RpcData) {
 			if (item.chain == chain) {
 				if (item.type == "blockheight") {
 					global.specialBlocks[item.blockHash] = item;
@@ -417,17 +417,17 @@ function loadHistoricalDataForChain(chain) {
 	}
 }
 
-function loadHolidays(chain) {
+function loadHolidays() {
 	debugLog(`Loading holiday data`);
 
 	global.btcHolidays = btcHolidays;
 	global.btcHolidays.byDay = {};
 	global.btcHolidays.sortedDays = [];
 	global.btcHolidays.sortedItems = [...btcHolidays.items];
-	global.btcHolidays.sortedItems.sort((a, b) => a.date.localeCompare(b.date));
+	global.btcHolidays.sortedItems.sort((a: RpcData, b: RpcData) => a.date.localeCompare(b.date));
 
-	global.btcHolidays.items.forEach(function(item) {
-		let day = item.date.substring(5);
+	global.btcHolidays.items.forEach(function(item: RpcData) {
+		const day = item.date.substring(5);
 
 		if (!global.btcHolidays.sortedDays.includes(day)) {
 			global.btcHolidays.sortedDays.push(day);
@@ -468,9 +468,9 @@ function verifyRpcConnection() {
 	}
 }
 
-async function onRpcConnectionVerified(getnetworkinfo, getblockchaininfo) {
+async function onRpcConnectionVerified(getnetworkinfo: RpcData, getblockchaininfo: RpcData) {
 	// localservicenames introduced in 0.19
-	var services = getnetworkinfo.localservicesnames ? ("[" + getnetworkinfo.localservicesnames.join(", ") + "]") : getnetworkinfo.localservices;
+	const services = getnetworkinfo.localservicesnames ? ("[" + getnetworkinfo.localservicesnames.join(", ") + "]") : getnetworkinfo.localservices;
 
 	global.rpcConnected = true;
 	global.getnetworkinfo = getnetworkinfo;
@@ -527,44 +527,15 @@ async function onRpcConnectionVerified(getnetworkinfo, getblockchaininfo) {
 	// UTXO pull
 	refreshUtxoSetSummary();
 	setInterval(refreshUtxoSetSummary, 30 * 60 * 1000);
-
-
-
-	// disabled code, kept for reference
-	// eslint-disable-next-line no-constant-condition
-	if (false) {
-		monitorNewTransactions().catch(err => console.error(err));
-
-		//sock.subscribe('rawtx');
-	}
 }
 
-async function monitorNewTransactions() {
-	const zmq = require("zeromq");
-	const sock = new zmq.Subscriber();
+async function loadDifficultyHistory(tipBlockHeight: number | null = null) {
+	let tipHeight = tipBlockHeight as number;
 
-	sock.connect("tcp://ubuntu:28333");
-	console.log("Worker connected to port 28333");
-
-	// Subscribe to all topics (use sock.subscribe("specific_topic") for specific topics)
-	sock.subscribe();
-
-	for await (const [topic, message] of sock) {
-		utils.trackAppEvent("newTransaction");
-
-		console.log(
-			topic.toString("ascii") +
-			" - " +
-			message.toString("hex")
-		);
-	}
-}
-
-async function loadDifficultyHistory(tipBlockHeight=null) {
 	if (!tipBlockHeight) {
-		let getblockchaininfo = await coreApi.getBlockchainInfo();
+		const getblockchaininfo = await coreApi.getBlockchainInfo();
 
-		tipBlockHeight = getblockchaininfo.blocks;
+		tipHeight = getblockchaininfo.blocks;
 	}
 
 	if (config.slowDeviceMode) {
@@ -574,9 +545,9 @@ async function loadDifficultyHistory(tipBlockHeight=null) {
 	}
 
 	let height = 0;
-	let heights = [];
+	const heights: number[] = [];
 
-	while (height <= tipBlockHeight) {
+	while (height <= tipHeight) {
 		heights.push(height);
 		height += global.coinConfig.difficultyAdjustmentBlockCount;
 	}
@@ -593,7 +564,7 @@ async function loadDifficultyHistory(tipBlockHeight=null) {
 	debugLog("ATH difficulty: " + global.athDifficulty);
 }
 
-var txindexCheckCount = 0;
+let txindexCheckCount = 0;
 async function assessTxindexAvailability() {
 	// Here we try to call getindexinfo to assess availability of txindex
 	// However, getindexinfo RPC is only available in v0.21+, so the call
@@ -622,7 +593,7 @@ async function assessTxindexAvailability() {
 
 			try {
 				// lookup a known TXID as a test for whether txindex is available
-				let knownTx = await coreApi.getRawTransaction(coinConfig.knownTransactionsByNetwork[global.activeBlockchain]);
+				await coreApi.getRawTransaction(coinConfig.knownTransactionsByNetwork[global.activeBlockchain]);
 
 				// if we get here without an error being thrown, we know we're able to look up by txid
 				// thus, txindex is available
@@ -630,7 +601,7 @@ async function assessTxindexAvailability() {
 
 				debugLog("txindex check: available! (pre-v0.21)");
 
-			} catch (e) {
+			} catch {
 				// here we were unable to query by txid, so we believe txindex is unavailable
 				global.txindexAvailable = false;
 
@@ -645,7 +616,7 @@ async function assessTxindexAvailability() {
 	} catch (e) {
 		utils.logError("o2328ryw8wsde", e);
 
-		var retryTime = Math.trunc(Math.min(15 * 60 * 1000, 1000 * 10 * Math.pow(2, txindexCheckCount)));
+		const retryTime = Math.trunc(Math.min(15 * 60 * 1000, 1000 * 10 * Math.pow(2, txindexCheckCount)));
 		txindexCheckCount++;
 
 		debugLog(`txindex check: error in rpc getindexinfo; will try again in ${retryTime}ms`);
@@ -682,37 +653,34 @@ function refreshNetworkVolumes() {
 		return;
 	}
 
-	var cutoff1d = new Date().getTime() - (60 * 60 * 24 * 1000);
-	var cutoff7d = new Date().getTime() - (60 * 60 * 24 * 7 * 1000);
+	const cutoff1d = new Date().getTime() - (60 * 60 * 24 * 1000);
+	const cutoff7d = new Date().getTime() - (60 * 60 * 24 * 7 * 1000);
 
 	coreApi.getBlockchainInfo().then(function(result) {
-		var promises = [];
+		const promises = [];
 
-		var blocksPerDay = 144 + 20; // 20 block padding
+		const blocksPerDay = 144 + 20; // 20 block padding
 
-		for (var i = 0; i < (blocksPerDay * 1); i++) {
+		for (let i = 0; i < (blocksPerDay * 1); i++) {
 			if (result.blocks - i >= 0) {
 				promises.push(coreApi.getBlockStatsByHeight(result.blocks - i));
 			}
 		}
 
-		var startBlock = result.blocks;
+		const startBlock = result.blocks;
 
-		var endBlock1d = result.blocks;
-		var endBlock7d = result.blocks;
+		let endBlock1d = result.blocks;
 
-		var endBlockTime1d = 0;
-		var endBlockTime7d = 0;
+		let endBlockTime1d = 0;
 
 		Promise.all(promises).then(function(results) {
-			var volume1d = new Decimal(0);
-			var volume7d = new Decimal(0);
+			let volume1d = new Decimal(0);
+			let volume7d = new Decimal(0);
 
-			var blocks1d = 0;
-			var blocks7d = 0;
+			let blocks1d = 0;
 
 			if (results && results.length > 0 && results[0] != null) {
-				for (var i = 0; i < results.length; i++) {
+				for (let i = 0; i < results.length; i++) {
 					if (results[i].time * 1000 > cutoff1d) {
 						volume1d = volume1d.plus(new Decimal(results[i].total_out));
 						volume1d = volume1d.plus(new Decimal(results[i].subsidy));
@@ -727,10 +695,6 @@ function refreshNetworkVolumes() {
 						volume7d = volume7d.plus(new Decimal(results[i].total_out));
 						volume7d = volume7d.plus(new Decimal(results[i].subsidy));
 						volume7d = volume7d.plus(new Decimal(results[i].totalfee));
-						blocks7d++;
-
-						endBlock7d = results[i].height;
-						endBlockTime7d = results[i].time;
 					}
 				}
 
@@ -773,7 +737,7 @@ expressApp.onStartup = async () => {
 	// eslint-disable-next-line no-constant-condition
 	if (false) {
 		(function () {
-			var callback = function() {
+			const callback = function() {
 				debugLog("Waited 5 sec after startup, now dumping 'startup' heap...");
 
 				const filename = `./heapDumpAtStartup-${Date.now()}.heapsnapshot`;
@@ -791,7 +755,7 @@ expressApp.onStartup = async () => {
 
 	if (global.sourcecodeVersion == null && fs.existsSync('.git')) {
 		try {
-			let log = await simpleGit(".").log(["-n 1"]);
+			const log = await simpleGit(".").log(["-n 1"]);
 
 			global.sourcecodeVersion = log.all[0].hash.substring(0, 10);
 			global.sourcecodeDate = log.all[0].date.substring(0, "0000-00-00".length);
@@ -812,7 +776,7 @@ expressApp.onStartup = async () => {
 			debugLog(`Starting ${global.coinConfig.ticker} RPC Explorer, v${global.appVersion} (code: unknown commit) at http://${config.host}:${config.port}${config.baseUrl}`);
 		}
 		
-		expressApp.continueStartup();
+		expressApp.continueStartup?.();
 
 	} else {
 		global.cacheId = global.appVersion;
@@ -820,7 +784,7 @@ expressApp.onStartup = async () => {
 
 		debugLog(`Starting ${global.coinConfig.ticker} RPC Explorer, v${global.appVersion} at http://${config.host}:${config.port}${config.baseUrl}`);
 
-		expressApp.continueStartup();
+		expressApp.continueStartup?.();
 	}
 }
 
@@ -828,18 +792,17 @@ function connectToRpcServer() {
 	// reload credentials, the main "config.credentials.rpc" can be stale
 	// since the username/password can be sourced from the auth cookie
 	// which changes each startup of bitcoind
-	let credentialsForRpcConnect = config.credentials.loadFreshRpcCredentials();
+	const credentialsForRpcConnect = config.credentials.loadFreshRpcCredentials();
 
 	debugLog(`RPC Credentials: ${JSON.stringify(utils.obfuscateProperties(credentialsForRpcConnect, ["password"]), null, 4)}`);
 
-	let rpcCred = credentialsForRpcConnect;
+	const rpcCred = credentialsForRpcConnect;
 	debugLog(`Connecting to RPC node at [${rpcCred.host}]:${rpcCred.port}`);
 
-	let usernamePassword = `${rpcCred.username}:${rpcCred.password}`;
-	let authorizationHeader = `Basic ${btoa(usernamePassword)}`; // basic auth header format (base64 of "username:password")
+	const usernamePassword = `${rpcCred.username}:${rpcCred.password}`;
+	const authorizationHeader = `Basic ${btoa(usernamePassword)}`; // basic auth header format (base64 of "username:password")
 
-	/** @type {{host: string, port: string | number, username: string, password: string, timeout: number, headers?: Record<string, string>}} */
-	let rpcClientProperties = {
+	const rpcClientProperties: { host: string, port: string | number, username?: string, password?: string, timeout: number, headers?: Record<string, string> } = {
 		host: rpcCred.host,
 		port: rpcCred.port,
 		username: rpcCred.username,
@@ -857,7 +820,7 @@ function connectToRpcServer() {
 	// main RPC client
 	global.rpcClient = jayson.Client.http(rpcClientProperties);
 
-	let rpcClientNoTimeoutProperties = {
+	const rpcClientNoTimeoutProperties = {
 		host: rpcCred.host,
 		port: rpcCred.port,
 		username: rpcCred.username,
@@ -879,7 +842,7 @@ expressApp.continueStartup = function() {
 	if (config.credentials.rpc.authType == "cookie") {
 		debugLog(`RPC authentication is cookie based; watching for changes to the auth cookie file...`);
 
-		fs.watchFile(config.credentials.rpc.authCookieFilepath, (curr, prev) => {
+		fs.watchFile(config.credentials.rpc.authCookieFilepath, () => {
 			debugLog(`RPC auth cookie change detected; attempting reconnect...`);
 
 			connectToRpcServer();
@@ -900,7 +863,7 @@ expressApp.continueStartup = function() {
 
 
 	if (config.addressApi) {
-		let supportedAddressApis = addressApi.getSupportedAddressApis();
+		const supportedAddressApis = addressApi.getSupportedAddressApis();
 		if (!supportedAddressApis.includes(config.addressApi)) {
 			utils.logError("32907ghsd0ge", `Unrecognized value for BTCEXP_ADDRESS_API: '${config.addressApi}'. Valid options are: ${supportedAddressApis}`);
 		}
@@ -948,8 +911,8 @@ expressApp.use(function(req, res, next) {
 		req.session.username = config.credentials.rpc.username;
 	}
 
-	var userAgent = req.headers['user-agent'];
-	var crawler = utils.getCrawlerFromUserAgentString(userAgent);
+	const userAgent = req.headers['user-agent'];
+	const crawler = utils.getCrawlerFromUserAgentString(userAgent);
 	if (crawler) {
 		res.locals.crawlerBot = true;
 	}
@@ -1062,10 +1025,10 @@ if (expressApp.get("env") === "local") {
 
 
 expressApp.use(function(req, res, next) {
-	var time = Date.now() - req.startTime;
-	var userAgent = req.headers['user-agent'];
-	var crawler = utils.getCrawlerFromUserAgentString(userAgent);
-	let ip = (/** @type {string} */ (req.headers['x-forwarded-for']) || req.connection.remoteAddress || '').split(',')[0].trim();
+	const time = Date.now() - req.startTime;
+	const userAgent = req.headers['user-agent'];
+	const crawler = utils.getCrawlerFromUserAgentString(userAgent);
+	const ip = ((req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '').split(',')[0].trim();
 
 	if (crawler) {
 		debugAccessLog(`Finished action '${req.path}' (${res.statusCode}) in ${time}ms for crawler '${crawler}' / '${userAgent}', ip=${ip}`);
@@ -1083,7 +1046,7 @@ expressApp.use(function(req, res, next) {
 expressApp.use(function(req, res, next) {
 	utils.trackAppEvent("error404");
 
-	var err = new Error(`Not Found: ${req ? req.url : 'unknown url'}`);
+	const err = new Error(`Not Found: ${req ? req.url : 'unknown url'}`);
 	Object.assign(err, {status: 404});
 
 	next(err);
@@ -1091,14 +1054,14 @@ expressApp.use(function(req, res, next) {
 
 /// error handlers
 
-const sharedErrorHandler = (req, err) => {
+const sharedErrorHandler = (req: Request, err: RpcData) => {
 	if (err && err.message && err.message.includes("Not Found")) {
 		const path = err.toString().substring(err.toString().lastIndexOf(" ") + 1);
 		const userAgent = req.headers['user-agent'];
 		const crawler = utils.getCrawlerFromUserAgentString(userAgent);
 		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress; 
 
-		const attributes = { path:path };
+		const attributes: Record<string, string> = { path:path };
 
 		if (crawler) {
 			attributes.crawler = crawler;
@@ -1118,7 +1081,8 @@ const sharedErrorHandler = (req, err) => {
 // development error handler
 // will print stacktrace
 if (expressApp.get("env") === "development" || expressApp.get("env") === "local") {
-	expressApp.use(function(err, req, res, next) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	expressApp.use(function(err: RpcData, req: Request, res: Response, next: NextFunction) {
 		if (err) {
 			sharedErrorHandler(req, err);
 		}
@@ -1133,7 +1097,8 @@ if (expressApp.get("env") === "development" || expressApp.get("env") === "local"
 
 // production error handler
 // no stacktraces leaked to user
-expressApp.use(function(err, req, res, next) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+expressApp.use(function(err: RpcData, req: Request, res: Response, next: NextFunction) {
 	if (err) {
 		sharedErrorHandler(req, err);
 	}
@@ -1148,19 +1113,21 @@ expressApp.use(function(err, req, res, next) {
 expressApp.locals.moment = moment;
 expressApp.locals.Decimal = Decimal;
 expressApp.locals.utils = utils;
-expressApp.locals.markdown = src => markdown.render(src);
+expressApp.locals.markdown = (src: string) => markdown.render(src);
 
-expressApp.locals.assetUrl = (path) => {
+expressApp.locals.assetUrl = (path: string) => {
 	return `${path}?v=${global.cacheId}`;
 };
 
 // debug setting to skip js/css integrity checks
 const skipIntegrityChecks = false;
-const resourceIntegrityHashes = require("./app/resourceIntegrityHashes.js");
+import resourceIntegrityHashes from "./app/resourceIntegrityHashes.js";
 
-expressApp.locals.assetIntegrity = (filename) => {
-	if (!skipIntegrityChecks && resourceIntegrityHashes[filename]) {
-		return resourceIntegrityHashes[filename];
+expressApp.locals.assetIntegrity = (filename: string) => {
+	const hashes: Record<string, string> = resourceIntegrityHashes;
+
+	if (!skipIntegrityChecks && hashes[filename]) {
+		return hashes[filename];
 
 	} else {
 		return "";
@@ -1168,4 +1135,4 @@ expressApp.locals.assetIntegrity = (filename) => {
 };
 
 
-module.exports = expressApp;
+export = expressApp;

@@ -1,31 +1,19 @@
-"use strict";
-
-const debug = require("debug");
+import debug from "debug";
 const debugLog = debug("btcexp:router");
 
-const fs = require('fs');
-const v8 = require('v8');
+import fs from "fs";
+import v8 from "v8";
 
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const qrcode = require('qrcode');
-const bitcoinjs = require('bitcoinjs-lib');
-const sha256 = require("crypto-js/sha256");
-const hexEnc = require("crypto-js/enc-hex");
-const { Decimal } = require("decimal.js");
 
 
-const utils = require('./../app/utils.js');
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
+import * as utils from "../app/utils.js";
+import config from "../app/config.js";
 
 
-const statTracker = require("./../app/statTracker.js");
-const appStats = require("./../app/appStats.js");
+import * as statTracker from "../app/statTracker.js";
+import * as appStats from "../app/appStats.js";
 
 
 
@@ -99,7 +87,7 @@ router.get("/app-stats", function(req, res, next) {
 		res.locals.performanceStats.push([key, value]);
 	}
 
-	res.locals.performanceStats.sort((a, b) => {
+	res.locals.performanceStats.sort((a: [string, unknown], b: [string, unknown]) => {
 		return a[0].localeCompare(b[0]);
 	});
 
@@ -109,7 +97,7 @@ router.get("/app-stats", function(req, res, next) {
 		res.locals.eventStats.push([key, value]);
 	}
 
-	res.locals.eventStats.sort((a, b) => {
+	res.locals.eventStats.sort((a: [string, unknown], b: [string, unknown]) => {
 		return a[0].localeCompare(b[0]);
 	});
 
@@ -119,7 +107,7 @@ router.get("/app-stats", function(req, res, next) {
 		res.locals.valueStats.push([key, value]);
 	}
 
-	res.locals.valueStats.sort((a, b) => {
+	res.locals.valueStats.sort((a: [string, unknown], b: [string, unknown]) => {
 		return a[0].localeCompare(b[0]);
 	});
 	
@@ -133,11 +121,11 @@ router.get("/app-stats", function(req, res, next) {
 router.get('/resetUserSettings', (req, res) => {
 	req.session.userSettings = Object.create(null);
  
-	let userSettings = Object.create(null);
+	const userSettings = Object.create(null);
 	
 	res.cookie("user-settings", JSON.stringify(userSettings));
 
-	res.redirect(req.headers.referer);
+	res.redirect(req.headers.referer || "/");
 });
 
 
@@ -160,4 +148,4 @@ router.get('/heapdump', (req, res) => {
 
 
 
-module.exports = router;
+export = router;

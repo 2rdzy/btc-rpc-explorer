@@ -1,26 +1,11 @@
-"use strict";
 
-const debug = require("debug");
-const debugLog = debug("btcexp:router");
-
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const bitcoinjs = require('bitcoinjs-lib');
-const bip32 = require('bip32');
-const bs58check = require('bs58check');
-const { bech32, bech32m } = require("bech32");
-const { Decimal } = require("decimal.js");
-const asyncHandler = require("express-async-handler");
+import asyncHandler from "express-async-handler";
 
-const utils = require('./../app/utils.js');
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
-const rpcApi = require("./../app/api/rpcApi.js");
-const btcQuotes = require("./../app/coins/btcQuotes.js");
+import * as utils from "../app/utils.js";
+import * as coreApi from "../app/api/coreApi.js";
+import type { RpcData } from "../app/api/rpcApi.js";
 
 
 router.get("/tx-display", asyncHandler(async (req, res, next) => {
@@ -28,10 +13,10 @@ router.get("/tx-display", asyncHandler(async (req, res, next) => {
 	res.locals.txInputsByTransaction = {};
 	res.locals.blockHeightsByTxid = {};
 
-	let txidOrder = [];
+	const txidOrder: string[] = [];
 
 	const promises = [];
-	for (const [txid, data] of Object.entries(global.coinConfig.testData.txDisplayTestList)) {
+	for (const [txid, data] of Object.entries(global.coinConfig.testData.txDisplayTestList) as [string, RpcData][]) {
 		txidOrder.push(txid);
 
 		const blockHash = data.blockHash;
@@ -56,7 +41,7 @@ router.get("/tx-display", asyncHandler(async (req, res, next) => {
 
 	await Promise.all(promises);
 
-	res.locals.transactions.sort((/** @type {any} */ a, /** @type {any} */ b) => {
+	res.locals.transactions.sort((a: RpcData, b: RpcData) => {
 		return txidOrder.indexOf(a.txid) - txidOrder.indexOf(b.txid);
 	});
 
@@ -65,4 +50,4 @@ router.get("/tx-display", asyncHandler(async (req, res, next) => {
 	next();
 }));
 
-module.exports = router;
+export = router;

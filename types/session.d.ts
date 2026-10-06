@@ -8,8 +8,8 @@ declare module "express-session" {
 		port: string | number;
 		username: string;
 		userSettings: any;
-		userMessage: string;
-		userMessageType: string;
+		userMessage: string | null;
+		userMessageType: string | null;
 		query: any;
 		redirectUrl: string;
 		favoriteRpcCommands: any;

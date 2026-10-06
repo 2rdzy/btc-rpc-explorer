@@ -60,7 +60,7 @@ function connectToServer(host: string | null, port: number, protocol?: string | 
 		const defaultProtocol = port === 50001 ? 'tcp' : 'tls';
 
 		const electrumConfig = { client:"btc-rpc-explorer-v2", version:"1.4" };
-		const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };
+		const electrumPersistencePolicy: { retryPeriod: number, maxRetry: number, callback: (() => void) | null } = { retryPeriod: 10000, maxRetry: 1000, callback: null };
 
 		const onConnect = function(client: Client, versionInfo: unknown) {
 			debugLog(`Connected to Electrum Server @ ${host}:${port} (${JSON.stringify(versionInfo)})`);

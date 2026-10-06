@@ -1,31 +1,27 @@
-"use strict";
-
-const debug = require("debug");
+import debug from "debug";
 const debugLog = debug("btcexp:router");
 
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const util = require('util');
-const moment = require('moment');
-const qrcode = require('qrcode');
-const bitcoinjs = require('bitcoinjs-lib');
-const sha256 = require("crypto-js/sha256");
-const hexEnc = require("crypto-js/enc-hex");
-const { bech32, bech32m } = require("bech32");
-const { Decimal } = require("decimal.js");
-const asyncHandler = require("express-async-handler");
-const markdown = require("markdown-it")();
+import moment from "moment";
+import * as bitcoinjs from "bitcoinjs-lib";
+import sha256 from "crypto-js/sha256";
+import hexEnc from "crypto-js/enc-hex";
+import { bech32m } from "bech32";
+import { Decimal } from "decimal.js";
+import asyncHandler from "express-async-handler";
+import MarkdownIt from "markdown-it";
+const markdown = new MarkdownIt();
 
-const coins = require("./../app/coins.js");
-const config = require("./../app/config.js");
-const utils = require('./../app/utils.js');
-const { queryInt, queryString } = require("./../app/request.js");
-const coreApi = require("./../app/api/coreApi.js");
-const addressApi = require("./../app/api/addressApi.js");
-const xyzpubApi = require("./../app/api/xyzpubApi.js");
-const rpcApi = require("./../app/api/rpcApi.js");
-const apiDocs = require("./../docs/api.js");
-const btcQuotes = require("./../app/coins/btcQuotes.js");
+import config from "../app/config.js";
+import * as utils from "../app/utils.js";
+import { queryInt, queryString } from "../app/request.js";
+import * as coreApi from "../app/api/coreApi.js";
+import * as addressApi from "../app/api/addressApi.js";
+import * as xyzpubApi from "../app/api/xyzpubApi.js";
+import apiDocs from "./../docs/api.js";
+import btcQuotes from "../app/coins/btcQuotes.js";
+import type { RpcData } from "../app/api/rpcApi.js";
 
 
 
@@ -37,13 +33,13 @@ router.get("/docs", function(req, res, next) {
 
 	res.locals.categories = [];
 	apiDocs.routes.forEach(x => {
-		let category = x.category;
+		const category = x.category;
 
-		if (!res.locals.categories.find(y => (y.name == category))) {
+		if (!res.locals.categories.find((y: RpcData) => (y.name == category))) {
 			res.locals.categories.push({name:category, items:[]});
 		}
 
-		res.locals.categories.find(x => (x.name == category)).items.push(x);
+		res.locals.categories.find((x: RpcData) => (x.name == category)).items.push(x);
 	});
 
 	res.render("api-docs");
@@ -108,11 +104,11 @@ router.get("/blocks/tip/height", asyncHandler(async (req, res, next) => {
 
 router.get("/block/:hashOrHeight", asyncHandler(async (req, res, next) => {
 	const hashOrHeight = req.params.hashOrHeight;
-	let hash = (hashOrHeight.length == 64 ? hashOrHeight : null);
+	let hash: string = (hashOrHeight.length == 64 ? hashOrHeight : "");
 
 	try {
 
-		if (hash == null) {
+		if (hash == "") {
 			hash = await coreApi.getBlockHashByHeight(parseInt(hashOrHeight));
 		}
 
@@ -131,10 +127,10 @@ router.get("/block/:hashOrHeight", asyncHandler(async (req, res, next) => {
 
 router.get("/block/header/:hashOrHeight", asyncHandler(async (req, res, next) => {
 	const hashOrHeight = req.params.hashOrHeight;
-	let hash = (hashOrHeight.length == 64 ? hashOrHeight : null);
+	let hash: string = (hashOrHeight.length == 64 ? hashOrHeight : "");
 
 	try {
-		if (hash == null) {
+		if (hash == "") {
 			hash = await coreApi.getBlockHashByHeight(parseInt(hashOrHeight));
 		}
 
@@ -157,19 +153,18 @@ router.get("/block/header/:hashOrHeight", asyncHandler(async (req, res, next) =>
 /// TRANSACTIONS
 
 router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
-	let txid = utils.asHash(req.params.txid);
-	let promises = [];
-	let txInputLimit = (res.locals.crawlerBot) ? 3 : -1;
+	const txid = utils.asHash(req.params.txid);
+	const txInputLimit = (res.locals.crawlerBot) ? 3 : -1;
 
 	try {
-		let results = await coreApi.getRawTransactionsWithInputs([txid], txInputLimit);
-		let outJson = results.transactions[0];
-		let txInputs = results.txInputsByTransaction[txid] || {};
+		const results = await coreApi.getRawTransactionsWithInputs([txid], txInputLimit);
+		const outJson = results.transactions[0];
+		const txInputs = results.txInputsByTransaction[txid] || {};
 		
 		let inputBtc = 0;
 		if (txInputs[0]) {
-			for (let key in txInputs) {
-				let item = txInputs[key];
+			for (const key in txInputs) {
+				const item = txInputs[key];
 				inputBtc += item["value"] * global.coinConfig.baseCurrencyUnit.multiplier;
 				outJson.vin[key].scriptSig.address = item.scriptPubKey.address;
 				outJson.vin[key].scriptSig.type = item.scriptPubKey.type;
@@ -178,8 +173,8 @@ router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
 		}
 		
 		let outputBtc = 0;
-		for (let key in outJson.vout) {	
-			let item = outJson.vout[key];			
+		for (const key in outJson.vout) {	
+			const item = outJson.vout[key];			
 			outputBtc += item.value * global.coinConfig.baseCurrencyUnit.multiplier;
 		}
 
@@ -193,7 +188,7 @@ router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
 		} 
 
 		if (global.specialTransactions && global.specialTransactions[txid]) {
-			let funInfo = global.specialTransactions[txid];
+			const funInfo = global.specialTransactions[txid];
 			outJson.fun = funInfo;
 		}
 		
@@ -211,7 +206,7 @@ router.get("/tx/:txid", asyncHandler(async (req, res, next) => {
 router.get("/tx/volume/24h", function(req, res, next) {
 	try {
 		if (global.networkVolume && global.networkVolume.d1 && global.networkVolume.d1.amt) {
-			let currencyValue = parseInt(global.networkVolume.d1.amt);
+			const currencyValue = parseInt(global.networkVolume.d1.amt);
 
 			res.json({"24h": currencyValue});
 
@@ -235,7 +230,7 @@ router.get("/tx/volume/24h", function(req, res, next) {
 
 router.get("/blockchain/coins", asyncHandler(async (req, res, next) => {
 	if (global.utxoSetSummary) {
-		let supply = parseFloat(global.utxoSetSummary.total_amount).toString();
+		const supply = parseFloat(global.utxoSetSummary.total_amount).toString();
 
 		res.send({
 			supply: supply.toString(),
@@ -247,9 +242,9 @@ router.get("/blockchain/coins", asyncHandler(async (req, res, next) => {
 	} else {
 		// estimated supply
 
-		let getblockchaininfo = await coreApi.getBlockchainInfo();
-		let estimatedSupply = utils.estimatedSupply(getblockchaininfo.blocks);
-		let lastCheckpoint = coinConfig.utxoSetCheckpointsByNetwork[global.activeBlockchain];
+		const getblockchaininfo = await coreApi.getBlockchainInfo();
+		const estimatedSupply = utils.estimatedSupply(getblockchaininfo.blocks);
+		const lastCheckpoint = coinConfig.utxoSetCheckpointsByNetwork[global.activeBlockchain];
 
 		res.send({
 			supply: estimatedSupply.toString(),
@@ -273,12 +268,12 @@ router.get("/blockchain/next-halving", asyncHandler(async (req, res, next) => {
 	try {
 		const getblockchaininfo = await coreApi.getBlockchainInfo();
 
-		let promises = [];
+		const promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
 		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
-		let blockHeights = [];
+		const blockHeights: number[] = [];
 		if (getblockchaininfo.blocks) {
 			for (let i = 0; i < 1; i++) {
 				blockHeights.push(getblockchaininfo.blocks - i);
@@ -290,7 +285,7 @@ router.get("/blockchain/next-halving", asyncHandler(async (req, res, next) => {
 		}
 
 		promises.push(utils.timePromise("homepage.getBlockHeaderByHeight", async () => {
-			let h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
+			const h = coinConfig.difficultyAdjustmentBlockCount * res.locals.difficultyPeriod;
 			res.locals.difficultyPeriodFirstBlockHeader = await coreApi.getBlockHeaderByHeight(h);
 		}));
 
@@ -303,11 +298,11 @@ router.get("/blockchain/next-halving", asyncHandler(async (req, res, next) => {
 		await utils.awaitPromises(promises);
 
 
-		let nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
+		const nextHalvingData = utils.nextHalvingEstimates(res.locals.difficultyPeriodFirstBlockHeader, res.locals.latestBlocks[0]);
 
 		// timeAgo =  moment.duration(moment.utc(new Date()).diff(moment.utc(new Date())));
-		let timeAgo = moment.duration(moment.utc(nextHalvingData.nextHalvingDate).diff(moment.utc(new Date())));
-		let format = timeAgo.format();
+		const timeAgo = moment.duration(moment.utc(nextHalvingData.nextHalvingDate).diff(moment.utc(new Date())));
+		const format = timeAgo.format();
 		let formatParts = format.split(",").map(x => x.trim());
 		formatParts = formatParts.map(x => { return x.startsWith("0 ") ? "" : x; }).filter(x => x.length > 0);
 
@@ -388,20 +383,15 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		}
 
 
-		const transactions = [];
-		const addressApiSupport = addressApi.getCurrentAddressApiFeatureSupport();
 		
-		const result = {};
+		const result: RpcData = {};
 
 		let addressEncoding = "unknown";
 
-		let base58Error = null;
-		let bech32Error = null;
-		let bech32mError = null;
 
 		if (address.match(/^[132mn].*$/)) {
 			try {
-				let base58Data = bitcoinjs.address.fromBase58Check(address);
+				const base58Data = bitcoinjs.address.fromBase58Check(address);
 				result.base58 = {hash:base58Data.hash.toString("hex"), version:base58Data.version};
 
 				addressEncoding = "base58";
@@ -413,7 +403,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 		if (addressEncoding == "unknown") {
 			try {
-				let bech32Data = bitcoinjs.address.fromBech32(address);
+				const bech32Data = bitcoinjs.address.fromBech32(address);
 				result.bech32 = {data:bech32Data.data.toString("hex"), version:bech32Data.version};
 
 				addressEncoding = "bech32";
@@ -425,7 +415,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 		if (addressEncoding == "unknown") {
 			try {
-				let bech32mData = bech32m.decode(address);
+				const bech32mData = bech32m.decode(address);
 				result.bech32m = {words:Buffer.from(bech32mData.words).toString("hex"), version:bech32mData.words[0]};
 
 				addressEncoding = "bech32m";
@@ -447,7 +437,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 
 		result.notes = [];
 		if (global.specialAddresses[address] && global.specialAddresses[address].type == "fun") {
-			let funInfo = global.specialAddresses[address].addressInfo;
+			const funInfo = global.specialAddresses[address].addressInfo;
 
 			result.notes.push(funInfo);
 		}
@@ -455,7 +445,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		if (global.miningPoolsConfigs) {
 			for (let i = 0; i < global.miningPoolsConfigs.length; i++) {
 				if (global.miningPoolsConfigs[i].payout_addresses[address]) {
-					let note = global.miningPoolsConfigs[i].payout_addresses[address];
+					const note = global.miningPoolsConfigs[i].payout_addresses[address];
 					note.type = "payout address for miner";
 
 					result.notes.push(note);
@@ -477,14 +467,14 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		const promises = [];
 
 		let addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(validateaddressResult.scriptPubKey)));
-		addrScripthash = addrScripthash.match(/.{2}/g).reverse().join("");
+		addrScripthash = (addrScripthash.match(/.{2}/g) as string[]).reverse().join("");
 
 		result.electrumScripthash = addrScripthash;
 
 		promises.push(utils.timePromise("address.getAddressDetails", async () => {
 			const addressDetailsResult = await addressApi.getAddressDetails(address, validateaddressResult.scriptPubKey, sort, limit, offset);
 
-			let addressDetails = addressDetailsResult.addressDetails;
+			const addressDetails = addressDetailsResult.addressDetails;
 
 			result.txHistory = addressDetails;
 			result.txHistory.request = {};
@@ -519,7 +509,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 /// XYZ PUBS
 
 // redirect for an old path
-router.get("/util/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
+router.get("/util/xyzpub/:extendedPubkey", asyncHandler(async (req, res) => {
 	const extendedPubkey = req.params.extendedPubkey;
 	
 	res.redirect(`${req.baseUrl}/xyzpub/${extendedPubkey}`);
@@ -542,11 +532,7 @@ router.get("/xyzpub/:extendedPubkey", asyncHandler(async (req, res, next) => {
 		}
 
 		
-		let relatedKeys = [];
 
-		let outputType = "Unknown";
-		let outputTypeDesc = null;
-		let bip32Path = "Unknown";
 
 
 		const keyDetails = xyzpubApi.getKeyDetails(extendedPubkey);
@@ -581,7 +567,7 @@ router.get("/xyzpub/txids/:extendedPubkey", asyncHandler(async (req, res, next) 
 		
 		const searchResult = await xyzpubApi.searchXpubTxids(extendedPubkey, gapLimit, limit);
 
-		let result = {
+		const result: { txids: string[], txCount: number } = {
 			txids: [],
 			txCount: 0
 		};
@@ -607,7 +593,7 @@ router.get("/xyzpub/txids/:extendedPubkey", asyncHandler(async (req, res, next) 
 	} catch (e) {
 		utils.logError("382rdere", e);
 
-		res.json({success:false, error: e.toString()});
+		res.json({success:false, error: String(e)});
 
 		next();
 	}
@@ -646,7 +632,7 @@ router.get("/xyzpub/addresses/:extendedPubkey", asyncHandler(async (req, res, ne
 	} catch (e) {
 		utils.logError("3297rwegee", e);
 
-		res.json({success:false, error: e.toString()});
+		res.json({success:false, error: String(e)});
 
 		next();
 	}
@@ -658,7 +644,7 @@ router.get("/xyzpub/addresses/:extendedPubkey", asyncHandler(async (req, res, ne
 
 /// MINING
 
-router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
+router.get("/mining/hashrate", asyncHandler(async (req, res) => {
 	try {
 		let decimals = 3;
 
@@ -666,10 +652,10 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 			decimals = queryInt(req.query, "decimals", decimals);
 		}
 
-		let blocksPerDay = 24 * 60 * 60 / coinConfig.targetBlockTimeSeconds;
-		let rates = [];
+		const blocksPerDay = 24 * 60 * 60 / coinConfig.targetBlockTimeSeconds;
+		const rates: (RpcData | null)[] = [];
 
-		let timePeriods = [
+		const timePeriods = [
 			1 * blocksPerDay,
 			7 * blocksPerDay,
 			30 * blocksPerDay,
@@ -677,13 +663,13 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 			365 * blocksPerDay,
 		];
 
-		let promises = [];
+		const promises: Promise<void>[] = [];
 
 		for (let i = 0; i < timePeriods.length; i++) {
 			const index = i;
 			const x = timePeriods[i];
 
-			promises.push(new Promise(async (resolve, reject) => {
+			promises.push((async () => {
 				try {
 					const hashrate = await coreApi.getNetworkHashrate(x);
 
@@ -691,12 +677,10 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 						// the window reaches back before the BLAKE2b fork
 						rates[index] = null;
 
-						resolve();
-
 						return;
 					}
 
-					let summary = utils.formatLargeNumber(hashrate, decimals);
+					const summary = utils.formatLargeNumber(hashrate, decimals);
 					
 					rates[index] = {
 						val: summary[0].toNumber(),
@@ -713,14 +697,10 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 						string3: `${(summary[0].toNumber() * summary[1].val).toLocaleString()}`
 					};
 
-					resolve();
-
 				} catch (ex) {
 					utils.logError("8ehfwe8ehe", ex);
-
-					resolve();
 				}
-			}));
+			})());
 		}
 
 		await Promise.all(promises);
@@ -737,42 +717,37 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 		utils.logError("23reuhd8uw92D", e);
 
 		res.json({
-			error: typeof(e) == "string" ? e : utils.stringifySimple(e)
+			error: typeof(e) == "string" ? e : utils.stringifySimple(e as Record<string, unknown>)
 		});
 	}
 }));
 
-router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res, next) => {
+router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res) => {
 	const { perfId, perfResults } = utils.perfLogNewItem({action:"api.diff-adj-estimate"});
 	res.locals.perfId = perfId;
 
-	let promises = [];
+	const promises: Promise<void>[] = [];
 	const getblockchaininfo = await utils.timePromise("api_diffAdjEst_getBlockchainInfo", coreApi.getBlockchainInfo);
-	/** @type {any} */
-	let currentBlock;
-	let difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
-	/** @type {any} */
-	let difficultyPeriodFirstBlockHeader;
+	let currentBlock: RpcData;
+	const difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+	let difficultyPeriodFirstBlockHeader: RpcData;
 	
 	promises.push(utils.timePromise("api.diff-adj-est.getBlockHeaderByHeight", async () => {
 		currentBlock = await coreApi.getBlockHeaderByHeight(getblockchaininfo.blocks);
 	}, perfResults));
 	
 	promises.push(utils.timePromise("api.diff-adj-est.getBlockHeaderByHeight2", async () => {
-		let h = coinConfig.difficultyAdjustmentBlockCount * difficultyPeriod;
+		const h = coinConfig.difficultyAdjustmentBlockCount * difficultyPeriod;
 		difficultyPeriodFirstBlockHeader = await coreApi.getBlockHeaderByHeight(h);
 	}, perfResults));
 
 	await utils.awaitPromises(promises);
 	
-	let firstBlockHeader = difficultyPeriodFirstBlockHeader;
-	let heightDiff = currentBlock.height - firstBlockHeader.height;
-	let blockCount = heightDiff + 1;
-	let timeDiff = currentBlock.mediantime - firstBlockHeader.mediantime;
-	let timePerBlock = timeDiff / heightDiff;
-	let dt = new Date().getTime() / 1000 - firstBlockHeader.time;
-	let predictedBlockCount = dt / coinConfig.targetBlockTimeSeconds;
-	let timePerBlock2 = dt / heightDiff;
+	const firstBlockHeader = difficultyPeriodFirstBlockHeader;
+	const heightDiff = currentBlock.height - firstBlockHeader.height;
+	const blockCount = heightDiff + 1;
+	const dt = new Date().getTime() / 1000 - firstBlockHeader.time;
+	const predictedBlockCount = dt / coinConfig.targetBlockTimeSeconds;
 
 	let blockRatioPercent = new Decimal(blockCount / predictedBlockCount).times(100);
 	if (blockRatioPercent.gt(400)) {
@@ -794,13 +769,13 @@ router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res, next) => {
 	res.send(diffAdjPercent.toFixed(2).toString());
 }));
 
-router.get("/mining/next-block", asyncHandler(async (req, res, next) => {
+router.get("/mining/next-block", asyncHandler(async (req, res) => {
 	const promises = [];
 
-	const result = {};
+	const result: RpcData = {};
 
 	promises.push(utils.timePromise("api/next-block/getblocktemplate", async () => {
-		let nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
+		const nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
 			return await coreApi.getNextBlockEstimate();
 		});
 
@@ -822,17 +797,17 @@ router.get("/mining/next-block", asyncHandler(async (req, res, next) => {
 	res.json(result);
 }));
 
-router.get("/mining/next-block/txids", asyncHandler(async (req, res, next) => {
+router.get("/mining/next-block/txids", asyncHandler(async (req, res) => {
 	const promises = [];
 
-	const txids = [];
+	const txids: string[] = [];
 
 	promises.push(utils.timePromise("api/next-block/getblocktemplate", async () => {
-		let nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
+		const nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
 			return await coreApi.getNextBlockEstimate();
 		});
 
-		nextBlockEstimate.blockTemplate.transactions.forEach(x => {
+		nextBlockEstimate.blockTemplate.transactions.forEach((x: RpcData) => {
 			txids.push(x.txid);
 		});
 	}));
@@ -842,7 +817,7 @@ router.get("/mining/next-block/txids", asyncHandler(async (req, res, next) => {
 	res.json(txids);
 }));
 
-router.get("/mining/next-block/includes/:txid", asyncHandler(async (req, res, next) => {
+router.get("/mining/next-block/includes/:txid", asyncHandler(async (req, res) => {
 	const txid = req.params.txid;
 
 	const promises = [];
@@ -851,7 +826,7 @@ router.get("/mining/next-block/includes/:txid", asyncHandler(async (req, res, ne
 	let txCount = -1;
 
 	promises.push(utils.timePromise("api/next-block/getblocktemplate", async () => {
-		let nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
+		const nextBlockEstimate = await utils.timePromise("api/next-block/getNextBlockEstimate", async () => {
 			return await coreApi.getNextBlockEstimate();
 		});
 
@@ -868,7 +843,7 @@ router.get("/mining/next-block/includes/:txid", asyncHandler(async (req, res, ne
 
 	await utils.awaitPromises(promises);
 
-	let response = {included:(txidIndex >= 0)};
+	const response: RpcData = {included:(txidIndex >= 0)};
 	if (txidIndex >= 0) {
 		response.index = txidIndex;
 		response.txCount = txCount;
@@ -877,17 +852,17 @@ router.get("/mining/next-block/includes/:txid", asyncHandler(async (req, res, ne
 	res.json(response);
 }));
 
-router.get("/mining/miner-summary", asyncHandler(async (req, res, next) => {
+router.get("/mining/miner-summary", asyncHandler(async (req, res) => {
 	let startHeight = -1;
 	let endHeight = -1;
 
 	if (req.query.since) {
 		const regex = /^([0-9]+)d$/;
-		const match = queryString(req.query, "since").match(regex);
+		const match = (queryString(req.query, "since") as string).match(regex);
 
 		if (match) {
-			let days = parseInt(match[1]);
-			let getblockchaininfo = await coreApi.getBlockchainInfo();
+			const days = parseInt(match[1]);
+			const getblockchaininfo = await coreApi.getBlockchainInfo();
 
 			startHeight = getblockchaininfo.blocks - 144 * days;
 			endHeight = getblockchaininfo.blocks;
@@ -920,13 +895,13 @@ router.get("/mempool/summary", function(req, res, next) {
 	}).catch(next);
 });
 
-router.get("/mempool/fees", asyncHandler(async (req, res, next) => {
-	let feeConfTargets = [1, 3, 6, 144];	
-	let rawSmartFeeEstimates = await coreApi.getSmartFeeEstimates("CONSERVATIVE", feeConfTargets);
-	let smartFeeEstimates = {};
+router.get("/mempool/fees", asyncHandler(async (req, res) => {
+	const feeConfTargets = [1, 3, 6, 144];	
+	const rawSmartFeeEstimates = await coreApi.getSmartFeeEstimates("CONSERVATIVE", feeConfTargets);
+	const smartFeeEstimates: RpcData = {};
 	
 	for (let i = 0; i < feeConfTargets.length; i++) {
-		let rawSmartFeeEstimate = rawSmartFeeEstimates[i];
+		const rawSmartFeeEstimate = rawSmartFeeEstimates[i];
 		if (rawSmartFeeEstimate.errors) {
 			smartFeeEstimates[feeConfTargets[i]] = "?";
 		} else {
@@ -934,14 +909,14 @@ router.get("/mempool/fees", asyncHandler(async (req, res, next) => {
 		}
 	}		
 		
-	let results = {
+	const results: RpcData = {
 		"nextBlock":{"smart":smartFeeEstimates[1]},
 		"30min":smartFeeEstimates[3],
 		"60min":smartFeeEstimates[6],
 		"1day":smartFeeEstimates[144]
 	};
 
-	let nextBlockEstimate = await coreApi.getNextBlockEstimate();
+	const nextBlockEstimate = await coreApi.getNextBlockEstimate();
 	if (nextBlockEstimate != undefined && nextBlockEstimate.minFeeRate != undefined) {
 		//console.log("nextBlockEstimate: " + JSON.stringify(nextBlockEstimate));
 		results.nextBlock.min = Math.trunc(nextBlockEstimate.minFeeRate);
@@ -963,8 +938,8 @@ router.get("/mempool/fees", asyncHandler(async (req, res, next) => {
 const supportedCurrencies = ["usd", "eur", "gbp", "xau"];
 
 router.get("/price/sats", function(req, res, next) {
-	let result = {};
-	let amount = 1.0;
+	const result: RpcData = {};
+	const amount = 1.0;
 
 	if (!global.exchangeRates) {
 		result.success = false;
@@ -973,14 +948,14 @@ router.get("/price/sats", function(req, res, next) {
 
 	supportedCurrencies.forEach(currency => {
 		if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
-			let satsRateData = utils.satoshisPerUnitOfLocalCurrency(currency);
-			result[currency] = satsRateData.amtRaw;
+			const satsRateData = utils.satoshisPerUnitOfLocalCurrency(currency);
+			result[currency] = (satsRateData as { amtRaw: number }).amtRaw;
 
 		} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let satCurrencyType = global.currencyTypes["sat"];
-			let one = new Decimal(1);
+			const satCurrencyType = global.currencyTypes["sat"];
+			const one = new Decimal(1);
 			dec = one.dividedBy(dec);
 			dec = dec.times(satCurrencyType.multiplier);
 			
@@ -1004,21 +979,21 @@ router.get("/price/marketcap", function(req, res, next) {
 	}
 
 	coreApi.getBlockchainInfo().then(function(getblockchaininfo){
-		let estimatedSupply = utils.estimatedSupply(getblockchaininfo.blocks);
+		const estimatedSupply = utils.estimatedSupply(getblockchaininfo.blocks);
 		let price = 0;
 
-		let amount = 1.0;
-		let result = {};
+		const amount = 1.0;
+		const result: RpcData = {};
 
 		supportedCurrencies.forEach(currency => {
 			if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
-				let formatData = utils.formatExchangedCurrency(amount, currency);
+				const formatData = utils.formatExchangedCurrency(amount, currency);
 				price = Number(parseFloat(formatData.valRaw).toFixed(2));
 
 			} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 				let dec = new Decimal(amount);
 				dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-				let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
+				const exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
 				price = Number(exchangedAmt);
 			}
 		
@@ -1033,9 +1008,9 @@ router.get("/price/marketcap", function(req, res, next) {
 });
 
 router.get("/price", function(req, res, next) {
-	let amount = 1.0;
-	let result = {};
-	let format = (req.query.format == "true");
+	const amount = 1.0;
+	const result: RpcData = {};
+	const format = (req.query.format == "true");
 
 	if (!global.exchangeRates) {
 		result.success = false;
@@ -1044,7 +1019,7 @@ router.get("/price", function(req, res, next) {
 	
 	supportedCurrencies.forEach(currency => {
 		if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
-			let formatData = utils.formatExchangedCurrency(amount, currency);
+			const formatData = utils.formatExchangedCurrency(amount, currency);
 
 			if (format) {
 				result[currency] = formatData.val;
@@ -1055,7 +1030,7 @@ router.get("/price", function(req, res, next) {
 		} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
+			const exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
 			result[currency] = utils.addThousandsSeparators(exchangedAmt);
 		}
 	});
@@ -1072,13 +1047,12 @@ router.get("/price", function(req, res, next) {
 /// FUN
 
 router.get("/quotes/random", function(req, res, next) {
-	let index = utils.randomInt(0, btcQuotes.items.length);
 
 	let quote = null;
 	let done = false;
 
 	while (!done) {
-		let quoteIndex = utils.randomInt(0, btcQuotes.items.length);
+		const quoteIndex = utils.randomInt(0, btcQuotes.items.length);
 		quote = btcQuotes.items[quoteIndex];
 
 		done = !utils.objHasProperty(quote, "duplicateIndex");
@@ -1100,7 +1074,7 @@ router.get("/quotes/:quoteIndex", function(req, res, next) {
 		return;
 	}
 
-	let index = parseInt(req.params.quoteIndex);
+	const index = parseInt(req.params.quoteIndex);
 	
 	res.json(btcQuotes.items[index]);
 
@@ -1119,7 +1093,7 @@ router.get("/holidays/today", function(req, res, next) {
 		momentObj = momentObj.add(queryInt(req.query, "tzOffset", 0), "hours")
 	}
 
-	let day = momentObj.format("MM-DD");
+	const day = momentObj.format("MM-DD");
 	if (global.btcHolidays.byDay[day]) {
 		res.json({day: day, holidays: global.btcHolidays.byDay[day]});
 
@@ -1156,4 +1130,4 @@ router.get("/holidays/:day", function(req, res, next) {
 });
 
 
-module.exports = router;
+export = router;
