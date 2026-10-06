@@ -240,57 +240,6 @@ app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because express
 app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 app/api/electrumAddressApi.ts: TS7018: Object literal's property 'callback' implicitly has an 'any' type.
-app/api/mockApi.js: TS7005: Variable 'blocks' implicitly has an 'any[]' type.
-app/api/mockApi.js: TS7005: Variable 'txids' implicitly has an 'any[]' type.
-app/api/mockApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'blockHashes' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'blockHeights' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'methodName' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/mockApi.js: TS7006: Parameter 'txids' implicitly has an 'any' type.
-app/api/mockApi.js: TS7034: Variable 'blocks' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/mockApi.js: TS7034: Variable 'txids' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/rpcApi.js: TS2339: Property 'ancestors' does not exist on type '{}'.
-app/api/rpcApi.js: TS2339: Property 'descendants' does not exist on type '{}'.
-app/api/rpcApi.js: TS2339: Property 'entry' does not exist on type '{}'.
-app/api/rpcApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockCount' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockhash' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockhash' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'blockhashEnd' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'callback' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'callback' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'cmd' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'cmd' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'confTargetBlockCount' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'dt' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'hasParams' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'hash' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'height' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'method' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'methodName' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'minRpcVersionNeeded' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'outputIndex' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'request' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'rpcResult' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'success' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'wallet' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7006: Parameter 'walletOnly' implicitly has an 'any' type.
-app/api/rpcApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
