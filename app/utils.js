@@ -4,8 +4,6 @@ const fs = require("fs");
 
 const debug = require("debug");
 const debugLog = debug("btcexp:utils");
-const debugErrorLog = debug("btcexp:error");
-const debugErrorVerboseLog = debug("btcexp:errorVerbose");
 
 const { Decimal } = require("decimal.js");
 const axios = require("axios").default;
@@ -34,21 +32,11 @@ const { splitArrayIntoChunks, splitArrayIntoChunksByChunkCount, objectProperties
 const { seededRandom, seededRandomIntBetween, randomInt } = require("./helpers/random.js");
 const { rgbToHsl, colorHexToRgb, colorHexToHsl } = require("./helpers/color.js");
 const { parseNodeVersion, getDifficulty, isBlake2bDifficulty } = require("./helpers/node.js");
+const { logError } = require("./helpers/errors.js");
+const { formatLargeNumber, formatLargeNumberSignificant, formatCurrencyAmountWithForcedDecimalPlaces, formatCurrencyAmount, formatCurrencyAmountInSmallestUnits, satoshisPerUnitOfLocalCurrency, getExchangedCurrencyFormatData, formatExchangedCurrency } = require("./helpers/currency.js");
+const { outputTypeAbbreviation, outputTypeName, asHash, asHashOrHeight, asAddress } = require("./helpers/outputTypes.js");
 
 
-const exponentScales = [
-	{val:1000000000000000000000000000000000, name:"?", abbreviation:"V", exponent:"33"},
-	{val:1000000000000000000000000000000, name:"?", abbreviation:"W", exponent:"30"},
-	{val:1000000000000000000000000000, name:"?", abbreviation:"X", exponent:"27"},
-	{val:1000000000000000000000000, name:"yotta", abbreviation:"Y", exponent:"24"},
-	{val:1000000000000000000000, name:"zetta", abbreviation:"Z", exponent:"21"},
-	{val:1000000000000000000, name:"exa", abbreviation:"E", exponent:"18"},
-	{val:1000000000000000, name:"peta", abbreviation:"P", exponent:"15", textDesc:"Q"},
-	{val:1000000000000, name:"tera", abbreviation:"T", exponent:"12", textDesc:"T"},
-	{val:1000000000, name:"giga", abbreviation:"G", exponent:"9", textDesc:"B"},
-	{val:1000000, name:"mega", abbreviation:"M", exponent:"6", textDesc:"M"},
-	{val:1000, name:"kilo", abbreviation:"K", exponent:"3", textDesc:"thou"}
-];
 
 const crawlerBotUserAgentStrings = {
 	"google": new RegExp("adsbot-google|Googlebot|mediapartners-google", "i"),
@@ -178,196 +166,12 @@ function redirectToConnectPageIfNeeded(req, res) {
 
 
 
-function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedDecimalPlaces) {
-	formatType = formatType.toLowerCase();
-
-	let currencyType = global.currencyTypes[formatType];
-
-	if (currencyType == null) {
-		throw `Unknown currency type: ${formatType}`;
-	}
-
-	let dec = new Decimal(amount);
-
-	let decimalPlaces = currencyType.decimalPlaces;
-	//if (decimalPlaces == 0 && dec < 1) {
-	//	decimalPlaces = 5;
-	//}
-
-	if (forcedDecimalPlaces >= 0) {
-		decimalPlaces = forcedDecimalPlaces;
-	}
-
-	if (currencyType.type == "native") {
-		dec = dec.times(currencyType.multiplier);
-
-		if (forcedDecimalPlaces >= 0) {
-			// toFixed will keep trailing zeroes
-			let baseStr = addThousandsSeparators(dec.toFixed(decimalPlaces));
-
-			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
-
-		} else {
-			// toDP excludes trailing zeroes but doesn't "fix" numbers like 1e-8
-			// instead, we use toFixed and (optionally) manually strip trailing zeroes
-			// old method is kept for reference since this is sensitive, high-volume code
-			let baseStr = addThousandsSeparators(dec.toFixed(decimalPlaces).replace(/\.$/, ""));
-
-			// with Issue #500, the idea was raised that stripping trailing zeroes can
-			// make values more difficult to parse visually; now the stripping is
-			// dynamic, based on the value - if any of the 4 least-significant digits
-			// are non-zero (i.e. sat-value is NOT evenly divisible by 10,000), then
-			// no stripping is performed, otherwise it is performed, to preserve some
-			// of the UX benefit of larger, "even" amounts (e.g. 0.1BTC).
-			let trailingZeroesStrippedStr = baseStr.replace(/0+$/, "");
-			if (baseStr.length - trailingZeroesStrippedStr.length >= 4) {
-				baseStr = trailingZeroesStrippedStr
-
-				if (baseStr.endsWith(".")) {
-					baseStr = baseStr.slice(0, -1);
-				}
-			}
-
-			//let baseStr = addThousandsSeparators(dec.toDP(decimalPlaces)); // old version, failed to properly format "1e-8" (left unchanged)
-
-			let returnVal = {currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
-
-			// max digits in "val"
-			let maxValDigits = config.site.valueDisplayMaxLargeDigits;
-
-			// todo: make this section locale-aware (don't hardcode ".")
-
-			if (baseStr.indexOf(".") == -1) {
-				returnVal.val = baseStr;
-				
-			} else {
-				if (baseStr.length - baseStr.indexOf(".") - 1 > maxValDigits) {
-					returnVal.val = baseStr.substring(0, baseStr.indexOf(".") + maxValDigits + 1);
-					returnVal.lessSignificantDigits = baseStr.substring(baseStr.indexOf(".") + maxValDigits + 1);
-
-				} else {
-					returnVal.val = baseStr;
-				}
-			}
-
-			return returnVal;
-		}
-	} else if (currencyType.type == "exchanged") {
-		//console.log(JSON.stringify(global.exchangeRates) + " - " + currencyType.name);
-		if (global.exchangeRates != null && global.exchangeRates[currencyType.id] != null) {
-			dec = dec.times(global.exchangeRates[currencyType.id]);
-
-			let baseStr = addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces));
-
-			return {val:baseStr, currencyUnit:currencyType.name, simpleVal:baseStr, intVal:dec.trunc().toNumber()};
-
-		} else {
-			return formatCurrencyAmountWithForcedDecimalPlaces(amount, coinConfig.defaultCurrencyUnit.name, forcedDecimalPlaces);
-		}
-	} else {
-		throw `Unknown currency type: ${currencyType.type}`;
-	}
-}
-
-function formatCurrencyAmount(amount, formatType) {
-	return formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, -1);
-}
-
-function formatCurrencyAmountInSmallestUnits(amount, forcedDecimalPlaces) {
-	return formatCurrencyAmountWithForcedDecimalPlaces(amount, coins[config.coin].baseCurrencyUnit.name, forcedDecimalPlaces);
-}
 
 
-function satoshisPerUnitOfLocalCurrency(localCurrency) {
-	if (global.exchangeRates != null) {
-		let exchangeType = localCurrency;
 
-		if (!global.exchangeRates[localCurrency]) {
-			// if current display currency is a native unit, default to USD for exchange values
-			exchangeType = "usd";
-		}
 
-		let dec = new Decimal(1);
-		let one = new Decimal(1);
-		dec = dec.times(global.exchangeRates[exchangeType]);
-		
-		// USD/BTC -> BTC/USD
-		dec = one.dividedBy(dec);
 
-		let unitName = coins[config.coin].baseCurrencyUnit.name;
-		let satCurrencyType = global.currencyTypes["sat"];
-		let localCurrencyType = global.currencyTypes[localCurrency];
 
-		// BTC/USD -> sat/USD
-		dec = dec.times(satCurrencyType.multiplier);
-
-		let exchangedAmt = dec.trunc().toNumber();
-
-		return {amt:addThousandsSeparators(exchangedAmt),amtRaw:exchangedAmt, unit:`sat/${localCurrencyType.symbol}`}
-	}
-
-	return null;
-}
-
-function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) {
-	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
-		let dec = new Decimal(amount);
-		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
-
-		return {
-			symbol: global.currencySymbols[exchangeType],
-			value: addThousandsSeparators(exchangedAmt),
-			unit: exchangeType
-		}
-		
-	} else if (exchangeType == "au") {
-		if (global.exchangeRates != null && global.goldExchangeRates != null) {
-			let dec = new Decimal(amount);
-			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
-
-			return {
-				symbol: "AU",
-				value: addThousandsSeparators(exchangedAmt),
-				unit: "oz"
-			}
-		}
-	}
-
-	return "";
-}
-
-/** @returns {any} an object ({val, symbol, unit, valRaw}), or "" when there is no rate for the currency */
-function formatExchangedCurrency(amount, exchangeType, decimals=2) {
-	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
-		let dec = new Decimal(amount);
-		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(decimals);
-
-		return {
-			val: addThousandsSeparators(exchangedAmt),
-			symbol: global.currencyTypes[exchangeType].symbol,
-			unit: exchangeType,
-			valRaw: exchangedAmt
-		};
-	} else if (exchangeType == "au") {
-		if (global.exchangeRates != null && global.goldExchangeRates != null) {
-			let dec = new Decimal(amount);
-			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(decimals);
-
-			return {
-				val: addThousandsSeparators(exchangedAmt),
-				unit: "oz",
-				symbol: "AU",
-				valRaw: exchangedAmt
-			};
-		}
-	}
-
-	return "";
-}
 
 
 
@@ -705,47 +509,7 @@ function geoLocateIpAddresses(ipAddresses, provider) {
 
 
 
-/** @returns {[Decimal, any]} the number scaled down, and the scale that was used ({} when none) */
-function formatLargeNumber(n, decimalPlaces) {
-	try {
-		for (let i = 0; i < exponentScales.length; i++) {
-			let item = exponentScales[i];
 
-			let fraction = new Decimal(n / item.val);
-			if (fraction.abs().gte(1)) {
-				return [fraction.toDP(decimalPlaces), item];
-			}
-		}
-
-		return [new Decimal(n).toDP(decimalPlaces), {}];
-
-	} catch (err) {
-		logError("ru92huefhew", err, { n:n, decimalPlaces:decimalPlaces });
-
-		throw err;
-	}
-}
-
-/** @returns {[Decimal, any]} the number scaled down, and the scale that was used ({} when none) */
-function formatLargeNumberSignificant(n, significantDigits) {
-	try {
-		for (let i = 0; i < exponentScales.length; i++) {
-			let item = exponentScales[i];
-
-			let fraction = new Decimal(n / item.val);
-			if (fraction.abs().gte(1)) {
-				return [fraction.toDP(Math.max(0, significantDigits - `${fraction.floor()}`.length)), item];
-			}
-		}
-
-		return [new Decimal(n).toDP(significantDigits), {}];
-
-	} catch (err) {
-		logError("38fhcdugdeogwe", err, { n:n, significantDigits:significantDigits });
-
-		throw err;
-	}
-}
 
 
 
@@ -756,65 +520,7 @@ const reflectPromise = p => p.then(v => ({v, status: "resolved" }),
 							e => ({e, status: "rejected" }));
 
 
-global.errorStats = {};
 
-function logError(errorId, err, optionalUserData = {}, logStacktrace=true) {
-	debugErrorLog("Error " + errorId + ": " + err + ", json: " + JSON.stringify(err) + (optionalUserData != null ? (", userData: " + optionalUserData + " (json: " + JSON.stringify(optionalUserData) + ")") : ""));
-	
-	if (err && err.stack && logStacktrace) {
-		debugErrorVerboseLog("Stack: " + err.stack);
-	}
-
-
-	if (!global.errorLog) {
-		global.errorLog = [];
-	}
-
-	if (!global.errorStats[errorId]) {
-		global.errorStats[errorId] = {
-			count: 0,
-			firstSeen: new Date().getTime(),
-			properties: {}
-		};
-	}
-
-	if (optionalUserData && err && err.message) {
-		optionalUserData.errorMsg = err.message;
-	}
-
-	if (optionalUserData) {
-		for (const [key, value] of Object.entries(optionalUserData)) {
-			if (!global.errorStats[errorId].properties[key]) {
-				global.errorStats[errorId].properties[key] = {};
-			}
-
-			if (!global.errorStats[errorId].properties[key][value]) {
-				global.errorStats[errorId].properties[key][value] = 0;
-			}
-
-			global.errorStats[errorId].properties[key][value]++;
-		}
-	}
-
-	statTracker.trackEvent(`errors.${errorId}`);
-	statTracker.trackEvent(`errors.*`);
-
-	global.errorStats[errorId].count++;
-	global.errorStats[errorId].lastSeen = new Date().getTime();
-
-	global.errorLog.push({errorId:errorId, error:err, userData:optionalUserData, date:new Date()});
-	while (global.errorLog.length > 100) {
-		global.errorLog.splice(0, 1);
-	}
-
-	
-	let returnVal = {errorId:errorId, error:err};
-	if (optionalUserData) {
-		returnVal.userData = optionalUserData;
-	}
-
-	return returnVal;
-}
 
 function buildQrCodeUrls(strings) {
 	return new Promise(function(resolve, reject) {
@@ -859,59 +565,10 @@ function buildQrCodeUrl(str, results) {
 	});
 }
 
-function outputTypeAbbreviation(outputType) {
-	const map = {
-		"pubkey": "P2PK",
-		"multisig": "P2MS",
-		"pubkeyhash": "P2PKH",
-		"scripthash": "P2SH",
-		"witness_v0_keyhash": "P2WPKH",
-		"witness_v0_scripthash": "P2WSH",
-		"witness_v1_taproot": "P2TR",
-		"nonstandard": "nonstandard",
-		"nulldata": "nulldata"
-	};
 
-	if (map[outputType]) {
-		return map[outputType];
 
-	} else {
-		return "???";
-	}
-}
 
-function outputTypeName(outputType) {
-	const map = {
-		"pubkey": "Pay to Public Key",
-		"multisig": "Pay to MultiSig",
-		"pubkeyhash": "Pay to Public Key Hash",
-		"scripthash": "Pay to Script Hash",
-		"witness_v0_keyhash": "Witness, v0 Key Hash",
-		"witness_v0_scripthash": "Witness, v0 Script Hash",
-		"witness_v1_taproot": "Witness, v1 Taproot",
-		"nonstandard": "Non-Standard",
-		"nulldata": "Null Data"
-	};
 
-	if (map[outputType]) {
-		return map[outputType];
-
-	} else {
-		return "???";
-	}
-}
-
-function asHash(value) {
-	return value.replace(/[^a-f0-9]/gi, "");
-}
-
-function asHashOrHeight(value) {
-	return +value || asHash(value);
-}
-
-function asAddress(value) {
-	return value.replace(/[^a-z0-9]/gi, "");
-}
 
 const arrayFromHexString = hexString =>
 	new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
