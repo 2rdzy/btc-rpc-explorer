@@ -69,3 +69,6 @@ dist/
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# the explorer as test/helpers/app.ts builds it for the page tests
+.test-build
