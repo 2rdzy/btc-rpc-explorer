@@ -28,6 +28,9 @@
 	],
 	"author": "Dan Janosik <dan@47.io>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=20"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/2rdzy/btc-rpc-explorer.git"

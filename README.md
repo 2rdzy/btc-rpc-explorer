@@ -47,7 +47,7 @@ See [CHANGELOG.md](/CHANGELOG.md) (upstream's history).
 
 1. A Bitcoin Knots node on the BLAKE2b chain (v29.4.2 or later), with its RPC server enabled (`server=1`).
 2. Let the node synchronize (you *can* use this tool while synchronizing, but some pages may fail).
-3. Node.js 18+ (22+ recommended).
+3. Node.js 20+ (22+ recommended).
 4. Optional, for address history: an Electrum-protocol server for the same chain, such as a Fulcrum build that follows it.
 
 ### Note about pruning and indexing
