@@ -104,6 +104,40 @@ describe('estimates', () => {
 		assert.ok(out.delta.gt(0));
 	});
 
+	// blocks of exactly 500 seconds, 100 blocks before the next difficulty adjustment (at 961632)
+	const steady = () => [{ height: 960960, time: 0, mediantime: 1000 }, { height: 961532, time: 0, mediantime: 1000 + 572 * 500 }];
+
+	test('difficultyAdjustmentEstimates: the time left follows from the pace of the epoch so far', () => {
+		const [start, current] = steady();
+		const out = estimates.difficultyAdjustmentEstimates(start, current);
+
+		assert.equal(out.timePerBlock, 500);
+		assert.equal(out.blocksLeft, 100);
+		assert.equal(out.currentEpoch, 476);
+		assert.equal(out.calculationBlockCount, 572);
+		// 100 blocks * 500 s = 13.9 hours: less than a day, so the time left is given in hours
+		assert.equal(out.daysLeftStr, '< 1 day');
+		assert.equal(out.timeLeftStr, '~14 hrs');
+	});
+
+	test('difficultyAdjustmentEstimates: more than a day left is given in days', () => {
+		const out = estimates.difficultyAdjustmentEstimates({ height: 960960, time: 0, mediantime: 1000 }, { height: 961100, time: 0, mediantime: 1000 + 140 * 500 });
+
+		// 532 blocks * 500 s = 3.08 days
+		assert.equal(out.blocksLeft, 532);
+		assert.equal(out.daysLeftStr, '~3.1 days');
+		assert.equal(out.timeLeftStr, '~3.1 days');
+	});
+
+	test('nextHalvingEstimates: the days follow from the blocks left, the target block time and the pace of the epoch', () => {
+		const [start, current] = steady();
+		const out = estimates.nextHalvingEstimates(start, current) as ReturnType<typeof estimates.nextHalvingEstimates> & { daysUntilNextHalving: number };
+
+		// 88468 blocks to go at 600 s, less the 100 s each of the 100 blocks of this epoch that come in faster
+		assert.equal(out.blocksUntilNextHalving, 1050000 - 961532);
+		assert.ok(Math.abs(out.daysUntilNextHalving - (88468 * 600 - 100 * 100) / 86400) < 1e-9);
+	});
+
 	test('nextHalvingEstimates', () => {
 		const out = estimates.nextHalvingEstimates(header(960960, 1e6), header(961100, 600));
 		assert.equal(out.halvingCount, 4);

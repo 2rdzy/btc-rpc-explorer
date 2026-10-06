@@ -1437,7 +1437,7 @@ async function buildMempoolSummary(statusId: string, ageBuckets: number, sizeBuc
 			const summary = txSummaries[i];
 
 			const fee = summary.f;
-			const size = summary.w / 4; // TOOD: hack
+			const size = summary.w / 4; // the virtual size, from the weight
 			const feePerByte = summary.f / summary.w;
 			const age = Date.now() / 1000 - summary.t;
 
@@ -1780,7 +1780,7 @@ async function buildPredictedBlocks(statusId: string, statusFunc: StatusFunc): P
 			for (let i = 0; i < unAddedTxIndexes.length; i++) {
 				loopCounter++;
 				if (loopCounter % 1000 == 0) {
-					console.log("lop: " + loopCounter);
+					debugLog("predicted blocks: loop " + loopCounter);
 				}
 
 				const tx = txSummaries[unAddedTxIndexes[i]];
@@ -1816,7 +1816,7 @@ async function buildPredictedBlocks(statusId: string, statusFunc: StatusFunc): P
 
 					const sizeChange = currentBlock.txids.size - startSize;
 					if (sizeChange != (1 + tx.a.length)) {
-						console.log("DUPLICATEEEE");
+						debugLog("predicted blocks: a transaction was added to a block twice");
 					}
 
 					currentBlock.weight += weightWithAncestors;
@@ -1881,7 +1881,7 @@ async function buildPredictedBlocks(statusId: string, statusFunc: StatusFunc): P
 								currentBlock.txs.push({txid:ancesTx.key, childOf:tx.key});
 
 							} else {
-								console.log("WTF");
+								debugLog("predicted blocks: an ancestor is not in the mempool summaries");
 							}
 
 							
@@ -1905,10 +1905,10 @@ async function buildPredictedBlocks(statusId: string, statusFunc: StatusFunc): P
 			// ...and start a new block
 			//currentBlock = Object.assign({}, blockTemplate);
 			
-			console.log("block finished: " + JSON.stringify(currentBlock));
+			debugLog("predicted blocks: block finished: " + JSON.stringify(currentBlock));
 		}
 
-		console.log("loops: " + loopCounter);
+		debugLog("predicted blocks: loops: " + loopCounter);
 
 		//console.log("all blocks: " + JSON.stringify(blocks, null, 4));
 		

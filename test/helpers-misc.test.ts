@@ -104,6 +104,8 @@ describe('values and supply', () => {
 		assert.equal(mining.estimatedSupply(1).toString(), '100');
 		assert.equal(mining.estimatedSupply(210000).toString(), '10500050');
 		assert.equal(mining.estimatedSupply(420000).toString(), '15750050');
+		// part way through an era: the blocks since the last halving at the reward of that era
+		assert.equal(mining.estimatedSupply(300000).toString(), String(10500050 + 90000 * 25));
 	});
 });
 
