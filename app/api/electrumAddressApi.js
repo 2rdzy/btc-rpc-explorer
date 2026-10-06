@@ -122,7 +122,12 @@ function connectToServer(host, port, protocol) {
 			onLog: onLog
 		};
 
-		var electrumClient = new ElectrumClient(port, host, protocol || defaultProtocol, null, electrumCallbacks);
+		var electrumOptions = {
+			tls: config.electrumTls,
+			requestTimeout: 120000
+		};
+
+		var electrumClient = new ElectrumClient(port, host, protocol || defaultProtocol, electrumOptions, electrumCallbacks);
 		
 		electrumClient.initElectrum(electrumConfig, electrumPersistencePolicy).then(function() {
 			// success handled by onConnect callback

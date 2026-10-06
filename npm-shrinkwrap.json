@@ -27,7 +27,7 @@
 				"debug": "^4.4.1",
 				"decimal.js": "^10.6.0",
 				"dotenv": "^13.0.1",
-				"electrum-client": "github:2rdzy/electrum-client#d98e929028d2b05c88a41fe37652737912bead79",
+				"electrum-client": "github:2rdzy/electrum-client#4d08c8dd91b231ea28bb91f03853f018ede19b3b",
 				"express": "^4.21.2",
 				"express-async-handler": "^1.2.0",
 				"express-rate-limit": "^8.0.1",
@@ -3514,11 +3514,12 @@
 			"license": "MIT"
 		},
 		"node_modules/electrum-client": {
-			"version": "1.1.7",
-			"resolved": "git+ssh://git@github.com/2rdzy/electrum-client.git#d98e929028d2b05c88a41fe37652737912bead79",
+			"version": "2.0.0",
+			"resolved": "git+ssh://git@github.com/2rdzy/electrum-client.git#4d08c8dd91b231ea28bb91f03853f018ede19b3b",
+			"integrity": "sha512-k2Q4aB0kpJlMDaMqwQs1DFGQxNxX+TTnvQS9yW0c+IFzgKR9jHhm2AQwwsBydRj74gKDCwLxxuyXZsOk8JCuDA==",
 			"license": "MIT",
 			"engines": {
-				"node": ">=6"
+				"node": ">=18"
 			}
 		},
 		"node_modules/emoji-regex": {
