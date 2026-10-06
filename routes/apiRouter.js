@@ -426,7 +426,7 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		if (addressEncoding == "unknown") {
 			try {
 				let bech32mData = bech32m.decode(address);
-				result.bech32m = {words:Buffer.from(bech32mData.words).toString("hex"), version:bech32mData.version};
+				result.bech32m = {words:Buffer.from(bech32mData.words).toString("hex"), version:bech32mData.words[0]};
 
 				addressEncoding = "bech32m";
 
@@ -699,18 +699,18 @@ router.get("/mining/hashrate", asyncHandler(async (req, res, next) => {
 					let summary = utils.formatLargeNumber(hashrate, decimals);
 					
 					rates[index] = {
-						val: parseFloat(summary[0]),
+						val: summary[0].toNumber(),
 
 						unit: `${summary[1].name}hash`,
 						unitAbbreviation: `${summary[1].abbreviation}H`,
 						unitExponent: summary[1].exponent,
 						unitMultiplier: summary[1].val,
 
-						raw: summary[0] * summary[1].val,
+						raw: summary[0].toNumber() * summary[1].val,
 						
 						string1: `${summary[0]}x10^${summary[1].exponent}`,
 						string2: `${summary[0]}e${summary[1].exponent}`,
-						string3: `${(summary[0] * summary[1].val).toLocaleString()}`
+						string3: `${(summary[0].toNumber() * summary[1].val).toLocaleString()}`
 					};
 
 					resolve();
@@ -748,8 +748,10 @@ router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res, next) => {
 
 	let promises = [];
 	const getblockchaininfo = await utils.timePromise("api_diffAdjEst_getBlockchainInfo", coreApi.getBlockchainInfo);
+	/** @type {any} */
 	let currentBlock;
 	let difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+	/** @type {any} */
 	let difficultyPeriodFirstBlockHeader;
 	
 	promises.push(utils.timePromise("api.diff-adj-est.getBlockHeaderByHeight", async () => {
@@ -881,7 +883,7 @@ router.get("/mining/miner-summary", asyncHandler(async (req, res, next) => {
 
 	if (req.query.since) {
 		const regex = /^([0-9]+)d$/;
-		const match = req.query.since.match(regex);
+		const match = queryString(req.query, "since").match(regex);
 
 		if (match) {
 			let days = parseInt(match[1]);
@@ -1011,16 +1013,16 @@ router.get("/price/marketcap", function(req, res, next) {
 		supportedCurrencies.forEach(currency => {
 			if (global.exchangeRates != null && global.exchangeRates[currency] != null) {
 				let formatData = utils.formatExchangedCurrency(amount, currency);
-				price = parseFloat(formatData.valRaw).toFixed(2);
+				price = Number(parseFloat(formatData.valRaw).toFixed(2));
 
 			} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 				let dec = new Decimal(amount);
 				dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-				let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
-				price = exchangedAmt;
+				let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
+				price = Number(exchangedAmt);
 			}
 		
-			result[currency] = estimatedSupply * price;
+			result[currency] = estimatedSupply.toNumber() * price;
 		});
 
 		res.json(result);
@@ -1053,7 +1055,7 @@ router.get("/price", function(req, res, next) {
 		} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
+			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
 			result[currency] = utils.addThousandsSeparators(exchangedAmt);
 		}
 	});

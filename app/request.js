@@ -33,4 +33,17 @@ function queryInt(query, name, defaultValue) {
 	return Number.isNaN(number) ? defaultValue : number;
 }
 
-module.exports = { queryString, queryInt };
+// The values of query parameter `name` as a list of strings, for parameters sent as ?name[0]=a&name[1]=b.
+// A single ?name=a counts as a list of one. Anything that is not a string (an object, say) becomes null,
+// and a missing parameter gives an empty list.
+function queryStringList(query, name) {
+	const value = query ? query[name] : undefined;
+
+	if (Array.isArray(value)) {
+		return value.map(item => (typeof item === "string" ? item : null));
+	}
+
+	return typeof value === "string" ? [value] : [];
+}
+
+module.exports = { queryString, queryInt, queryStringList };

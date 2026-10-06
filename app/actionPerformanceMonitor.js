@@ -7,7 +7,7 @@ const utils = require("./utils.js");
 const onHeadersListener = (config, req, statusCode, startTimeNanos, statTracker) => {
 	try {
 		const responseTimeNanos = process.hrtime.bigint() - startTimeNanos;
-		const responseTimeMillis = parseInt(responseTimeNanos) * 1e-6;
+		const responseTimeMillis = Number(responseTimeNanos) * 1e-6;
 		
 		const category = Math.floor(statusCode / 100);
 		

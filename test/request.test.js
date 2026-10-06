@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const { describe, test } = require('node:test');
 
-const { queryInt, queryString } = require('../app/request.js');
+const { queryInt, queryString, queryStringList } = require('../app/request.js');
 
 describe('queryString', () => {
 	test('returns a string value', () => assert.equal(queryString({ a: 'x' }, 'a'), 'x'));
@@ -30,4 +30,17 @@ describe('queryInt', () => {
 	test('returns the default for an object', () => assert.equal(queryInt({ n: { a: '1' } }, 'n', 10), 10));
 	test('uses the first of a repeated parameter', () => assert.equal(queryInt({ n: ['7', '9'] }, 'n', 10), 7));
 	test('returns undefined when there is no default and no number', () => assert.equal(queryInt({ n: 'x' }, 'n'), undefined));
+});
+
+describe('queryStringList', () => {
+	test('returns the values of an indexed list', () => assert.deepEqual(queryStringList({ args: ['975700', 'x'] }, 'args'), ['975700', 'x']));
+	test('treats a single value as a list of one', () => assert.deepEqual(queryStringList({ args: '975700' }, 'args'), ['975700']));
+	test('turns anything that is not a string into null, keeping the places of the others', () => {
+		assert.deepEqual(queryStringList({ args: ['a', { b: '1' }, ['c']] }, 'args'), ['a', null, null]);
+	});
+	test('gives an empty list for a missing parameter or an object', () => {
+		assert.deepEqual(queryStringList({}, 'args'), []);
+		assert.deepEqual(queryStringList({ args: { 0: 'a' } }, 'args'), []);
+		assert.deepEqual(queryStringList(undefined, 'args'), []);
+	});
 });

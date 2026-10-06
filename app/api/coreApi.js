@@ -420,6 +420,7 @@ async function getNextBlockEstimate() {
 		medianFeeRate = feeRates[Math.floor(feeRates.length / 2)];
 	}
 
+	/** @type {any[]} */
 	const feeRateGroups = [];
 	let groupCount = 10;
 	for (let i = 0; i < groupCount; i++) {
@@ -1690,6 +1691,7 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 
 			let bucketCount = satoshiPerByteBucketMaxima.length + 1;
 
+			/** @type {any[]} */
 			let satoshiPerByteBuckets = [];
 			let satoshiPerByteBucketLabels = [];
 
@@ -1768,6 +1770,7 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 
 			const oldestLargestCount = 20;
 
+			/** @type {any} */
 			let summary = {
 				"count": 0,
 				"totalFees": new Decimal(0),
@@ -1893,8 +1896,8 @@ function buildMempoolSummary(statusId, ageBuckets, sizeBuckets, statusFunc) {
 				satoshiPerByteBucketMaxima = satoshiPerByteBucketMaxima.slice(0, topIndex + 1);
 			}
 
-			summary["averageFee"] = summary["totalFees"] / summary["count"];
-			summary["averageFeePerByte"] = summary["totalFees"] / summary["totalBytes"];
+			summary["averageFee"] = Number(summary["totalFees"]) / summary["count"];
+			summary["averageFeePerByte"] = Number(summary["totalFees"]) / summary["totalBytes"];
 
 			summary["satoshiPerByteBucketMaxima"] = satoshiPerByteBucketMaxima;
 			summary.satoshiPerByteBuckets = satoshiPerByteBuckets;
@@ -2211,6 +2214,7 @@ function getRpcMethodHelp(methodName) {
 			});
 
 			let args = [];
+			/** @type {any} */
 			let argX = null;
 			// looking for line starting with "N. " where N is an integer (1-2 digits)
 			argumentLines.forEach(function(line) {

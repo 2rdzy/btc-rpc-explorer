@@ -21,7 +21,7 @@ const markdown = require("markdown-it")();
 const asyncHandler = require("express-async-handler");
 
 const utils = require('./../app/utils.js');
-const { queryInt, queryString } = require("./../app/request.js");
+const { queryInt, queryString, queryStringList } = require("./../app/request.js");
 const coins = require("./../app/coins.js");
 const config = require("./../app/config.js");
 const coreApi = require("./../app/api/coreApi.js");
@@ -1830,8 +1830,10 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 		res.locals.gethelp = helpContent;
 
 
-		if (req.query.method) {
-			method = req.query.method;
+		const queryMethod = queryString(req.query, "method");
+
+		if (queryMethod) {
+			method = queryMethod;
 
 			if (!req.session.recentRpcCommands) {
 				req.session.recentRpcCommands = [];
@@ -1845,52 +1847,55 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 				}
 			}
 
-			res.locals.method = req.query.method;
+			res.locals.method = queryMethod;
 
-			const methodHelp = await coreApi.getRpcMethodHelp(req.query.method.trim());
+			const methodHelp = await coreApi.getRpcMethodHelp(queryMethod.trim());
 			res.locals.methodhelp = methodHelp;
 
 			if (req.query.execute) {
 				let argDetails = methodHelp.args;
 				
-				if (req.query.args) {
-					debugLog("ARGS: " + JSON.stringify(req.query.args));
+				// the arguments, as strings: ?args[0]=1&args[1]=abc (a single ?args=x counts as one argument)
+				const queryArgs = queryStringList(req.query, "args");
 
-					for (let i = 0; i < req.query.args.length; i++) {
+				if (queryArgs.length > 0) {
+					debugLog("ARGS: " + JSON.stringify(queryArgs));
+
+					for (let i = 0; i < queryArgs.length; i++) {
 						let argProperties = argDetails[i].properties;
 						debugLog(`ARG_PROPS[${i}]: ` + JSON.stringify(argProperties));
 
 						for (let j = 0; j < argProperties.length; j++) {
 							if (argProperties[j] === "numeric") {
-								if (req.query.args[i] == null || req.query.args[i] == "") {
+								if (queryArgs[i] == null || queryArgs[i] == "") {
 									argValues.push(null);
 
 								} else {
-									argValues.push(parseInt(req.query.args[i]));
+									argValues.push(parseInt(queryArgs[i]));
 								}
 
 								break;
 
 							} else if (argProperties[j] === "boolean") {
-								if (req.query.args[i]) {
-									argValues.push(req.query.args[i] == "true");
+								if (queryArgs[i]) {
+									argValues.push(queryArgs[i] == "true");
 								}
 
 								break;
 
 							} else if (argProperties[j] === "string") {
-								if (req.query.args[i]) {
-									argValues.push(req.query.args[i].replace(/[\r]/g, ''));
+								if (queryArgs[i]) {
+									argValues.push(queryArgs[i].replace(/[\r]/g, ''));
 								}
 
 								break;
 
 							} else if (argProperties[j] === "numeric or string" || argProperties[j] === "string or numeric") {
-								if (req.query.args[i]) {
-									let stringVal = req.query.args[i].replace(/[\r]/g, '');
+								if (queryArgs[i]) {
+									let stringVal = queryArgs[i].replace(/[\r]/g, '');
 									let numberVal = parseInt(stringVal);
 
-									if (numberVal.toString() == numberVal) {
+									if (!Number.isNaN(numberVal)) {
 										argValues.push(numberVal);
 
 									} else {
@@ -1901,15 +1906,15 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 								break;
 
 							} else if (argProperties[j] === "array" || argProperties[j] === "json array") {
-								if (req.query.args[i]) {
-									argValues.push(JSON.parse(req.query.args[i]));
+								if (queryArgs[i]) {
+									argValues.push(JSON.parse(queryArgs[i]));
 								}
 								
 								break;
 
 							} else if (argProperties[j] === "json object") {
-								if (req.query.args[i]) {
-									argValues.push(JSON.parse(req.query.args[i]));
+								if (queryArgs[i]) {
+									argValues.push(JSON.parse(queryArgs[i]));
 								}
 								
 								break;
@@ -1923,7 +1928,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 
 				res.locals.argValues = argValues;
 
-				if (config.rpcBlacklist.includes(req.query.method.toLowerCase())) {
+				if (config.rpcBlacklist.includes(queryMethod.toLowerCase())) {
 					res.locals.methodResult = "Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the 'rpcBlacklist' setting in config.js.";
 
 					res.render("rpc-browser");
@@ -1946,11 +1951,11 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 					});
 				});
 
-				debugLog("Executing RPC '" + req.query.method + "' with params: " + JSON.stringify(argValues));
+				debugLog("Executing RPC '" + method + "' with params: " + JSON.stringify(argValues));
 
 				try {
 					const startTimeNanos = utils.startTimeNanos();
-					const rpcResult = await rpcApi.getRpcDataWithParams({method:req.query.method, parameters:argValues});
+					const rpcResult = await rpcApi.getRpcDataWithParams({method:method, parameters:argValues});
 					const result = rpcResult;
 					const dtMillis = utils.dtMillis(startTimeNanos);
 
@@ -1970,7 +1975,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 					//next();
 
 				} catch (err) {
-					res.locals.pageErrors.push(utils.logError("23roewuhfdghe", err, {method:req.query.method, params:argValues}));
+					res.locals.pageErrors.push(utils.logError("23roewuhfdghe", err, {method:method, params:argValues}));
 
 					res.locals.methodResult = {error:("" + err)};
 

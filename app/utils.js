@@ -88,7 +88,7 @@ if (fs.existsSync(ipCacheFile)) {
 	try {
 		let rawData = fs.readFileSync(ipCacheFile);
 
-		ipMemoryCache = JSON.parse(rawData);
+		ipMemoryCache = JSON.parse(rawData.toString());
 
 		debugLog(`Loaded ip address cache (${rawData.length.toLocaleString()} bytes)`);
 
@@ -169,6 +169,7 @@ function redirectToConnectPageIfNeeded(req, res) {
 	return false;
 }
 
+/** @param {BufferEncoding} [outputFormat] */
 function formatHex(hex, outputFormat="utf8") {
 	return Buffer.from(hex, "hex").toString(outputFormat);
 }
@@ -371,7 +372,7 @@ function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) 
 	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
 		let dec = new Decimal(amount);
 		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
+		let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
 
 		return {
 			symbol: global.currencySymbols[exchangeType],
@@ -383,7 +384,7 @@ function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) 
 		if (global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
+			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(2);
 
 			return {
 				symbol: "AU",
@@ -396,11 +397,12 @@ function getExchangedCurrencyFormatData(amount, exchangeType, includeUnit=true) 
 	return "";
 }
 
+/** @returns {any} an object ({val, symbol, unit, valRaw}), or "" when there is no rate for the currency */
 function formatExchangedCurrency(amount, exchangeType, decimals=2) {
 	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
 		let dec = new Decimal(amount);
 		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
-		let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(decimals);
+		let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(decimals);
 
 		return {
 			val: addThousandsSeparators(exchangedAmt),
@@ -412,7 +414,7 @@ function formatExchangedCurrency(amount, exchangeType, decimals=2) {
 		if (global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(decimals);
+			let exchangedAmt = Number(Math.round(dec.toNumber() * 100) / 100).toFixed(decimals);
 
 			return {
 				val: addThousandsSeparators(exchangedAmt),
@@ -480,6 +482,7 @@ function ellipsizeMiddle(str, length, replacement="…", extraCharAtStart=true) 
 //  - stripZeroes (default: true)
 //  - shortenDurationNames (default: true)
 //  - outputCommas (default: true)
+/** @param {{oneElement?: boolean, stripZeroes?: boolean, shortenDurationNames?: boolean, outputCommas?: boolean, decimalPlaces?: number}} [options] */
 function summarizeDuration(duration, options={}) {
 	let oneElement = "oneElement" in options ? options.oneElement : false;
 	let stripZeroes = "stripZeroes" in options ? options.stripZeroes : true;
@@ -493,6 +496,7 @@ function summarizeDuration(duration, options={}) {
 	let str = formatParts.join(", ");
 
 	if (oneElement) {
+		/** @type {number[]} */
 		let parts = [duration.asYears(), duration.asMonths(), duration.asWeeks(), duration.asDays(), duration.asHours(), duration.asMinutes(), duration.asSeconds()];
 		let partNames = ["years", "months", "weeks", "days", "hours", "minutes", "seconds"];
 
@@ -902,6 +906,7 @@ function isBlake2bDifficulty(obj) {
 	return obj.difficulty == null && obj.difficulty_blake2b != null;
 }
 
+/** @returns {[Decimal, any]} the number scaled down, and the scale that was used ({} when none) */
 function formatLargeNumber(n, decimalPlaces) {
 	try {
 		for (let i = 0; i < exponentScales.length; i++) {
@@ -922,6 +927,7 @@ function formatLargeNumber(n, decimalPlaces) {
 	}
 }
 
+/** @returns {[Decimal, any]} the number scaled down, and the scale that was used ({} when none) */
 function formatLargeNumberSignificant(n, significantDigits) {
 	try {
 		for (let i = 0; i < exponentScales.length; i++) {
@@ -1232,7 +1238,7 @@ const fileCache = (cacheDir, cacheName, cacheVersion=1) => {
 				let rawData = fs.readFileSync(filepath);
 
 				try {
-					return JSON.parse(rawData);
+					return JSON.parse(rawData.toString());
 
 				} catch (e) {
 					logError("378y43edewe", e);
@@ -1262,7 +1268,7 @@ const startTimeNanos = () => {
 const dtMillis = (startTimeNanos) => {
 	const dtNanos = process.hrtime.bigint() - startTimeNanos;
 
-	return parseInt(dtNanos) * 1e-6;
+	return Number(dtNanos) * 1e-6;
 };
 
 function objectProperties(obj) {
@@ -1542,6 +1548,7 @@ function tryParseAddress(address) {
 	let bech32Error = null;
 	let bech32mError = null;
 
+	/** @type {any} */
 	let parsedAddress = null;
 
 	let b58prefix = (global.activeBlockchain == "main" ? /^[13].*$/ : /^[2mn].*$/);

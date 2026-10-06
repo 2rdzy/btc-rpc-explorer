@@ -220,12 +220,12 @@ module.exports = {
 	site: {
 		hideInfoNotes: process.env.BTCEXP_UI_HIDE_INFO_NOTES,
 		homepage:{
-			recentBlocksCount: parseInt(process.env.BTCEXP_UI_HOME_PAGE_LATEST_BLOCKS_COUNT || (slowDeviceMode ? 5 : 10))
+			recentBlocksCount: parseInt(process.env.BTCEXP_UI_HOME_PAGE_LATEST_BLOCKS_COUNT || String(slowDeviceMode ? 5 : 10))
 		},
 		blockTxPageSize: (slowDeviceMode ? 10 : 20),
 		addressTxPageSize: 10,
 		txMaxInput: (slowDeviceMode ? 3 : 15),
-		browseBlocksPageSize: parseInt(process.env.BTCEXP_UI_BLOCKS_PAGE_BLOCK_COUNT || (slowDeviceMode ? 10 : 25)),
+		browseBlocksPageSize: parseInt(process.env.BTCEXP_UI_BLOCKS_PAGE_BLOCK_COUNT || String(slowDeviceMode ? 10 : 25)),
 		browseMempoolTransactionsPageSize: (slowDeviceMode ? 10 : 25),
 		addressPage:{
 			txOutputMaxDefaultDisplay:10
