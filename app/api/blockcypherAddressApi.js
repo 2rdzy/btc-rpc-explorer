@@ -1,6 +1,6 @@
 "use strict";
 
-const axios = require("axios");
+const axios = require("axios").default;
 const utils = require("./../utils.js");
 
 

@@ -85,7 +85,7 @@ const momentDurationFormat = require("moment-duration-format");
 const coreApi = require("./app/api/coreApi.js");
 const rpcApi = require("./app/api/rpcApi.js");
 const coins = require("./app/coins.js");
-const axios = require("axios");
+const axios = require("axios").default;
 const qrcode = require("qrcode");
 const addressApi = require("./app/api/addressApi.js");
 const electrumAddressApi = require("./app/api/electrumAddressApi.js");
@@ -634,7 +634,7 @@ async function assessTxindexAvailability() {
 	} catch (e) {
 		utils.logError("o2328ryw8wsde", e);
 
-		var retryTime = parseInt(Math.min(15 * 60 * 1000, 1000 * 10 * Math.pow(2, txindexCheckCount)));
+		var retryTime = Math.trunc(Math.min(15 * 60 * 1000, 1000 * 10 * Math.pow(2, txindexCheckCount)));
 		txindexCheckCount++;
 
 		debugLog(`txindex check: error in rpc getindexinfo; will try again in ${retryTime}ms`);

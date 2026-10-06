@@ -276,7 +276,7 @@ router.get("/blockchain/next-halving", asyncHandler(async (req, res, next) => {
 		let promises = [];
 
 		res.locals.getblockchaininfo = getblockchaininfo;
-		res.locals.difficultyPeriod = parseInt(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+		res.locals.difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 
 		let blockHeights = [];
 		if (getblockchaininfo.blocks) {
@@ -749,7 +749,7 @@ router.get("/mining/diff-adj-estimate", asyncHandler(async (req, res, next) => {
 	let promises = [];
 	const getblockchaininfo = await utils.timePromise("api_diffAdjEst_getBlockchainInfo", coreApi.getBlockchainInfo);
 	let currentBlock;
-	let difficultyPeriod = parseInt(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
+	let difficultyPeriod = Math.trunc(Math.floor(getblockchaininfo.blocks / coinConfig.difficultyAdjustmentBlockCount));
 	let difficultyPeriodFirstBlockHeader;
 	
 	promises.push(utils.timePromise("api.diff-adj-est.getBlockHeaderByHeight", async () => {
@@ -942,9 +942,9 @@ router.get("/mempool/fees", asyncHandler(async (req, res, next) => {
 	let nextBlockEstimate = await coreApi.getNextBlockEstimate();
 	if (nextBlockEstimate != undefined && nextBlockEstimate.minFeeRate != undefined) {
 		//console.log("nextBlockEstimate: " + JSON.stringify(nextBlockEstimate));
-		results.nextBlock.min = parseInt(nextBlockEstimate.minFeeRate);
-		results.nextBlock.max = parseInt(nextBlockEstimate.maxFeeRate);
-		results.nextBlock.median = parseInt(nextBlockEstimate.medianFeeRate);
+		results.nextBlock.min = Math.trunc(nextBlockEstimate.minFeeRate);
+		results.nextBlock.max = Math.trunc(nextBlockEstimate.maxFeeRate);
+		results.nextBlock.median = Math.trunc(nextBlockEstimate.medianFeeRate);
 	}
 
 	res.json(results);
@@ -1014,7 +1014,7 @@ router.get("/price/marketcap", function(req, res, next) {
 			} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 				let dec = new Decimal(amount);
 				dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-				let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(2);
+				let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
 				price = exchangedAmt;
 			}
 		
@@ -1051,7 +1051,7 @@ router.get("/price", function(req, res, next) {
 		} else if (currency == "xau" && global.exchangeRates != null && global.goldExchangeRates != null) {
 			let dec = new Decimal(amount);
 			dec = dec.times(global.exchangeRates.usd).dividedBy(global.goldExchangeRates.usd);
-			let exchangedAmt = parseFloat(Math.round(dec * 100) / 100).toFixed(2);
+			let exchangedAmt = Number(Math.round(dec * 100) / 100).toFixed(2);
 			result[currency] = utils.addThousandsSeparators(exchangedAmt);
 		}
 	});

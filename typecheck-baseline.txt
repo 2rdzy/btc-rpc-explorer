@@ -6,41 +6,14 @@ app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
 app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
 app.js: TS2339: Property 'continueStartup' does not exist on type 'Express'.
 app.js: TS2339: Property 'debug' does not exist on type 'object'.
-app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'host' does not exist on type 'Session & Partial<SessionData>'.
 app.js: TS2339: Property 'onStartup' does not exist on type 'Express'.
-app.js: TS2339: Property 'port' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'port' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'post' does not exist on type 'typeof import("node_modules/axios/index")'.
-app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
 app.js: TS2339: Property 'split' does not exist on type 'string | string[]'.
 app.js: TS2339: Property 'stack' does not exist on type 'unknown'.
 app.js: TS2339: Property 'startTime' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 app.js: TS2339: Property 'startTime' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 app.js: TS2339: Property 'status' does not exist on type 'Error'.
-app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userMessageType' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2339: Property 'username' does not exist on type 'Session & Partial<SessionData>'.
-app.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app.js: TS2349: This expression is not callable.
 app.js: TS2769: No overload matches this call.
 app/actionPerformanceMonitor.js: TS2345: Argument of type 'bigint' is not assignable to parameter of type 'string'.
-app/api/blockchainAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
-app/api/blockchainAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
-app/api/blockchainAddressApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/blockchairAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
-app/api/blockcypherAddressApi.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
 app/api/coreApi.js: TS2339: Property 'buckets' does not exist on type '{ count: number; totalFees: Decimal; totalBytes: number; totalWeight: number; minFeeRate: number; maxFeeRate: number; }'.
 app/api/coreApi.js: TS2339: Property 'buckets' does not exist on type '{ count: number; totalFees: Decimal; totalBytes: number; totalWeight: number; minFeeRate: number; maxFeeRate: number; }'.
 app/api/coreApi.js: TS2339: Property 'description' does not exist on type '{}'.
@@ -56,13 +29,6 @@ app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ feePerByte
 app/api/coreApi.js: TS2339: Property 'txid' does not exist on type '{ size: number; txidKey: any; }'.
 app/api/coreApi.js: TS2339: Property 'weightRatio' does not exist on type '{ minFeeRate: number; maxFeeRate: number; totalWeight: number; txidCount: number; }'.
 app/api/coreApi.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/api/coreApi.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/api/coreApi.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 app/api/rpcApi.js: TS2339: Property 'rpcCode' does not exist on type 'Error'.
@@ -78,9 +44,6 @@ app/systemMonitor.js: TS2769: No overload matches this call.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
 app/utils.js: TS2322: Type 'string' is not assignable to type 'number[]'.
-app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
-app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
-app/utils.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
 app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
 app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
 app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'number'.
@@ -92,14 +55,6 @@ app/utils.js: TS2345: Argument of type 'Decimal' is not assignable to parameter 
 app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'bigint' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-app/utils.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 app/utils.js: TS2345: Argument of type 'string' is not assignable to parameter of type 'BufferEncoding'.
 app/utils.js: TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
 app/utils.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
@@ -118,9 +73,7 @@ bin/cli.js: TS2307: Cannot find module './www' or its corresponding type declara
 bin/cli.js: TS2322: Type 'boolean' is not assignable to type 'string'.
 bin/cli.js: TS2322: Type 'unknown' is not assignable to type 'string'.
 bin/frontend-resource-integrity.js: TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.
-bin/refresh-mining-pool-configs.js: TS2339: Property 'get' does not exist on type 'typeof import("node_modules/axios/index")'.
 bin/refresh-mining-pool-configs.js: TS2345: Argument of type '(err: any) => void' is not assignable to parameter of type 'WriteFileOptions'.
-routes/adminRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
 routes/apiRouter.js: TS18048: 'currentBlock' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'currentBlock' is possibly 'undefined'.
 routes/apiRouter.js: TS18048: 'firstBlockHeader' is possibly 'undefined'.
@@ -148,13 +101,6 @@ routes/apiRouter.js: TS2339: Property 'valRaw' does not exist on type 'string | 
 routes/apiRouter.js: TS2339: Property 'version' does not exist on type 'Decoded'.
 routes/apiRouter.js: TS2345: Argument of type 'Decimal | { val: number; name: string; abbreviation: string; exponent: string; textDesc?: undefined; } | { val: number; name: string; abbreviation: string; exponent: string; textDesc: string; } | {}' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/apiRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 routes/apiRouter.js: TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
@@ -166,36 +112,8 @@ routes/baseRouter.js: TS2322: Type 'string | ParsedQs | (string | ParsedQs)[]' i
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
 routes/baseRouter.js: TS2339: Property 'authenticated' does not exist on type 'Request<{}, any, any, ParsedQs, Record<string, any>>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'favoriteRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'query' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'recentRpcCommands' does not exist on type 'Session & Partial<SessionData>'.
 routes/baseRouter.js: TS2339: Property 'toLowerCase' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
 routes/baseRouter.js: TS2339: Property 'trim' does not exist on type 'string | ParsedQs | (string | ParsedQs)[]'.
-routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userMessage' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
-routes/baseRouter.js: TS2339: Property 'userSettings' does not exist on type 'Session & Partial<SessionData>'.
 routes/baseRouter.js: TS2345: Argument of type 'Decimal' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-routes/baseRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 routes/baseRouter.js: TS2365: Operator '<' cannot be applied to types 'number' and 'string | number | ParsedQs | (string | ParsedQs)[]'.
 routes/baseRouter.js: TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
-routes/snippetRouter.js: TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.

@@ -6,7 +6,7 @@ const os = require("os");
 const path = require("path");
 const dotenv = require("dotenv");
 const fs = require("fs");
-const axios = require("axios");
+const axios = require("axios").default;
 
 const utils = require("../app/utils.js");
 const coins = require("../app/coins.js");
