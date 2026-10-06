@@ -1,18 +1,30 @@
-"use strict";
+import { xpubChangeVersionBytes, bip32Addresses } from "../helpers/addresses.js";
+import * as coreApi from "./coreApi.js";
+import * as addressApi from "./addressApi.js";
 
-const config = require("./../config.js");
-const coins = require("../coins.js");
-const utils = require("../utils.js");
+export interface RelatedKey {
+	keyType: string,
+	key: string,
+	outputType: string,
+	firstAddress: string
+}
 
-const coinConfig = coins[config.coin];
+export interface KeyDetails {
+	keyType: string,
+	relatedKeys: RelatedKey[],
+	outputType?: string,
+	outputTypeDesc?: string,
+	bip32Path?: string,
+	// added by the API route
+	receiveAddresses?: string[],
+	changeAddresses?: string[]
+}
 
-const coreApi = require("./coreApi.js");
-const addressApi = require("./addressApi.js");
 
 
-
-function getKeyDetails(extendedPubkey) {
-	let keyDetails = {
+// What kind of key an extended public key is, and the same key in the other formats, with the first address of each.
+export function getKeyDetails(extendedPubkey: string): KeyDetails {
+	const keyDetails: KeyDetails = {
 		keyType: extendedPubkey.substring(0, 4),
 		relatedKeys: []
 	};
@@ -29,30 +41,30 @@ function getKeyDetails(extendedPubkey) {
 
 		let xpub = extendedPubkey;
 		if (!extendedPubkey.startsWith(xpub_tpub)) {
-			xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+			xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 		}
 
 		if (!extendedPubkey.startsWith(xpub_tpub)) {
 			keyDetails.relatedKeys.push({
 				keyType: xpub_tpub,
-				key: utils.xpubChangeVersionBytes(xpub, xpub_tpub),
+				key: xpubChangeVersionBytes(xpub, xpub_tpub),
 				outputType: "P2PKH",
-				firstAddress: utils.bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
+				firstAddress: bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
 			});
 		}
 
 		keyDetails.relatedKeys.push({
 			keyType: ypub_upub,
-			key: utils.xpubChangeVersionBytes(xpub, ypub_upub),
+			key: xpubChangeVersionBytes(xpub, ypub_upub),
 			outputType: "P2WPKH in P2SH",
-			firstAddress: utils.bip32Addresses(xpub, "p2sh(p2wpkh)", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2sh(p2wpkh)", 0, 1, 0)[0]
 		});
 
 		keyDetails.relatedKeys.push({
 			keyType: zpub_vpub,
-			key: utils.xpubChangeVersionBytes(xpub, zpub_vpub),
+			key: xpubChangeVersionBytes(xpub, zpub_vpub),
 			outputType: "P2WPKH",
-			firstAddress: utils.bip32Addresses(xpub, "p2wpkh", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2wpkh", 0, 1, 0)[0]
 		});
 
 	} else if (extendedPubkey.match(/^(ypub|upub).*$/)) {
@@ -63,20 +75,20 @@ function getKeyDetails(extendedPubkey) {
 		const xpub_tpub = global.activeBlockchain == "main" ? "xpub" : "tpub";
 		const zpub_vpub = global.activeBlockchain == "main" ? "zpub" : "vpub";
 
-		const xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+		const xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 
 		keyDetails.relatedKeys.push({
 			keyType: xpub_tpub,
 			key: xpub,
 			outputType: "P2PKH",
-			firstAddress: utils.bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
 		});
 
 		keyDetails.relatedKeys.push({
 			keyType: zpub_vpub,
-			key: utils.xpubChangeVersionBytes(xpub, zpub_vpub),
+			key: xpubChangeVersionBytes(xpub, zpub_vpub),
 			outputType: "P2WPKH",
-			firstAddress: utils.bip32Addresses(xpub, "p2wpkh", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2wpkh", 0, 1, 0)[0]
 		});
 
 	} else if (extendedPubkey.match(/^(zpub|vpub).*$/)) {
@@ -87,20 +99,20 @@ function getKeyDetails(extendedPubkey) {
 		const xpub_tpub = global.activeBlockchain == "main" ? "xpub" : "tpub";
 		const ypub_upub = global.activeBlockchain == "main" ? "ypub" : "upub";
 
-		const xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+		const xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 
 		keyDetails.relatedKeys.push({
 			keyType: xpub_tpub,
 			key: xpub,
 			outputType: "P2PKH",
-			firstAddress: utils.bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2pkh", 0, 1, 0)[0]
 		});
 
 		keyDetails.relatedKeys.push({
 			keyType: ypub_upub,
-			key: utils.xpubChangeVersionBytes(xpub, ypub_upub),
+			key: xpubChangeVersionBytes(xpub, ypub_upub),
 			outputType: "P2WPKH in P2SH",
-			firstAddress: utils.bip32Addresses(xpub, "p2sh(p2wpkh)", 0, 1, 0)[0]
+			firstAddress: bip32Addresses(xpub, "p2sh(p2wpkh)", 0, 1, 0)[0]
 		});
 
 	} else if (extendedPubkey.startsWith("Ypub")) {
@@ -118,46 +130,57 @@ function getKeyDetails(extendedPubkey) {
 
 // 0 is receive
 // 1 is change
-function getXpubAddresses(extendedPubkey, receiveOrChange=0, limit=20, offset=0) {
+export function getXpubAddresses(extendedPubkey: string, receiveOrChange = 0, limit = 20, offset = 0): string[] {
 	const xpub_tpub = global.activeBlockchain == "main" ? "xpub" : "tpub";
-	const ypub_upub = global.activeBlockchain == "main" ? "ypub" : "upub";
-	const zpub_vpub = global.activeBlockchain == "main" ? "zpub" : "vpub";
-
 	// if xpub/ypub/zpub convert to address under path m/0/0
 	if (extendedPubkey.match(/^(xpub|tpub).*$/)) {
 		let xpub = extendedPubkey;
 
 		if (!extendedPubkey.startsWith(xpub_tpub)) {
-			xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+			xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 		}
 
-		return utils.bip32Addresses(xpub, "p2pkh", receiveOrChange, limit, offset);
+		return bip32Addresses(xpub, "p2pkh", receiveOrChange, limit, offset);
 
 	} else if (extendedPubkey.match(/^(ypub|upub).*$/)) {
-		let xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+		const xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 
-		return utils.bip32Addresses(xpub, "p2sh(p2wpkh)", receiveOrChange, limit, offset);
+		return bip32Addresses(xpub, "p2sh(p2wpkh)", receiveOrChange, limit, offset);
 
 	} else if (extendedPubkey.match(/^(zpub|vpub).*$/)) {
-		let xpub = utils.xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
+		const xpub = xpubChangeVersionBytes(extendedPubkey, xpub_tpub);
 
-		return utils.bip32Addresses(xpub, "p2wpkh", receiveOrChange, limit, offset);
+		return bip32Addresses(xpub, "p2wpkh", receiveOrChange, limit, offset);
 	}
 
 	return [];
 }
 
 
+export interface UsedAddress {
+	addressIndex: number,
+	address: string,
+	type: string,
+	txids: string[],
+	priorGap: number
+}
+
+export interface XpubSearchResult {
+	usedAddresses: UsedAddress[],
+	emptyAddresses: { receive: string[], change: string[] }
+}
+
+// The addresses of an xpub that have transactions, and the empty ones after the last used one.
 // gapLimit=20, default as per bip32
-async function searchXpubTxids(extendedPubkey, gapLimit=20, addressLimit=-1) {
+export async function searchXpubTxids(extendedPubkey: string, gapLimit = 20, addressLimit = -1): Promise<XpubSearchResult> {
 	// addressLimit == -1 means we get every address with a transaction and 20 addresses gap at the end. 	
-	let sort = "desc";
+	const sort = "desc";
 	
-	let txLimit = 20;
+	const txLimit = 20;
 	let txOffset = 0;
 	let addressCount = 0;
-	let gapCounts = {"0": 0, "1": 0};
-	let result = {
+	const gapCounts: Record<number, number> = {0: 0, 1: 0};
+	const result: XpubSearchResult = {
 		usedAddresses: [],
 		emptyAddresses: {
 			receive: [],
@@ -170,14 +193,14 @@ async function searchXpubTxids(extendedPubkey, gapLimit=20, addressLimit=-1) {
 			if (gapCounts[receiveOrChange] < gapLimit) {
 				txOffset = 0;
 
-				let address = getXpubAddresses(extendedPubkey, receiveOrChange, 1, addressCount)[0];
-				let getAddressResult = await coreApi.getAddress(address);
+				const address = getXpubAddresses(extendedPubkey, receiveOrChange, 1, addressCount)[0];
+				const getAddressResult = await coreApi.getAddress(address);
 
 				if (getAddressResult) {
 					let moreTx = true;
 
 					while (moreTx) {
-						let detailsResult = await addressApi.getAddressDetails(getAddressResult.address, getAddressResult.scriptPubKey, sort, txLimit, txOffset);
+						const detailsResult = await addressApi.getAddressDetails(getAddressResult.address, getAddressResult.scriptPubKey, sort, txLimit, txOffset);
 
 						if (detailsResult && detailsResult.addressDetails && detailsResult.addressDetails.txids) {
 							if (detailsResult.addressDetails.txids.length == 0) {
@@ -222,11 +245,3 @@ async function searchXpubTxids(extendedPubkey, gapLimit=20, addressLimit=-1) {
 
 	return result;
 }
-
-
-module.exports = {
-	getKeyDetails: getKeyDetails,
-	getXpubAddresses: getXpubAddresses,
-	searchXpubTxids: searchXpubTxids
-};
-

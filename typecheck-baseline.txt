@@ -30,17 +30,6 @@ app.js: TS7006: Parameter 'tipBlockHeight' implicitly has an 'any' type.
 app.js: TS7034: Variable 'configs' implicitly has type 'any[]' in some locations where its type cannot be determined.
 app.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ "bootstrap.bundle.min.js": string; "chart.min.js": string; "chartjs-adapter-moment.min.js": string; "dataTables.bootstrap4.min.js": string; "decimal.js": string; "difficulty-history-data.js": string; ... 13 more ...; "leaflet.js": string; }'.
 app.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ "bootstrap.bundle.min.js": string; "chart.min.js": string; "chartjs-adapter-moment.min.js": string; "dataTables.bootstrap4.min.js": string; "decimal.js": string; "difficulty-history-data.js": string; ... 13 more ...; "leaflet.js": string; }'.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'limit' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'limit' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'offset' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'offset' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'scriptPubkey' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'sort' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/blockchainAddressApi.js: TS7008: Member 'txids' implicitly has an 'any[]' type.
-app/api/blockchainAddressApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 app/api/coreApi.js: TS2339: Property 'addressCount' does not exist on type '{ txid: any; vout: any; sequence: any; }'.
 app/api/coreApi.js: TS2339: Property 'avgFee' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; minFeeRate: number; maxFeeRate: number; feeRates: any[]; weightByFeeRate: {}; txids: Set<any>; txs: any[]; }'.
 app/api/coreApi.js: TS2339: Property 'key' does not exist on type '{ f: number; af: number; asz: any; a: any; t: any; w: any; }'.
@@ -250,57 +239,7 @@ app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because express
 app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/electrumAddressApi.js: TS7005: Variable 'balanceData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'balanceData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'balanceData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'balanceData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'electrumClients' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'electrumClients' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'electrumClients' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'errorStrs' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'errors' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'txidData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'txidData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'txidData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'txidData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7005: Variable 'txidData' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'addrScripthash' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'addrScripthash' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'client' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'client' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'cmd' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'dt' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'electrumClient' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'electrumClient' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'electrumClient' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'electrumClient' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'err' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'err' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'err' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'f' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'f' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'host' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'limit' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'offset' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'port' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'protocol' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'result' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'scriptPubkey' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'sort' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'str' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'success' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7006: Parameter 'versionInfo' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7008: Member 'txids' implicitly has an 'any[]' type.
-app/api/electrumAddressApi.js: TS7018: Object literal's property 'callback' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7031: Binding element 'result' implicitly has an 'any' type.
-app/api/electrumAddressApi.js: TS7034: Variable 'balanceData' implicitly has type 'any' in some locations where its type cannot be determined.
-app/api/electrumAddressApi.js: TS7034: Variable 'electrumClients' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/electrumAddressApi.js: TS7034: Variable 'errorStrs' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/electrumAddressApi.js: TS7034: Variable 'errors' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/electrumAddressApi.js: TS7034: Variable 'txidData' implicitly has type 'any' in some locations where its type cannot be determined.
-app/api/electrumAddressApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+app/api/electrumAddressApi.ts: TS7018: Object literal's property 'callback' implicitly has an 'any' type.
 app/api/mockApi.js: TS7005: Variable 'blocks' implicitly has an 'any[]' type.
 app/api/mockApi.js: TS7005: Variable 'txids' implicitly has an 'any[]' type.
 app/api/mockApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
@@ -352,30 +291,6 @@ app/api/rpcApi.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
 app/api/rpcApi.js: TS7006: Parameter 'wallet' implicitly has an 'any' type.
 app/api/rpcApi.js: TS7006: Parameter 'walletOnly' implicitly has an 'any' type.
 app/api/rpcApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/xyzpubApi.js: TS2339: Property 'bip32Path' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'bip32Path' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'bip32Path' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'bip32Path' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'bip32Path' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputType' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputType' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputType' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputType' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputType' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputTypeDesc' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputTypeDesc' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS2339: Property 'outputTypeDesc' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
-app/api/xyzpubApi.js: TS7006: Parameter 'extendedPubkey' implicitly has an 'any' type.
-app/api/xyzpubApi.js: TS7006: Parameter 'extendedPubkey' implicitly has an 'any' type.
-app/api/xyzpubApi.js: TS7006: Parameter 'extendedPubkey' implicitly has an 'any' type.
-app/api/xyzpubApi.js: TS7018: Object literal's property 'change' implicitly has an 'any[]' type.
-app/api/xyzpubApi.js: TS7018: Object literal's property 'receive' implicitly has an 'any[]' type.
-app/api/xyzpubApi.js: TS7018: Object literal's property 'relatedKeys' implicitly has an 'any[]' type.
-app/api/xyzpubApi.js: TS7018: Object literal's property 'usedAddresses' implicitly has an 'any[]' type.
-app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
-app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
-app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
-app/api/xyzpubApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ "0": number; "1": number; }'.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
@@ -385,7 +300,6 @@ routes/adminRouter.js: TS7006: Parameter 'b' implicitly has an 'any' type.
 routes/apiRouter.js: TS2339: Property 'base58' does not exist on type '{ encoding: string; notes: any[]; validateaddress: any; electrumScripthash: string; }'.
 routes/apiRouter.js: TS2339: Property 'bech32' does not exist on type '{ encoding: string; notes: any[]; validateaddress: any; electrumScripthash: string; }'.
 routes/apiRouter.js: TS2339: Property 'bech32m' does not exist on type '{ encoding: string; notes: any[]; validateaddress: any; electrumScripthash: string; }'.
-routes/apiRouter.js: TS2339: Property 'changeAddresses' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
 routes/apiRouter.js: TS2339: Property 'index' does not exist on type '{ included: boolean; }'.
 routes/apiRouter.js: TS2339: Property 'max' does not exist on type '{ smart: any; }'.
 routes/apiRouter.js: TS2339: Property 'maxFeeRate' does not exist on type '{}'.
@@ -394,7 +308,6 @@ routes/apiRouter.js: TS2339: Property 'median' does not exist on type '{ smart: 
 routes/apiRouter.js: TS2339: Property 'min' does not exist on type '{ smart: any; }'.
 routes/apiRouter.js: TS2339: Property 'minFeeRate' does not exist on type '{}'.
 routes/apiRouter.js: TS2339: Property 'minFeeTxid' does not exist on type '{}'.
-routes/apiRouter.js: TS2339: Property 'receiveAddresses' does not exist on type '{ keyType: any; relatedKeys: any[]; }'.
 routes/apiRouter.js: TS2339: Property 'totalFees' does not exist on type '{}'.
 routes/apiRouter.js: TS2339: Property 'txCount' does not exist on type '{ included: boolean; }'.
 routes/apiRouter.js: TS2339: Property 'txCount' does not exist on type '{}'.
@@ -410,7 +323,6 @@ routes/apiRouter.js: TS7005: Variable 'rates' implicitly has an 'any[]' type.
 routes/apiRouter.js: TS7005: Variable 'rates' implicitly has an 'any[]' type.
 routes/apiRouter.js: TS7005: Variable 'rates' implicitly has an 'any[]' type.
 routes/apiRouter.js: TS7005: Variable 'txids' implicitly has an 'any[]' type.
-routes/apiRouter.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
 routes/apiRouter.js: TS7006: Parameter 'x' implicitly has an 'any' type.
 routes/apiRouter.js: TS7006: Parameter 'x' implicitly has an 'any' type.
 routes/apiRouter.js: TS7006: Parameter 'y' implicitly has an 'any' type.
