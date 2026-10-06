@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"outDir": "dist",
+		"rootDir": ".",
+		"sourceMap": true,
+		"noImplicitAny": false
+	},
+	"include": ["types/**/*.d.ts", "app.js", "app/**/*.js", "routes/**/*.js", "bin/www.js", "bin/cli.js", "bin/refresh-mining-pool-configs.js"],
+	"exclude": ["node_modules", "public", "dist", "test"]
+}

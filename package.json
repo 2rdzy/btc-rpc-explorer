@@ -3,9 +3,9 @@
 	"version": "3.5.1",
 	"description": "Open-source, self-hosted explorer for the BLAKE2b Bitcoin Knots chain",
 	"private": false,
-	"bin": "bin/cli.js",
+	"bin": "dist/bin/cli.js",
 	"scripts": {
-		"start": "node ./bin/www",
+		"start": "node --enable-source-maps ./dist/bin/www.js",
 		"test": "node --test test/*.test.js",
 		"miners": "node ./bin/refresh-mining-pool-configs.js",
 		"integrity": "node ./bin/frontend-resource-integrity.js",
@@ -18,7 +18,9 @@
 		"css-dark": "sass --style compressed ./public/scss/dark.scss ./public/style/dark.min.css",
 		"css-dark-v1": "sass --style compressed ./public/scss/dark-v1.scss ./public/style/dark-v1.min.css",
 		"css": "npm run css-light && npm run css-dark && npm run css-dark-v1 && npm run integrity",
-		"typecheck": "node bin/typecheck.js"
+		"typecheck": "node bin/typecheck.js",
+		"build": "tsc -p tsconfig.build.json",
+		"clean": "rm -rf dist"
 	},
 	"keywords": [
 		"bitcoin",

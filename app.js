@@ -103,7 +103,8 @@ const { rateLimit } = require("express-rate-limit");
 
 require("./app/currencies.js");
 
-const package_json = require('./package.json');
+const { projectRoot } = require('./app/paths.js');
+const package_json = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
 global.appVersion = package_json.version;
 global.cacheId = global.appVersion;
 debugLog(`Default cacheId '${global.cacheId}'`);
@@ -164,7 +165,7 @@ expressApp.use(require("./app/actionPerformanceMonitor.js")(statTracker, {
 }));
 
 // view engine setup
-expressApp.set('views', path.join(__dirname, 'views'));
+expressApp.set('views', path.join(projectRoot, 'views'));
 
 // ref: https://blog.stigok.com/post/disable-pug-debug-output-with-expressjs-web-app
 expressApp.engine('pug', (path, /** @type {any} */ options, fn) => {
@@ -196,7 +197,7 @@ if (process.env.BTCEXP_BASIC_AUTH_PASSWORD) {
 }
 
 // uncomment after placing your favicon in /public
-//expressApp.use(favicon(__dirname + '/public/favicon.ico'));
+//expressApp.use(favicon(projectRoot + '/public/favicon.ico'));
 //expressApp.use(logger('dev'));
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({ extended: false }));
@@ -228,7 +229,7 @@ expressApp.use(session(sessionConfig));
 
 expressApp.use(compression());
 
-expressApp.use(config.baseUrl, express.static(path.join(__dirname, 'public'), {
+expressApp.use(config.baseUrl, express.static(path.join(projectRoot, 'public'), {
 	maxAge: 30 * 24 * 60 * 60 * 1000
 }));
 
@@ -293,7 +294,7 @@ process.on("unhandledRejection", (reason, p) => {
 });
 
 function loadCustomMiningPoolConfigs() {
-	const customConfigDir = path.join(__dirname, "public", "txt", "mining-pools-configs-custom", global.coinConfig.ticker);
+	const customConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs-custom", global.coinConfig.ticker);
 	const configs = [];
 
 	try {
@@ -317,7 +318,7 @@ function loadMiningPoolConfigs() {
 	// replaces) and come first, so they take precedence.
 	global.miningPoolsConfigs = loadCustomMiningPoolConfigs();
 
-	var miningPoolsConfigDir = path.join(__dirname, "public", "txt", "mining-pools-configs", global.coinConfig.ticker);
+	var miningPoolsConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs", global.coinConfig.ticker);
 
 	fs.readdir(miningPoolsConfigDir, function(err, files) {
 		if (err) {
@@ -364,7 +365,7 @@ async function getSourcecodeProjectMetadata() {
 function loadChangelog() {
 	var filename = "CHANGELOG.md";
 	
-	fs.readFile(path.join(__dirname, filename), 'utf8', function(err, data) {
+	fs.readFile(path.join(projectRoot, filename), 'utf8', function(err, data) {
 		if (err) {
 			utils.logError("2379gsd7sgd334", err);
 
@@ -376,7 +377,7 @@ function loadChangelog() {
 
 	filename = "CHANGELOG-API.md";
 	
-	fs.readFile(path.join(__dirname, filename), 'utf8', function(err, data) {
+	fs.readFile(path.join(projectRoot, filename), 'utf8', function(err, data) {
 		if (err) {
 			utils.logError("ouqhuwey723", err);
 

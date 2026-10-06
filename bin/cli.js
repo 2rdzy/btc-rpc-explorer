@@ -92,6 +92,4 @@ Object.keys(args).filter(k => k.length > 1).forEach(k => {
 	}
 });
 
-// bin/www has no file extension, so TypeScript cannot resolve it
-// @ts-ignore
-require('./www');
+require('./www.js');

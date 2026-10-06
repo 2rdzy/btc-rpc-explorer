@@ -67,11 +67,14 @@ With pruning enabled and/or `txindex` disabled:
 ```bash
 git clone https://github.com/2rdzy/btc-rpc-explorer
 cd btc-rpc-explorer
-npm install
+npm ci
+npm run build
 npm start
 ```
 
 The app is then at [http://127.0.0.1:3002/](http://127.0.0.1:3002/). Views are cached, so restart after editing a template.
+
+The code runs from `dist/`, which `npm run build` compiles with TypeScript. **Run `npm run build` again after every update** (and after `npm run css`), then restart. `npm ci` installs the dev dependencies the build needs; to keep a smaller install, build first and then run `npm prune --omit=dev`. Errors show the original source file and line, because `npm start` runs Node with `--enable-source-maps`.
 
 
 ## Configuration
@@ -108,10 +111,10 @@ Notes:
 
 #### CLI arguments
 
-Run `node bin/cli.js --help` for the full list, for example:
+Run `node dist/bin/cli.js --help` for the full list, for example:
 
 ```bash
-node bin/cli.js --port 8080 --bitcoind-port 8332 --bitcoind-cookie ~/.bitcoin/.cookie
+node dist/bin/cli.js --port 8080 --bitcoind-port 8332 --bitcoind-cookie ~/.bitcoin/.cookie
 ```
 
 #### Demo mode
@@ -141,7 +144,8 @@ See [docs/nginx-reverse-proxy.md](docs/nginx-reverse-proxy.md) for nginx and cer
 ## Development
 
 * `npm test` runs the tests, `npm run lint` runs ESLint, and `npm run typecheck` type-checks the JavaScript with TypeScript (`tsconfig.json`). CI runs all three.
-* The code is typed with JSDoc comments, so it runs as it is on Node, with no build step. The type check runs with `noImplicitAny`: new code must declare its parameter and variable types, for example `/** @param {string} name */`. The code that predates this is listed in `typecheck-baseline.txt` and only *new* findings fail the check; when you touch a function, type it and run `npm run typecheck -- --update` to shrink the list. Do not add to it.
+* The code is typed with JSDoc comments (and TypeScript files can be added next to the JavaScript ones: `npm run build` compiles both with `tsc` into `dist/`, using `tsconfig.build.json`). The type check runs with `noImplicitAny`: new code must declare its parameter and variable types, for example `/** @param {string} name */`. The code that predates this is listed in `typecheck-baseline.txt` and only *new* findings fail the check; when you touch a function, type it and run `npm run typecheck -- --update` to shrink the list. Do not add to it.
+* Tests and the type check run on the source. The app itself runs from `dist/`: `npm run build && npm start`. Files that are not code (`views/`, `public/`, the changelogs) are read from the project root, found by `app/paths.js`, so do not use `__dirname` to reach them.
 * `npm run css` rebuilds the three theme stylesheets from `public/scss/` and rewrites the integrity hashes in `app/resourceIntegrityHashes.js`. Commit the compiled `*.min.css` files and the hashes together, or browsers will reject the stylesheets.
 * `npm run miners` downloads the upstream mining pool lists. It does not touch `public/txt/mining-pools-configs-custom/`.
 

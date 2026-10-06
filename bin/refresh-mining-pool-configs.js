@@ -6,6 +6,7 @@ const os = require("os");
 const path = require("path");
 const dotenv = require("dotenv");
 const fs = require("fs");
+const { projectRoot } = require("../app/paths.js");
 const axios = require("axios").default;
 
 const utils = require("../app/utils.js");
@@ -16,7 +17,7 @@ async function refreshMiningPoolsForCoin(coinName) {
 	console.log(`Refreshing mining pools for ${coinName}...`);
 		
 	if (coins[coinName].miningPoolsConfigUrls) {
-		const miningPoolsConfigDir = path.join(__dirname, "..", "public", "txt", "mining-pools-configs", coinName);
+		const miningPoolsConfigDir = path.join(projectRoot, "public", "txt", "mining-pools-configs", coinName);
 		
 		fs.readdir(miningPoolsConfigDir, (err, files) => {
 			if (err) {
@@ -59,7 +60,7 @@ async function refreshMiningPoolConfig(coinName, index, url) {
 	try {
 		const response = await axios.get(url, { transformResponse: res => res });
 
-		const filename = path.join(__dirname, "..", "public", "txt", "mining-pools-configs", coinName, index + ".json");
+		const filename = path.join(projectRoot, "public", "txt", "mining-pools-configs", coinName, index + ".json");
 
 		try {
 			fs.writeFileSync(filename, response.data);

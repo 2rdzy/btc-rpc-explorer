@@ -14,7 +14,9 @@ app.set('port', process.env.PORT || process.env.BTCEXP_PORT || 3002);
 app.set('host', process.env.BTCEXP_HOST || '127.0.0.1');
 
 const server = app.listen(app.get('port'), app.get('host'), () => {
-	debug('Express server starting on ' + server.address().address + ':' + server.address().port);
+	const address = /** @type {import("net").AddressInfo} */ (server.address());
+
+	debug('Express server starting on ' + address.address + ':' + address.port);
 
 	if (app.onStartup) {
 		(async function() {

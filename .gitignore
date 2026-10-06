@@ -61,3 +61,6 @@ typings/
 cache/
 
 *.css.map
+
+# compiled output (npm run build)
+dist/
