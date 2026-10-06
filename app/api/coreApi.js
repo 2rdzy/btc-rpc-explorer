@@ -83,7 +83,7 @@ global.lruCaches = [ global.miscLruCache, global.blockLruCache, global.txLruCach
 		debugLog(`Pruned caches: ${totalSizeBefore.toLocaleString()} -> ${totalSizeAfter.toLocaleString()}`);
 	};
 
-	setInterval(pruneCaches, 60000);
+	setInterval(pruneCaches, 60000).unref();
 })();
 
 if (!config.noInmemoryRpcCache) {
@@ -492,7 +492,7 @@ global.difficultyByBlockheightCacheDirty = false;
 		}
 	};
 
-	setInterval(writeDifficultyCache, 60000);
+	setInterval(writeDifficultyCache, 60000).unref();
 })();
 
 async function getDifficultyByBlockHeights(blockHeights) {
