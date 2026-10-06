@@ -64,3 +64,8 @@ cache/
 
 # compiled output (npm run build)
 dist/
+
+# the dependencies are locked by npm-shrinkwrap.json only (see test/no-javascript.test.ts)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
