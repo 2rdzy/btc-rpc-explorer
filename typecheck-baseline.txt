@@ -30,215 +30,6 @@ app.js: TS7006: Parameter 'tipBlockHeight' implicitly has an 'any' type.
 app.js: TS7034: Variable 'configs' implicitly has type 'any[]' in some locations where its type cannot be determined.
 app.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ "bootstrap.bundle.min.js": string; "chart.min.js": string; "chartjs-adapter-moment.min.js": string; "dataTables.bootstrap4.min.js": string; "decimal.js": string; "difficulty-history-data.js": string; ... 13 more ...; "leaflet.js": string; }'.
 app.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ "bootstrap.bundle.min.js": string; "chart.min.js": string; "chartjs-adapter-moment.min.js": string; "dataTables.bootstrap4.min.js": string; "decimal.js": string; "difficulty-history-data.js": string; ... 13 more ...; "leaflet.js": string; }'.
-app/api/coreApi.js: TS2339: Property 'addressCount' does not exist on type '{ txid: any; vout: any; sequence: any; }'.
-app/api/coreApi.js: TS2339: Property 'avgFee' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; minFeeRate: number; maxFeeRate: number; feeRates: any[]; weightByFeeRate: {}; txids: Set<any>; txs: any[]; }'.
-app/api/coreApi.js: TS2339: Property 'key' does not exist on type '{ f: number; af: number; asz: any; a: any; t: any; w: any; }'.
-app/api/coreApi.js: TS2339: Property 'lastUpdated' does not exist on type '{}'.
-app/api/coreApi.js: TS2339: Property 'reqSigs' does not exist on type '{ txid: any; vout: any; sequence: any; }'.
-app/api/coreApi.js: TS2339: Property 'type' does not exist on type '{ txid: any; vout: any; sequence: any; }'.
-app/api/coreApi.js: TS2339: Property 'value' does not exist on type '{ txid: any; vout: any; sequence: any; }'.
-app/api/coreApi.js: TS2551: Property 'avgFeeRate' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; minFeeRate: number; maxFeeRate: number; feeRates: any[]; weightByFeeRate: {}; txids: Set<any>; txs: any[]; }'. Did you mean 'maxFeeRate'?
-app/api/coreApi.js: TS2551: Property 'avgTimespan' does not exist on type '{ txCounts: any[]; txLabels: any[]; txRates: any[]; timespans: any[]; blocksPerPoint: number; }'. Did you mean 'timespans'?
-app/api/coreApi.js: TS2551: Property 'maxFeeRateTx' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; minFeeRate: number; maxFeeRate: number; feeRates: any[]; weightByFeeRate: {}; txids: Set<any>; txs: any[]; }'. Did you mean 'maxFeeRate'?
-app/api/coreApi.js: TS2551: Property 'minFeeRateTx' does not exist on type '{ weight: number; totalFees: Decimal; vB: number; txCount: number; minFeeRate: number; maxFeeRate: number; feeRates: any[]; weightByFeeRate: {}; txids: Set<any>; txs: any[]; }'. Did you mean 'minFeeRate'?
-app/api/coreApi.js: TS7005: Variable 'args' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7005: Variable 'argumentLines' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7005: Variable 'cacheResult' implicitly has an 'any' type.
-app/api/coreApi.js: TS7005: Variable 'cacheResult' implicitly has an 'any' type.
-app/api/coreApi.js: TS7005: Variable 'feeRates' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7005: Variable 'sections' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7005: Variable 'sections' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7006: Parameter 'a' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'address' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'ageBuckets' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'allTxids' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'ancesTxidKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'ancesTxidKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'ancesTxidKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'b' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockCount' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockCount' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockEnd' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHashes' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeight' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeights' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeights' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeights' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeights' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockHeightsByTxid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockStart' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockhash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockhash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockhash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'blockhashEnd' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'btcFloat' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cache' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheConditionFunction' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheKey' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheMaxAge' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheType' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'cacheType' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'callback' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'callback' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'confTargetBlockCount' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'confTargetBlockCounts' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'count' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'dataPtCount' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'endBlock' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'err' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'err' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'eventType' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'eventType' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'hash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'hash' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'header' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'height' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'includeAncDec' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'index' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'index' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'inputs' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'limit' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'line' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'line' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'methodName' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'mode' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'mode' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'name' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'obj' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'offset' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'outputIndex' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'result' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'results' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'rpcApiFunction' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'rpcResult' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'sizeBuckets' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'startBlock' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusFunc' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusFunc' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusFunc' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusFunc' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusId' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusId' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusId' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'statusId' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txIndex' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txLimit' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txOffset' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txids' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txids' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txids' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'txids' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'vout' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'voutIndex' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/api/coreApi.js: TS7006: Parameter 'x' implicitly has an 'any' type.
-app/api/coreApi.js: TS7008: Member 'vin' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7008: Member 'vout' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'feeRates' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'feeRates' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'maxFeeTxid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7018: Object literal's property 'minFeeTxid' implicitly has an 'any' type.
-app/api/coreApi.js: TS7018: Object literal's property 'minerNamesSortedByBlockCount' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'timespans' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'txCounts' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'txLabels' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'txRates' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'txids' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7018: Object literal's property 'txs' implicitly has an 'any[]' type.
-app/api/coreApi.js: TS7022: 'totalDaysDestroyed' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-app/api/coreApi.js: TS7022: 'totalInput' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-app/api/coreApi.js: TS7022: 'totalOutput' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-app/api/coreApi.js: TS7034: Variable 'args' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/coreApi.js: TS7034: Variable 'argumentLines' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/coreApi.js: TS7034: Variable 'cacheResult' implicitly has type 'any' in some locations where its type cannot be determined.
-app/api/coreApi.js: TS7034: Variable 'feeRates' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/coreApi.js: TS7034: Variable 'sections' implicitly has type 'any[]' in some locations where its type cannot be determined.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type '`${any}:${any}`' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type '`${any}:${any}`' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-app/api/coreApi.js: TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
 app/api/electrumAddressApi.ts: TS7018: Object literal's property 'callback' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
 routes/adminRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
@@ -309,8 +100,6 @@ routes/baseRouter.js: TS7005: Variable 'itemYears' implicitly has an 'any[]' typ
 routes/baseRouter.js: TS7005: Variable 'itemYears' implicitly has an 'any[]' type.
 routes/baseRouter.js: TS7005: Variable 'parsedParams' implicitly has an 'any[]' type.
 routes/baseRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
-routes/baseRouter.js: TS7006: Parameter 'a' implicitly has an 'any' type.
-routes/baseRouter.js: TS7006: Parameter 'b' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'b' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'blockHash' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'body' implicitly has an 'any' type.
@@ -324,8 +113,6 @@ routes/baseRouter.js: TS7006: Parameter 'item' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'param' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
 routes/baseRouter.js: TS7006: Parameter 'tx' implicitly has an 'any' type.
-routes/baseRouter.js: TS7006: Parameter 'txid' implicitly has an 'any' type.
-routes/baseRouter.js: TS7006: Parameter 'x' implicitly has an 'any' type.
 routes/baseRouter.js: TS7018: Object literal's property 'txids' implicitly has an 'any[]' type.
 routes/baseRouter.js: TS7034: Variable 'coinbaseTxBlockHashes' implicitly has type 'any[]' in some locations where its type cannot be determined.
 routes/baseRouter.js: TS7034: Variable 'feeRates' implicitly has type 'any[]' in some locations where its type cannot be determined.
@@ -335,6 +122,7 @@ routes/baseRouter.js: TS7034: Variable 'itemMonths' implicitly has type 'any[]' 
 routes/baseRouter.js: TS7034: Variable 'itemYears' implicitly has type 'any[]' in some locations where its type cannot be determined.
 routes/baseRouter.js: TS7034: Variable 'itemYears' implicitly has type 'any[]' in some locations where its type cannot be determined.
 routes/baseRouter.js: TS7034: Variable 'parsedParams' implicitly has type 'any[]' in some locations where its type cannot be determined.
+routes/baseRouter.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 routes/baseRouter.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 routes/baseRouter.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
 routes/baseRouter.js: TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
@@ -362,9 +150,6 @@ routes/cleanupRouter.js: TS7006: Parameter 'type' implicitly has an 'any' type.
 routes/internalApiRouter.js: TS7005: Variable 'results' implicitly has an 'any[]' type.
 routes/internalApiRouter.js: TS7005: Variable 'results' implicitly has an 'any[]' type.
 routes/internalApiRouter.js: TS7005: Variable 'results' implicitly has an 'any[]' type.
-routes/internalApiRouter.js: TS7006: Parameter 'update' implicitly has an 'any' type.
-routes/internalApiRouter.js: TS7006: Parameter 'update' implicitly has an 'any' type.
-routes/internalApiRouter.js: TS7006: Parameter 'update' implicitly has an 'any' type.
 routes/internalApiRouter.js: TS7034: Variable 'results' implicitly has type 'any[]' in some locations where its type cannot be determined.
 routes/internalApiRouter.js: TS7034: Variable 'results' implicitly has type 'any[]' in some locations where its type cannot be determined.
 routes/snippetRouter.js: TS2339: Property 'maxFeeRate' does not exist on type '{}'.

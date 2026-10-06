@@ -6,6 +6,11 @@
 // no in-memory RPC cache: each test sets its own RPC answers and must see them
 process.env.BTCEXP_NO_INMEMORY_RPC_CACHE = 'true';
 
+// the tests write cache files (UTXO set, mempool summaries, ...): keep them out of the real cache directory
+if (!process.env.BTCEXP_FILESYSTEM_CACHE_DIR) {
+	process.env.BTCEXP_FILESYSTEM_CACHE_DIR = require('node:fs').mkdtempSync(require('node:path').join(require('node:os').tmpdir(), 'btcexp-test-cache-'));
+}
+
 global.cacheStats = {};
 global.appEventStats = {};
 global.activeBlockchain = 'main';
