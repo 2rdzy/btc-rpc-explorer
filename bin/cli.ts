@@ -29,7 +29,7 @@ const args = meow(`
 	  -E, --electrum-servers <..>   comma separated list of electrum servers to use for address queries; only used if --address-api=electrum [default: none]
 
 	  --rpc-allowall				 allow all rpc commands [default: false]
-	  --rpc-blacklist <methods>	  comma separated list of rpc commands to block [default: see in config.js]
+	  --rpc-blacklist <methods>	  comma separated list of rpc commands to block [default: see app/config.ts]
 	  --cookie-secret <secret>	   secret key for signed cookie hmac generation [default: hmac derive from bitcoind pass]
 	  --demo						 enable demoSite mode [default: disabled]
 	  --no-rates					 disable fetching of currency exchange rates [default: enabled]

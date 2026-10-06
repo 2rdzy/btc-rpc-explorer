@@ -15,8 +15,8 @@ export interface MinerInfo {
 }
 
 // Who mined a block, from its coinbase transaction: by payout address, coinbase tag, block hash or (on mainnet)
-// block height as listed in global.miningPoolsConfigs, else by the first paid address. Sets identifiedBy on the
-// entry it finds in the pool config, and returns that entry.
+// block height as listed in global.miningPoolsConfigs, else by the first paid address. Returns a copy of the entry
+// it finds in the pool config, with identifiedBy saying how (the config itself is not changed).
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo | null {
 	if (coinbaseTx == null || coinbaseTx.vin == null || coinbaseTx.vin.length == 0) {
@@ -31,10 +31,7 @@ export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo |
 				if (Object.prototype.hasOwnProperty.call(miningPoolsConfig.payout_addresses, payoutAddress)) {
 					if (coinbaseTx.vout && coinbaseTx.vout.length > 0) {
 						if (getVoutAddresses(coinbaseTx.vout[0]).includes(payoutAddress)) {
-							const minerInfo = miningPoolsConfig.payout_addresses[payoutAddress];
-							minerInfo.identifiedBy = "payout address " + payoutAddress;
-
-							return minerInfo;
+							return { ...miningPoolsConfig.payout_addresses[payoutAddress], identifiedBy: "payout address " + payoutAddress };
 						}
 					}
 				}
@@ -43,32 +40,23 @@ export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo |
 			for (const coinbaseTag in miningPoolsConfig.coinbase_tags) {
 				if (Object.prototype.hasOwnProperty.call(miningPoolsConfig.coinbase_tags, coinbaseTag)) {
 					if (formatHex(coinbaseTx.vin[0].coinbase, "utf8").indexOf(coinbaseTag) != -1) {
-						const minerInfo = miningPoolsConfig.coinbase_tags[coinbaseTag];
-						minerInfo.identifiedBy = "coinbase tag '" + coinbaseTag + "'";
-
-						return minerInfo;
+						return { ...miningPoolsConfig.coinbase_tags[coinbaseTag], identifiedBy: "coinbase tag '" + coinbaseTag + "'" };
 					}
 				}
 			}
 
 			for (const blockHash in miningPoolsConfig.block_hashes) {
 				if (blockHash == coinbaseTx.blockhash) {
-					const minerInfo = miningPoolsConfig.block_hashes[blockHash];
-					minerInfo.identifiedBy = "known block hash '" + blockHash + "'";
-
-					return minerInfo;
+					return { ...miningPoolsConfig.block_hashes[blockHash], identifiedBy: "known block hash '" + blockHash + "'" };
 				}
 			}
 
 			if (global.activeBlockchain == "main" && miningPoolsConfig.block_heights) {
 				for (const minerName in miningPoolsConfig.block_heights) {
 					const minerInfo = miningPoolsConfig.block_heights[minerName];
-					minerInfo.name = minerName;
 
 					if (minerInfo.heights.includes(blockHeight)) {
-						minerInfo.identifiedBy = "known block height #" + blockHeight;
-
-						return minerInfo;
+						return { ...minerInfo, name: minerName, identifiedBy: "known block height #" + blockHeight };
 					}
 				}
 			}
@@ -100,14 +88,14 @@ export function identifyMiner(coinbaseTx: any, blockHeight: number): MinerInfo |
 // The total value going into and out of a transaction (input is null when the inputs are not known).
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | undefined, blockHeight: number): { input: Decimal | null, output: Decimal } {
-	let totalInputValue: Decimal | null = new Decimal(0);
+	let totalInputValue = new Decimal(0);
 	let totalOutputValue = new Decimal(0);
 
 	try {
 		if (txInputs) {
 			for (let i = 0; i < tx.vin.length; i++) {
 				if (tx.vin[i].coinbase) {
-					totalInputValue = totalInputValue!.plus(new Decimal(coinConfig.blockRewardFunction(blockHeight, global.activeBlockchain)));
+					totalInputValue = totalInputValue.plus(new Decimal(coinConfig.blockRewardFunction(blockHeight, global.activeBlockchain)));
 
 				} else {
 					const txInput = txInputs[i];
@@ -117,7 +105,7 @@ export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | un
 							const vout = txInput;
 
 							if (vout.value) {
-								totalInputValue = totalInputValue!.plus(new Decimal(vout.value));
+								totalInputValue = totalInputValue.plus(new Decimal(vout.value));
 							}
 						} catch (err) {
 							logError("2397gs0gsse", err, {txid:tx.txid, vinIndex:i});
@@ -125,8 +113,6 @@ export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | un
 					}
 				}
 			}
-		} else {
-			totalInputValue = null;
 		}
 
 		for (let i = 0; i < tx.vout.length; i++) {
@@ -136,7 +122,7 @@ export function getTxTotalInputOutputValues(tx: any, txInputs: any[] | null | un
 		logError("2308sh0sg44", err, {tx:tx, txInputs:txInputs, blockHeight:blockHeight});
 	}
 
-	return {input:totalInputValue, output:totalOutputValue};
+	return {input:(txInputs ? totalInputValue : null), output:totalOutputValue};
 }
 
 // The fees a block collected: what its coinbase paid out, less the block reward. 0 when there is no coinbase.

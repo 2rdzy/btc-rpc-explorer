@@ -15,6 +15,7 @@ global.txindexAvailable = true;
 global.cacheId = 'test';
 
 global.coinConfig = coins[config.coin];
+global.SATS_PER_BTC = global.coinConfig.baseCurrencyUnit.multiplier;
 
 export interface RpcCall {
 	method: string,

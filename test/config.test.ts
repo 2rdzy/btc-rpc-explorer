@@ -29,6 +29,32 @@ const config = (env: Record<string, string>, property?: string) => {
 	return result.value;
 };
 
+describe('cookie secret', () => {
+	const legacyConstant = '0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f';
+
+	test('is the one that was given', () => {
+		assert.equal(config({ BTCEXP_COOKIE_SECRET: 'chosen' }, 'cookieSecret'), 'chosen');
+	});
+
+	test('is derived from the RPC credentials, so it is the same on every start', () => {
+		const env = { BTCEXP_BITCOIND_USER: 'u', BTCEXP_BITCOIND_PASS: 'p' };
+		const secret = config(env, 'cookieSecret');
+
+		assert.match(secret, /^[0-9a-f]{64}$/);
+		assert.equal(config(env, 'cookieSecret'), secret);
+		assert.notEqual(config({ ...env, BTCEXP_BITCOIND_PASS: 'q' }, 'cookieSecret'), secret);
+	});
+
+	test('with nothing to derive it from, is random for each start and not a value that is in the source', () => {
+		const first = config({}, 'cookieSecret');
+		const second = config({}, 'cookieSecret');
+
+		assert.match(first, /^[0-9a-f]{64}$/);
+		assert.notEqual(first, second);
+		assert.notEqual(first, legacyConstant);
+	});
+});
+
 describe('config defaults', () => {
 	test('the server listens on localhost:3002 with the base url /', () => {
 		const c = config({});

@@ -117,7 +117,7 @@ if (redisCache.active) {
 	}
 
 	// the node's address is part of the key; this enables multiple instances of btc-rpc-explorer
-	// (eg mainnet + testnet) to share a single redis instance peacefully (see app/rpcCacheKey.js)
+	// (eg mainnet + testnet) to share a single redis instance peacefully (see app/rpcCacheKey.ts)
 	const rpcCredKeyComponent = rpcCacheKeyComponent(config.credentials.rpc);
 
 	const redisCacheObj = redisCache.createCache(`${cacheKeyVersion}-${rpcCredKeyComponent}`, onRedisCacheEvent);

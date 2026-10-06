@@ -365,6 +365,42 @@ describe('mempool and mining summaries', () => {
 		}
 	});
 
+	// three transactions whose orders by age, by size, by fee rate and by ancestor fee rate all differ:
+	//   age (oldest first):  a, c, b      size (largest first):  a, b, c
+	//   fee rate:            b, c, a      ancestor fee rate:     b, c, a
+	// (their own ids: the summaries of transactions are cached by the start of the txid)
+	const orderedIds = ['dddddddddd01', 'eeeeeeeeee02', 'ffffffffff03'];
+	const orderedEntries: Record<string, ReturnType<typeof entry>> = {
+		[orderedIds[0]]: entry(0.0001, 300, 1000),
+		[orderedIds[1]]: entry(0.0003, 200, 3000),
+		[orderedIds[2]]: entry(0.00004, 100, 2000)
+	};
+
+	test('the oldest, largest and highest fee transactions are listed in order', async () => {
+		fakeRpc({ getrawmempool: () => orderedIds, getmempoolentry: params => orderedEntries[params[0]] });
+
+		const summary = await coreApi.buildMempoolSummary('s', 5, 5, () => {});
+
+		assert.deepEqual(summary.oldestTxs.map((x: RpcData) => x.txid), [orderedIds[0], orderedIds[2], orderedIds[1]]);
+		assert.deepEqual(summary.largestTxs.map((x: RpcData) => x.txid), [orderedIds[0], orderedIds[1], orderedIds[2]]);
+		assert.deepEqual(summary.highestFeeTxs.map((x: RpcData) => x.txid), [orderedIds[1], orderedIds[2], orderedIds[0]]);
+	});
+
+	test('predicted blocks take the transactions by their ancestor fee rate, highest first', async () => {
+		fakeRpc({ getrawmempool: () => orderedIds, getmempoolentry: params => orderedEntries[params[0]] });
+
+		const log = console.log;
+		console.log = () => {};
+		try {
+			const blocks = await coreApi.buildPredictedBlocks('s', () => {});
+
+			assert.equal(blocks.length, 1);
+			assert.deepEqual(blocks[0].txs.map((x: RpcData) => x.txid), [orderedIds[1], orderedIds[2], orderedIds[0]].map(id => id.substring(0, 10)));
+		} finally {
+			console.log = log;
+		}
+	});
+
 	test('buildMiningSummary groups blocks by miner', async () => {
 		global.miningPoolsConfigs = [{ payout_addresses: { addrA: { name: 'PoolA' } }, coinbase_tags: {}, block_hashes: {}, block_heights: {} }];
 		fakeRpc({

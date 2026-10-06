@@ -1770,7 +1770,7 @@ router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
 	});
 
 	if (config.rpcBlacklist.includes(cmd.toLowerCase())) {
-		res.write("Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the 'rpcBlacklist' setting in config.js.", function() {
+		res.write("Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the BTCEXP_RPC_BLACKLIST setting (see .env-sample).", function() {
 			res.end();
 		});
 
@@ -1924,7 +1924,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 				res.locals.argValues = argValues;
 
 				if (config.rpcBlacklist.includes(queryMethod.toLowerCase())) {
-					res.locals.methodResult = "Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the 'rpcBlacklist' setting in config.js.";
+					res.locals.methodResult = "Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the BTCEXP_RPC_BLACKLIST setting (see .env-sample).";
 
 					res.render("rpc-browser");
 

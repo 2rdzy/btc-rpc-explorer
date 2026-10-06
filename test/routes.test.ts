@@ -6,6 +6,7 @@ import baseRouter from "../routes/baseRouter.js";
 import apiRouter from "../routes/apiRouter.js";
 import type { Router } from "express";
 import type { RpcData } from "../app/api/rpcApi.js";
+import { fakeRpc } from "./helpers/setup.js";
 
 // express keeps the routes of a router in a stack that its types do not describe
 interface RouteLayer {
@@ -71,6 +72,30 @@ describe('terminal route', () => {
 		assert.deepEqual(await run({ cmd: 'nope' }), { Error: 'Unknown command' });
 		assert.deepEqual(await run({}), { Error: 'No command' });
 		assert.deepEqual(await run({ cmd: { a: 1 } }), { Error: 'No command' });
+	});
+});
+
+describe('mempool fees', () => {
+	const handler = routeHandler(apiRouter, '/mempool/fees', 'get');
+
+	// call the route as express would; resolves with what it sent as JSON
+	const getFees = () => new Promise<RpcData>((resolve, reject) => handler({ query: {} }, { json: (body: RpcData) => resolve(body) }, (err?: unknown) => reject(err)));
+
+	const smartFee = () => ({ feerate: 0.0001, blocks: 2 });
+
+	test('answers the smart estimates and the rates of the next block', async () => {
+		fakeRpc({
+			estimatesmartfee: smartFee,
+			getblocktemplate: () => ({ height: 5, weightlimit: 4000000, coinbasevalue: 5000010000, transactions: [{ txid: 'a', fee: 1000, weight: 400, depends: [] }] })
+		});
+
+		assert.deepEqual(await getFees(), { nextBlock: { smart: 10, min: 10, max: 10, median: 10 }, '30min': 10, '60min': 10, '1day': 10 });
+	});
+
+	test('still answers the smart estimates when the node has no block template', async () => {
+		fakeRpc({ estimatesmartfee: smartFee, getblocktemplate: () => ({ error: { code: -9, message: 'Node is not connected' } }) });
+
+		assert.deepEqual(await getFees(), { nextBlock: { smart: 10 }, '30min': 10, '60min': 10, '1day': 10 });
 	});
 });
 
