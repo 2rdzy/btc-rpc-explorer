@@ -18,7 +18,6 @@ const async = require("async");
 
 // choose one of the below: RPC to a node, or mock data while testing
 const rpcApi = require("./rpcApi.js");
-//const rpcApi = require("./mockApi.js");
 
 
 // this value should be incremented whenever data format changes, to avoid
