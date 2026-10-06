@@ -101,14 +101,6 @@ const jayson = require('jayson/promise');
 const { rateLimit } = require("express-rate-limit");
 
 
-const appUtils = require("@janoside/app-utils");
-const s3Utils = appUtils.s3Utils;
-
-let cdnS3Bucket = null;
-if (config.cdn.active) {
-	cdnS3Bucket = s3Utils.createBucket(config.cdn.s3Bucket, config.cdn.s3BucketRegion, config.cdn.s3BucketPath);
-}
-
 require("./app/currencies.js");
 
 const package_json = require('./package.json');
@@ -294,62 +286,6 @@ if (rateLimitWindowMinutes == -1) {
 if (config.baseUrl != '/') {
 	expressApp.get('/', (req, res) => res.redirect(config.baseUrl));
 }
-
-
-// if a CDN is configured, these assets will be uploaded at launch, then referenced from there
-const cdnItems = [
-	[`style/dark.min.css`, `text/css`, "utf8"],
-	[`style/light.min.css`, `text/css`, "utf8"],
-	[`style/dark-v1.min.css`, `text/css`, "utf8"],
-	[`style/highlight.min.css`, `text/css`, "utf8"],
-	[`style/dataTables.bootstrap4.min.css`, `text/css`, "utf8"],
-	[`style/bootstrap-icons.css`, `text/css`, "utf8"],
-
-	[`js/bootstrap.bundle.min.js`, `text/javascript`, "utf8"],
-	[`js/chart.min.js`, `text/javascript`, "utf8"],
-	[`js/jquery.min.js`, `text/javascript`, "utf8"],
-	[`js/site.js`, `text/javascript`, "utf8"],
-	[`js/highlight.min.js`, `text/javascript`, "utf8"],
-	[`js/chartjs-adapter-moment.min.js`, `text/javascript`, "utf8"],
-	[`js/jquery.dataTables.min.js`, `text/javascript`, "utf8"],
-	[`js/dataTables.bootstrap4.min.js`, `text/javascript`, "utf8"],
-	[`js/moment.min.js`, `text/javascript`, "utf8"],
-	[`js/sentry.min.js`, `text/javascript`, "utf8"],
-	[`js/decimal.js`, `text/javascript`, "utf8"],
-
-	[`img/network-mainnet/logo.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-mainnet/coin-icon.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-mainnet/apple-touch-icon.png`, `image/png`, "binary"],
-	[`img/network-mainnet/favicon-16x16.png`, `image/png`, "binary"],
-	[`img/network-mainnet/favicon-32x32.png`, `image/png`, "binary"],
-	[`img/network-testnet/logo.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-testnet/coin-icon.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-signet/logo.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-signet/coin-icon.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-regtest/logo.svg`, `image/svg+xml`, "utf8"],
-	[`img/network-regtest/coin-icon.svg`, `image/svg+xml`, "utf8"],
-
-	[`img/network-mainnet/favicon.ico`, `image/x-icon`, "binary"],
-	[`img/network-testnet/favicon.ico`, `image/x-icon`, "binary"],
-	[`img/network-signet/favicon.ico`, `image/x-icon`, "binary"],
-	[`img/network-regtest/favicon.ico`, `image/x-icon`, "binary"],
-
-	[`font/bootstrap-icons.woff`, `font/woff`, "binary"],
-	[`font/bootstrap-icons.woff2`, `font/woff2`, "binary"],
-
-	[`leaflet/leaflet.js`, `text/javascript`, "utf8"],
-	[`leaflet/leaflet.css`, `text/css`, "utf8"],
-	[`leaflet/images/layers.png`, `image/png`, "binary"],
-	[`leaflet/images/layers-2x.png`, `image/png`, "binary"],
-	[`leaflet/images/marker-icon-2x.png`, `image/png`, "binary"],
-	[`leaflet/images/marker-icon.png`, `image/png`, "binary"],
-	[`leaflet/images/marker-shadow.png`, `image/png`, "binary"],
-];
-
-const cdnFilepathMap = {};
-cdnItems.forEach(item => {
-	cdnFilepathMap[item[0]] = true;
-});
 
 
 process.on("unhandledRejection", (reason, p) => {
@@ -901,65 +837,6 @@ expressApp.onStartup = async () => {
 
 		expressApp.continueStartup();
 	}
-
-	if (config.cdn.active && config.cdn.s3Bucket) {
-		debugLog(`Configuring CDN assets; uploading ${cdnItems.length} assets to S3...`);
-
-		const s3Path = (filepath) => { return `${global.cacheId}/${filepath}`; }
-
-		const uploadedItems = [];
-		const existingItems = [];
-		const errorItems = [];
-
-		const uploadAssetIfNeeded = async (filepath, contentType, encoding) => {
-			try {
-				let absoluteFilepath = path.join(process.cwd(), "public", filepath);
-				let s3path = s3Path(filepath);
-				
-				const existingAsset = await cdnS3Bucket.get(s3path);
-
-				if (existingAsset) {
-					existingItems.push(filepath);
-
-					//debugLog(`Asset ${filepath} already in S3, skipping upload.`);
-
-				} else {
-					let fileData = fs.readFileSync(absoluteFilepath, {encoding: encoding, flag:'r'});
-					let fileBuffer = Buffer.from(fileData, encoding);
-
-					let options = {
-						"ContentType": contentType,
-						"CacheControl": "max-age=315360000"
-					};
-
-					await cdnS3Bucket.put(fileBuffer, s3path, options);
-
-					uploadedItems.push(filepath);
-
-					//debugLog(`Uploaded ${filepath} to S3.`);
-				}
-			} catch (e) {
-				errorItems.push(filepath);
-
-				debugErrorLog(`Error uploading asset to S3: ${JSON.stringify(filepath)}`, e);
-			}
-		};
-
-		const promises = [];
-		for (let i = 0; i < cdnItems.length; i++) {
-			let item = cdnItems[i];
-
-			let filepath = item[0];
-			let contentType = item[1];
-			let encoding = item[2];
-
-			promises.push(uploadAssetIfNeeded(filepath, contentType, encoding));
-		}
-
-		await utils.awaitPromises(promises);
-
-		debugLog(`Done uploading assets to S3:\n\tAlready present: ${existingItems.length}\n\tNewly uploaded: ${uploadedItems.length}\n\tError items: ${errorItems.length}`);
-	}
 }
 
 function connectToRpcServer() {
@@ -1292,17 +1169,7 @@ expressApp.locals.utils = utils;
 expressApp.locals.markdown = src => markdown.render(src);
 
 expressApp.locals.assetUrl = (path) => {
-	// trim off leading "./"
-	let normalizedPath = path.substring(2);
-
-	//console.log("assetUrl: " + path + " -> " + normalizedPath);
-
-	if (config.cdn.active && cdnFilepathMap[normalizedPath]) {
-		return `${config.cdn.baseUrl}/${global.cacheId}/${normalizedPath}`;
-
-	} else {
-		return `${path}?v=${global.cacheId}`;
-	}
+	return `${path}?v=${global.cacheId}`;
 };
 
 // debug setting to skip js/css integrity checks

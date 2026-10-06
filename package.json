@@ -40,7 +40,6 @@
 	},
 	"homepage": "https://github.com/2rdzy/btc-rpc-explorer#readme",
 	"dependencies": {
-		"@janoside/app-utils": "github:2rdzy/app-utils#ba4c23d3f",
 		"async": "^3.2.6",
 		"axios": "^1.11.0",
 		"basic-auth": "^2.0.1",

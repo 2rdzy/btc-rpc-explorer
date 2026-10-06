@@ -19,15 +19,6 @@ if (!baseUrl.endsWith("/")) {
 }
 
 
-let cdnBaseUrl = (process.env.BTCEXP_CDN_BASE_URL || ".").trim();
-while (cdnBaseUrl.endsWith("/")) {
-	cdnBaseUrl = cdnBaseUrl.substring(0, cdnBaseUrl.length - 1);
-}
-
-let s3BucketPath = (process.env.BTCEXP_S3_BUCKET_PATH || "").trim();
-while (s3BucketPath.endsWith("/")) {
-	s3BucketPath = s3BucketPath.substring(0, s3BucketPath.length - 1);
-}
 
 
 const coins = require("./coins.js");
@@ -138,14 +129,6 @@ module.exports = {
 	filesystemCacheDir: (process.env.BTCEXP_FILESYSTEM_CACHE_DIR || path.join(process.cwd(),"./cache")),
 
 	noTxIndexSearchDepth: (+process.env.BTCEXP_NOTXINDEX_SEARCH_DEPTH || 3),
-
-	cdn: {
-		active: (cdnBaseUrl == "." ? false : true),
-		s3Bucket: process.env.BTCEXP_S3_BUCKET,
-		s3BucketRegion: process.env.BTCEXP_S3_BUCKET_REGION,
-		s3BucketPath: s3BucketPath,
-		baseUrl: cdnBaseUrl
-	},
 
 	rateLimiting: {
 		windowMinutes: process.env.BTCEXP_RATE_LIMIT_WINDOW_MINUTES || 15,
