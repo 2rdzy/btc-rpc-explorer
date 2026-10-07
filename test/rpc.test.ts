@@ -40,6 +40,17 @@ describe('RPC errors', () => {
 		assert.equal(await rpcApi.getRpcDataWithParams({ method: 'gettxout', parameters: ['00', 0] }), null);
 	});
 
+	test('with throwOnError the same node error rejects, with the node\'s message and code', async () => {
+		fakeRpc({ gettxout: () => ({ error: { code: -5, message: 'No such mempool or blockchain transaction' } }) });
+
+		await assert.rejects(rpcApi.getRpcDataWithParams({ method: 'gettxout', parameters: ['00', 0], throwOnError: true }), (err: Error & { rpcCode: number }) => {
+			assert.match(err.message, /No such mempool or blockchain transaction/);
+			assert.equal(err.rpcCode, -5);
+
+			return true;
+		});
+	});
+
 	test('a successful reply resolves with its result', async () => {
 		fakeRpc({ getblockchaininfo: () => ({ blocks: 5, difficulty_blake2b: 1e19 }) });
 

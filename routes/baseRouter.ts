@@ -1791,7 +1791,7 @@ router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
 	}
 
 	try {
-		const rpcResult = await rpcApi.getRpcDataWithParams({method:cmd, parameters:parsedParams});
+		const rpcResult = await rpcApi.getRpcDataWithParams({method:cmd, parameters:parsedParams, throwOnError:true});
 		const result = rpcResult;
 		
 		if (result) {
@@ -1809,7 +1809,11 @@ router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
 	} catch (err) {
 		debugLog(JSON.stringify(err, null, 4));
 
-		res.write(JSON.stringify(err, null, 4), function() {
+		// an Error has no enumerable properties to show: say what the node answered
+		const rpcCode = (err as { rpcCode?: number }).rpcCode;
+		const reply = err instanceof Error ? { Error: err.message, ...(rpcCode === undefined ? {} : { code: rpcCode }) } : err;
+
+		res.write(JSON.stringify(reply, null, 4), function() {
 			res.end();
 		});
 	}
@@ -1961,7 +1965,7 @@ router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
 
 				try {
 					const startTimeNanos = utils.startTimeNanos();
-					const rpcResult = await rpcApi.getRpcDataWithParams({method:method, parameters:argValues});
+					const rpcResult = await rpcApi.getRpcDataWithParams({method:method, parameters:argValues, throwOnError:true});
 					const result = rpcResult;
 					const dtMillis = utils.dtMillis(startTimeNanos);
 

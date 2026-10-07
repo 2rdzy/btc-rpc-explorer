@@ -99,10 +99,11 @@ export const pages: PageCase[] = [
 	{ path: "/rpc-browser?method=getblockcount&execute=true", csrf: true, contains: ["getblockcount"] },
 	{ path: `/rpc-browser?method=getblockhash&execute=true&args[0]=975700`, csrf: true, contains: [BLOCK] },
 	{ path: `/rpc-browser?method=getblockheader&execute=true&args[0]=${BLOCK}&args[1]=true`, csrf: true, contains: ["merkleroot"] },
+	{ path: "/rpc-browser?method=getblockhash&execute=true&args[0]=99999999", csrf: true, contains: ["Block height out of range"] },
 	{ path: "/rpc-browser?method=nosuchmethod", contains: ["nosuchmethod"] },
 	{ path: "/rpc-terminal", contains: ["Terminal"] },
 	{ path: "/rpc-terminal", post: { cmd: "getblockhash 975700" }, contains: [BLOCK] },
-	{ path: "/rpc-terminal", post: { cmd: "getblockhash 99999999" }, contains: ["Error"] },
+	{ path: "/rpc-terminal", post: { cmd: "getblockhash 99999999" }, contains: ["Block height out of range", "-8"] },
 	{ path: "/rpc-terminal", post: { cmd: "stop" }, contains: ["blacklisted"] },
 
 	// the settings and the favourites, which redirect back to where they came from (here: the home page)
