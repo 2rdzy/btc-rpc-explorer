@@ -1,6 +1,6 @@
 {
 	"name": "btc-rpc-explorer",
-	"version": "3.5.1",
+	"version": "4.0.0",
 	"description": "Open-source, self-hosted explorer for the BLAKE2b Bitcoin Knots chain",
 	"private": false,
 	"bin": "dist/bin/cli.js",

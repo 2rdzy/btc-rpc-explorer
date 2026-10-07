@@ -1,3 +1,47 @@
+##### v4.0.0
+###### 2026-10-07
+
+This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BTCB2). It is a major release: the code base is TypeScript, the explorer runs from a build, and several defaults are safer than before. Read "Upgrading" first.
+
+###### Upgrading
+
+* Run `npm ci && npm run build` and start the explorer with `npm start` (or `node dist/bin/cli.js`): it runs from `dist/` now. The Docker image does this itself. Node 20 or newer is needed.
+* `NODE_ENV` defaults to `production`. Without `BTCEXP_COOKIE_SECRET` and an RPC password to derive it from, a random cookie secret is used, so sessions do not survive a restart.
+* Electrum servers over `tls://` are verified. A server with a self-signed certificate needs `BTCEXP_ELECTRUM_TLS_FINGERPRINT` (or `BTCEXP_ELECTRUM_TLS_CA`); `BTCEXP_ELECTRUM_TLS_ALLOW_UNVERIFIED` switches the check off.
+* Removed: the S3 asset upload and its settings (`BTCEXP_S3_BUCKET`, `BTCEXP_S3_BUCKET_PATH`, `BTCEXP_S3_BUCKET_REGION`, `BTCEXP_CDN_BASE_URL`), and the unauthenticated `/connect` and `/disconnect` routes.
+* The Redis cache keys changed (they no longer contain a hash of the RPC password), so an existing cache is simply not used.
+* New settings: `BTCEXP_PUBLIC_URL` (link preview tags), `BTCEXP_RATE_LIMIT_LOGIN_FAILURES`.
+
+###### BLAKE2b chain
+
+* Difficulty: the `difficulty_blake2b` field of Knots is used. The difficulty history keeps SHA-256d and BLAKE2b apart and shows no change across the switch.
+* Blocks: the extended header (`nonce2`, `nonce3`, extranonce and the rest) is shown for BLAKE2b blocks.
+* Hashrate is not reported across the fork. The node details page shows the fork and its deployment state.
+* The block template is requested with the `blake2b` rule; a node error for the status calls is reported instead of crashing `/next-block`.
+* The node version is read from the Knots subversion string.
+* Miners of this chain are identified from their coinbase tags (AlphaPool, Lazarus, B2Pool.io, omegapool.tech, CONVOY, dxpool, Legata, Rabid Pool); no upstream list knows them.
+
+###### Security
+
+* Dependencies with known vulnerabilities are updated; Dependabot and a monthly `npm audit` keep watch, and there is a single lock file.
+* `csurf` is replaced by `csrf-sync`; failed logins are rate limited; the Basic authentication password is compared in constant time; the RPC password is no longer hashed into cache keys.
+* Electrum certificates are verified (see above); a bug that let `/api/xyzpub/txids` run out of memory when no address API was configured is fixed.
+* The two Electrum client packages come from this account's forks, and the S3 upload, with its dependency, is gone.
+
+###### Electrum
+
+* With several Electrum servers the address page shows what most of them say and a trust warning, with each server's answer, when they differ. (The comparison never worked before.)
+
+###### Other changes
+
+* Red theme and Blake2b branding, with better link contrast in the dark themes; all text says Bitcoin Knots and what this fork is; the upstream demo links are gone; the README and setup docs are rewritten for this fork; the original authors are credited on the About page and in the README.
+* A block or transaction that does not exist answers 404 instead of 500.
+* The RPC terminal and browser show the node's own error message.
+* `/api/price/marketcap` no longer fails when exchange rates are disabled, and further bugs found by the review and by the tests are fixed.
+* Docker: a multi-stage image that runs as a non-root user under `tini`, a compose file bound to localhost, and a CI job that builds it.
+* Tests: about 600 tests run in CI on Node 20 and 22, among them page tests that run the whole explorer against recorded and made-up node answers.
+
+
 ##### v3.5.1
 ###### 2025-07-02
 
