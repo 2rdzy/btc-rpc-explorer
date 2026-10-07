@@ -6,6 +6,14 @@ block headContent
 block content
 	+pageTitle("Transaction Stats")
 
+	script(src=assetUrl(`./js/fork-marker.js`), integrity=assetIntegrity("fork-marker.js"), crossorigin="anonymous")
+
+	if (typeof blake2bForkHeight == "number")
+		p.text-muted
+			| The dashed line marks block 
+			a(href=`./block-height/${blake2bForkHeight}`) #{blake2bForkHeight.toLocaleString()}
+			|, where the BLAKE2b chain splits off: the grey part of each line is history shared with Bitcoin, the red part is this chain alone. The big step at the line is the split (a point whose window spans it mixes both sides).
+
 	if (false)
 		pre
 			code.json #{JSON.stringify(txStatResults, null, 4)}
