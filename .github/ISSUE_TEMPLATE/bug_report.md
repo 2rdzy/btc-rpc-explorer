@@ -13,10 +13,10 @@ A clear and concise description of what the bug is.
 
 **Environment (please complete the following information):**
 
- - Bitcoin Core / Node Version [e.g. 0.16.3]
- - NodeJS Version [e.g. 9.x]
+ - Bitcoin Knots version of the node [e.g. 29.4.2.knots20260508]
+ - NodeJS Version [e.g. 22.x]
  - Browser [e.g. chrome, safari]
- - Code Version / Commit [e.g. ab6cde8]
+ - Code Version / Commit [e.g. ab6cde8 or 4.0.0]
  - Installation Method [e.g. "npm" or "source code"]
  
 **Configuration file content**

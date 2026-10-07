@@ -16,6 +16,7 @@ import asyncHandler from "express-async-handler";
 
 import * as utils from "../app/utils.js";
 import { NotFoundError } from "../app/helpers/errors.js";
+import { isValidSetting, settingsFromCookie } from "../app/helpers/settings.js";
 import { queryInt, queryString, queryStringList } from "../app/request.js";
 import coins from "../app/coins.js";
 import config from "../app/config.js";
@@ -355,24 +356,20 @@ router.get("/changeSetting", function(req, res) {
 			req.session.userSettings = Object.create(null);
 		}
 
-		if (typeof req.query.name !== "string" || typeof req.query.value !== "string") {
+		// (the settings end up in pages and scripts: only plain values are kept)
+		if (!isValidSetting(req.query.name, req.query.value)) {
 			res.redirect(req.headers.referer || "/");
 
 			return;
 		}
 
-		if (req.query.name == "userTzOffset") {
-			if (Number.isNaN(parseFloat(req.query.value))) {
-				res.redirect(req.headers.referer || "/");
+		const name = req.query.name as string;
+		const value = req.query.value;
 
-				return;
-			}
-		}
+		req.session.userSettings[name] = value;
 
-		req.session.userSettings[req.query.name.toString()] = req.query.value.toString();
-
-		const userSettings = JSON.parse(req.cookies["user-settings"] || "{}");
-		userSettings[req.query.name] = req.query.value;
+		const userSettings = settingsFromCookie(req.cookies["user-settings"]);
+		userSettings[name] = value;
 
 		res.cookie("user-settings", JSON.stringify(userSettings));
 	}
@@ -1175,73 +1172,6 @@ router.get("/predicted-blocks", asyncHandler(async (req, res, next) => {
 		utils.logError("2083ryw0efghsu", err);
 					
 		res.locals.userMessage = "Error building page: " + err;
-
-		res.render("predicted-blocks");
-
-		next();
-	}
-}));
-
-router.get("/predicted-blocks-old", asyncHandler(async (req, res, next) => {
-	try {
-		const mempoolTxids = await utils.timePromise("predicted-blocks.getAllMempoolTxids", coreApi.getAllMempoolTxids);
-		const mempoolTxSummaries = await coreApi.getMempoolTxSummaries(mempoolTxids, Math.random().toString(36).substr(2, 5), () => {});
-
-		const blockTemplate: RpcData = {weight: 0, totalFees: new Decimal(0), vB: 0, txCount:0, txids: []};
-		const blocks = [];
-		
-		mempoolTxSummaries.sort((a, b) => {
-			const aFeeRate = (a.f + a.af) / (a.w + a.asz * 4);
-			const bFeeRate = (b.f + b.af) / (b.w + b.asz * 4);
-
-			if (aFeeRate > bFeeRate) {
-				return -1;
-
-			} else if (aFeeRate < bFeeRate) {
-				return 1;
-
-			} else {
-				return a.key.localeCompare(b.key);
-			}
-		});
-
-		res.locals.topTxs = mempoolTxSummaries.slice(0, 20);
-
-		let currentBlock: RpcData = Object.assign({}, blockTemplate);
-
-		for (let i = 0; i < mempoolTxSummaries.length; i++) {
-			const tx = mempoolTxSummaries[i];
-
-			tx.frw = tx.f / tx.w;
-			tx.fr = tx.f / tx.sz;
-
-			if ((currentBlock.weight + tx.w) > coinConfig.maxBlockWeight) {
-				// this tx doesn't fit in the current block we're building
-				// so let's finish this one up and add it to the list
-				currentBlock.avgFee = currentBlock.totalFees.dividedBy(currentBlock.txCount);
-				currentBlock.avgFeeRate = currentBlock.totalFees.dividedBy(currentBlock.vB);
-
-				blocks.push(currentBlock);
-
-				// ...and start a new block
-				currentBlock = Object.assign({}, blockTemplate);
-			}
-
-			currentBlock.txCount++;
-			currentBlock.weight += tx.w;
-			currentBlock.totalFees = currentBlock.totalFees.plus(new Decimal(tx.f));
-			currentBlock.vB += tx.sz;
-			//currentBlock.txids.push(tx.key);
-		}
-
-		res.locals.projectedBlocks = blocks;
-
-		res.render("predicted-blocks");
-
-		next();
-
-	} catch (err) {
-		res.locals.pageErrors.push(utils.logError("234efuewgew", err));
 
 		res.render("predicted-blocks");
 
