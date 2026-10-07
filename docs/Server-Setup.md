@@ -1,4 +1,4 @@
-### Setting up an explorer on Ubuntu 20.04 (replace explorer.example.com with your domain)
+### Setting up an explorer on Ubuntu (replace explorer.example.com with your domain)
 
 Update and install packages
 
@@ -42,19 +42,17 @@ Get source, install and build
     # get letsencrypt cert
     certbot --nginx -d explorer.example.com
     
-Tor setup
+Tor setup (optional, to also reach the explorer as an onion service)
 
     apt install tor
-    
+
 Edit /etc/tor/torrc
 
-1. Uncomment `ControlPort 9051`
-2. Uncomment `CookieAuthentication 1`
-3. If applicable, add Torv3 Hidden service credentials to `/var/lib/tor/btcexp...onion`
+1. If applicable, add Torv3 Hidden service credentials to `/var/lib/tor/btcexp...onion`
     * chmod 700 for directory, owned by the same "tor" user as other files in that dir
     * chmod 600 for the files in the "btcexp...onion" dir)
-5. Add `HiddenServiceDir /var/lib/tor/btcexp...onion/`
-6. Add `HiddenServicePort 80 127.0.0.1:3000`
+2. Add `HiddenServiceDir /var/lib/tor/btcexp...onion/`
+3. Add `HiddenServicePort 80 127.0.0.1:3002`
 
 
 Tor startup
@@ -64,6 +62,6 @@ Tor startup
     # verify tor startup
     ps -ef | grep tor
     
-    # verify tor listening on 9050 (proxy) and 9051 (control port)
-    netstat -nlp | grep 905
+    # verify tor listening on 9050 (proxy)
+    netstat -nlp | grep 9050
     
