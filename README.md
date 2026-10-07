@@ -14,7 +14,7 @@ Whatever reasons you may have for running a full node (trustlessness, technical 
 * Reads `difficulty_blake2b` as well as `difficulty` (Knots reports the former for BLAKE2b blocks).
 * Sends the `blake2b` rule with `getblocktemplate`, which Knots requires on this chain.
 * The block page shows the extended BLAKE2b header fields (`nonce2`, `nonce3`, extranonce, time offset, flags).
-* The difficulty history keeps SHA-256d and BLAKE2b difficulty apart, because they are on different scales and cannot be compared.
+* The difficulty history shows the work per block (the expected number of hashes) so that the SHA-256d and BLAKE2b epochs are on one scale: the BLAKE2b difficulty of Knots already is that number, and the SHA-256d difficulty is multiplied by 2^48 / 0xffff. The fall at the fork is visible, and marked.
 * No hashrate is reported for a window that reaches back before the fork, for the same reason.
 * The node details page shows the BLAKE2b fork height and whether it has taken effect.
 * A hand-maintained list identifies the miners seen on this chain (`public/txt/mining-pools-configs-custom/`).

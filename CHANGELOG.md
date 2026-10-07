@@ -14,7 +14,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 
 ###### BLAKE2b chain
 
-* Difficulty: the `difficulty_blake2b` field of Knots is used. The difficulty history keeps SHA-256d and BLAKE2b apart and shows no change across the switch.
+* Difficulty: the `difficulty_blake2b` field of Knots is used. The difficulty history shows the work per block (the expected number of hashes) on one scale, with the SHA-256d epochs in grey and the BLAKE2b ones in red, the fork marked, and the fall of the work at the switch (about 7 million times on this chain) visible in the chart and the table.
 * Blocks: the extended header (`nonce2`, `nonce3`, extranonce and the rest) is shown for BLAKE2b blocks.
 * Hashrate is not reported across the fork. The node details page shows the fork and its deployment state.
 * The block template is requested with the `blake2b` rule; a node error for the status calls is reported instead of crashing `/next-block`.

@@ -80,7 +80,10 @@ block content
 											//th Date
 											//th.text-end Block Start
 											th.text-end.text-card-highlight.text-uppercase.fw-light Difficulty
-											th.text-end.text-card-highlight.text-uppercase.fw-light Difficulty Δ
+											th.text-end.text-card-highlight.fw-light
+												span.text-uppercase Hashes per block
+												small.ms-1 (expected)
+											th.text-end.text-card-highlight.text-uppercase.fw-light Change in work
 												small.ms-1 (%)
 											
 									tbody(id="difficulty-table-body")
@@ -91,6 +94,7 @@ block content
 											//td.data-date
 											//td.text-end.data-block-start
 											td.text-end.data-difficulty
+											td.text-end.data-hashes
 											td.text-end.data-difficulty-delta
 
 										tr(id="empty-row-to-fix-striped-coloring", style="display: none;")
@@ -99,6 +103,7 @@ block content
 
 block endOfBody
 	+graphPageScriptSetup
+	script(src=assetUrl(`./js/fork-marker.js`), integrity=assetIntegrity("fork-marker.js"), crossorigin="anonymous")
 	script(src=assetUrl(`./js/difficulty-history-data.js`), integrity=assetIntegrity("difficulty-history-data.js"), crossorigin="anonymous")
 	
 
@@ -158,15 +163,22 @@ block endOfBody
 				fillDifficultyTable(summary);
 
 				if (summary.firstBlake2bEpoch != null) {
-					$("#algo-note").text(`Epochs before ${summary.firstBlake2bEpoch} report SHA-256d difficulty. From epoch ${summary.firstBlake2bEpoch} the proof of work is BLAKE2b and difficulty is the expected number of hashes per block. The two are on different scales and are not comparable, so no change is shown across the switch.`).show();
+					var change = summary.difficultyDeltaData.find(function(x) { return x.algorithmChange; });
+					var note = `Both lines show the expected number of hashes it takes to find a block (for SHA-256d that is difficulty × ${difficultyHistoryData.SHA256D_HASHES_PER_DIFFICULTY.toLocaleString()}; the BLAKE2b difficulty of Knots already is that number), so that the two proofs of work can be compared. Epochs before ${summary.firstBlake2bEpoch} are SHA-256d, shared with Bitcoin; from epoch ${summary.firstBlake2bEpoch} the proof of work is BLAKE2b.`;
+
+					if (change && change.difficultyDelta < -99) {
+						note += ` The work per block fell by a factor of ${new Decimal(100).dividedBy(new Decimal(change.difficultyDelta).plus(100)).toSignificantDigits(2).toNumber().toLocaleString()} at the switch.`;
+					}
+
+					$("#algo-note").text(note).show();
 				}
 
 				for (var i = 0; i < yearItems.length; i++) {
-					createGraph(`graph-diff-hist-${yearItems[i][1]}`, [summary.graphData_years[yearItems[i][1]], summary.blake2bGraphData_years[yearItems[i][1]]], "Difficulty", true, ["SHA-256d difficulty", "BLAKE2b difficulty (expected hashes)"], ["#adb5bd", "#C4402A"]);
+					createGraph(`graph-diff-hist-${yearItems[i][1]}`, [summary.graphData_years[yearItems[i][1]], summary.blake2bGraphData_years[yearItems[i][1]]], "Hashes per block (expected)", true, ["SHA-256d (difficulty × 2³²)", "BLAKE2b"], ["#adb5bd", "#C4402A"]);
 				}
 
 				for (var i = 0; i < yearItems.length; i++) {
-					createGraph(`graph-diff-change-${yearItems[i][1]}`, [summary.changeGraphData_years[yearItems[i][1]]], "Difficulty Change %", false);
+					createGraph(`graph-diff-change-${yearItems[i][1]}`, [summary.changeGraphData_years[yearItems[i][1]]], "Change in work per block %", false);
 				}
 
 				//createGraph("graph-diff-hist-2", summary.epochChunks, "Difficulty 2");
@@ -232,14 +244,13 @@ block endOfBody
 					row.find(".data-difficulty").text(new Decimal(item.difficulty).toDP(3));
 				}
 
+				row.find(".data-hashes").text(item.hashes.toExponential(2));
+
 				if (item.blake2b) {
 					row.find(".data-difficulty").append(' <span class="badge bg-primary ms-1" title="BLAKE2b proof of work: difficulty is the expected number of hashes per block">BLAKE2b</span>');
 				}
 
-				if (deltaItem.algorithmChange) {
-					row.find(".data-difficulty-delta").text("algorithm change").addClass("text-muted");
-
-				} else if (deltaItem.difficultyDelta) {
+				if (deltaItem.difficultyDelta) {
 					if (deltaItem.difficultyDelta > 0) {
 						row.find(".data-difficulty-delta").text("+" + (new Decimal(deltaItem.difficultyDelta).toDP(2)));
 						row.find(".data-difficulty-delta").addClass("text-success");
@@ -251,8 +262,10 @@ block endOfBody
 				} else {
 					row.find(".data-difficulty-delta").text("-");
 				}
-				
-				
+
+				if (deltaItem.algorithmChange) {
+					row.find(".data-difficulty-delta").append(' <span class="badge bg-secondary ms-1" title="The proof of work changed between this epoch and the one before">algorithm change</span>');
+				}
 
 				row.show();
 
@@ -271,10 +284,7 @@ block endOfBody
 				row.find(".data-epoch").text(item.epoch);
 				//row.find(".data-date").text(item.count.toLocaleString());
 				//row.find(".data-block-start").text(sumBlockCount.toDP(2));
-				if (item.algorithmChange) {
-					row.find(".data-difficulty-delta").text("algorithm change").addClass("text-muted");
-
-				} else if (item.difficultyDelta) {
+				if (item.difficultyDelta) {
 					if (item.difficultyDelta > 0) {
 						row.find(".data-difficulty-delta").text("+" + (new Decimal(item.difficultyDelta).toDP(2)));
 						row.find(".data-difficulty-delta").addClass("text-success");
@@ -320,6 +330,7 @@ block endOfBody
 			var ctx = document.getElementById(graphId).getContext('2d');
 			var graph = new Chart(ctx, {
 				type: 'line',
+				plugins: [forkMarker.plugin(summary.firstBlake2bEpoch, "BLAKE2b from epoch " + summary.firstBlake2bEpoch, "#C4402A")],
 				data: {
 					datasets: datasets
 				},

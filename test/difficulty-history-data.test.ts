@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { summarizeData } from "../public/js/difficulty-history-data.js";
+import { hashesPerBlock, SHA256D_HASHES_PER_DIFFICULTY, summarizeData } from "../public/js/difficulty-history-data.js";
 
 const yearItems: [string, number][] = [['All Time', 1000], ['1y', 1], ['5y', 5]];
 
@@ -19,6 +19,21 @@ function rawData(count: number, { difficulty = (i: number) => 100 + i, firstBlak
 
 	return raw;
 }
+
+describe('hashesPerBlock', () => {
+	test('is the difficulty times 2^48 / 0xffff for SHA-256d, and the difficulty itself for BLAKE2b', () => {
+		assert.equal(SHA256D_HASHES_PER_DIFFICULTY, Math.round(2 ** 48 / 0xffff));
+		assert.equal(hashesPerBlock(1, false), 4295032833);
+		assert.equal(hashesPerBlock(1.27e14, false), 1.27e14 * 4295032833);
+		assert.equal(hashesPerBlock(2.18e19, true), 2.18e19);
+	});
+
+	test('agrees with the network hash rate of Bitcoin: difficulty 1.27e14 is about 900 EH/s', () => {
+		const hashesPerSecond = hashesPerBlock(1.2748e14, false) / 600;
+
+		assert.ok(hashesPerSecond > 8.9e20 && hashesPerSecond < 9.2e20, String(hashesPerSecond));
+	});
+});
 
 describe('summarizeData', () => {
 	test('lists one entry per epoch, in height order, even if the heights arrive unsorted', () => {
@@ -72,23 +87,31 @@ describe('summarizeData', () => {
 		test('puts each epoch in the series of its own algorithm', () => {
 			assert.deepEqual(summary.graphData_years[1000].map(p => p.x), [0, 1, 2, 3]);
 			assert.deepEqual(summary.blake2bGraphData_years[1000].map(p => p.x), [4, 5, 6]);
-			assert.ok(summary.graphData_years[1000].every(p => p.y! < 1e15));
-			assert.ok(summary.blake2bGraphData_years[1000].every(p => p.y! > 1e18));
 		});
 
-		test('shows no percentage across the switch, only an algorithm change', () => {
+		test('puts both on one scale: the expected number of hashes per block', () => {
+			// SHA-256d difficulty about 1e14 is about 4.3e23 hashes, BLAKE2b about 1e19 is already hashes
+			assert.ok(summary.graphData_years[1000].every(p => p.y! > 4e23 && p.y! < 5e23));
+			assert.ok(summary.blake2bGraphData_years[1000].every(p => p.y! > 1e19 && p.y! < 2e19));
+			assert.equal(summary.difficultyData[0].hashes, 1e14 * SHA256D_HASHES_PER_DIFFICULTY);
+			assert.equal(summary.difficultyData[0].difficulty, 1e14);
+			assert.equal(summary.difficultyData[4].hashes, summary.difficultyData[4].difficulty);
+		});
+
+		test('shows the fall of the work per block at the switch, flagged as an algorithm change', () => {
 			const delta = summary.difficultyDeltaData[4];
 
 			assert.equal(delta.algorithmChange, true);
-			assert.equal(delta.difficultyDelta, undefined);
+			assert.ok(delta.difficultyDelta! < -99.99);
+			assert.ok(delta.difficultyDelta! > -100);
 		});
 
-		test('leaves a gap in the change chart at the switch and keeps the rest', () => {
+		test('puts the switch in the change chart too: almost -100%', () => {
 			const changes = summary.changeGraphData_years[1000];
 
 			assert.equal(changes.length, 7);
-			assert.equal(changes[4].y, null);
-			assert.ok(changes.filter((p, i) => i !== 4).every(p => typeof p.y === 'number'));
+			assert.ok(changes[4].y! < -99.99 && changes[4].y! >= -100);
+			assert.ok(changes.every(p => typeof p.y === 'number'));
 		});
 
 		test('compares epochs of the same algorithm normally on both sides of the switch', () => {
