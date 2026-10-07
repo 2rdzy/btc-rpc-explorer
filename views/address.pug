@@ -199,14 +199,21 @@ block content
 									span.text-muted Newest First
 
 					+contentSection(null, false, null, true, false)
-						if (conflictedTxidResults)
+						if (typeof addressConflicts != "undefined" && addressConflicts.length > 0)
 							div.alert.alert-warning.pb-0
 								div.float-start(style="width: 55px; height: 50px; font-size: 18px;")
 									i.bi-exclamation-triangle(style="margin-top: 10px;")
 								h4.alert-heading.h6.fw-bold Trust Warning
-								p
-									span The transaction history for this address was requested from mulitple Electrum servers and the results did not match. The results below were obtained only from 
-									span.fw-bold #{electrumHistory.server}
+								each conflict in addressConflicts
+									p
+										span The Electrum servers did not agree on the #{conflict.what} of this address. What is shown comes from 
+										span.fw-bold #{conflict.used}
+										span , the answer most servers gave.
+									ul
+										each answer in conflict.answers
+											li
+												span.fw-bold #{answer.server}
+												span : #{answer.summary}
 
 
 						if (true)

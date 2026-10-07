@@ -12,7 +12,9 @@ import * as statTracker from "../statTracker.js";
 import { logError } from "../helpers/errors.js";
 import { ellipsize } from "../helpers/text.js";
 import { reflectPromise } from "../helpers/timing.js";
+import { balanceKey, balanceSummary, chooseAnswer, historyKey, historySummary } from "./electrumConsensus.js";
 import type { AddressDetails, AddressDetailsResult } from "./addressDetails.js";
+import type { ServerConflict } from "./electrumConsensus.js";
 
 const debugLog = debug("btcexp:electrum");
 
@@ -147,7 +149,7 @@ async function runOnServer<T>(electrumClient: Client, f: (client: Client) => Pro
 	try {
 		const result = await f(electrumClient);
 
-		return {result:result, server:electrumClient.host};
+		return {result:result, server:`${electrumClient.host}:${electrumClient.port}`};
 
 	} catch (err) {
 		logError("ElectrumServerError", err, {host:electrumClient.host, port:electrumClient.port});
@@ -175,15 +177,19 @@ export async function getAddressDetails(address: string, scriptPubkey: string, s
 
 	const addrScripthash = (hexEnc.stringify(sha256(hexEnc.parse(scriptPubkey))).match(/.{2}/g) as string[]).reverse().join("");
 
-	// set when the answers come in below (a conflict, or no answer, leaves them empty)
-	let txidData = null as HistoryItem[] | null | undefined;
-	let balanceData = null as Balance | null | undefined;
+	// set when the answers come in below (an answer that failed leaves them empty)
+	let txidData = null as HistoryItem[] | null;
+	let balanceData = null as Balance | null;
+	const conflicts: ServerConflict[] = [];
 
 	const promises: Promise<void>[] = [];
 
-	promises.push(getAddressTxids(addrScripthash).then(function(result) {
-		// a conflict has no `result`
-		txidData = "result" in result ? result.result : undefined;
+	promises.push(getAddressTxids(addrScripthash).then(function({ chosen, conflict }) {
+		txidData = chosen.result;
+
+		if (conflict) {
+			conflicts.push(conflict);
+		}
 
 	}).catch(function(err) {
 		err.userData = {address:address, sort:sort, limit:limit, offset:offset};
@@ -193,8 +199,12 @@ export async function getAddressDetails(address: string, scriptPubkey: string, s
 		throw err;
 	}));
 
-	promises.push(getAddressBalance(addrScripthash).then(function(result) {
-		balanceData = "result" in result ? result.result : undefined;
+	promises.push(getAddressBalance(addrScripthash).then(function({ chosen, conflict }) {
+		balanceData = chosen.result;
+
+		if (conflict) {
+			conflicts.push(conflict);
+		}
 
 	}).catch(function(err) {
 		err.userData = {address:address, sort:sort, limit:limit, offset:offset};
@@ -242,14 +252,12 @@ export async function getAddressDetails(address: string, scriptPubkey: string, s
 		}
 	});
 
-	return {addressDetails:addressDetails, errors:errors};
+	return conflicts.length > 0 ? {addressDetails:addressDetails, errors:errors, conflicts:conflicts} : {addressDetails:addressDetails, errors:errors};
 }
 
-// Note on the comparison of the servers' answers below: it looks at `.length` and `.confirmed` of the
-// {result, server} wrappers, which are never set, so different answers are never reported as conflicts and the
-// first server's answer is used. That is how it has always behaved, and is kept as it is.
+// Both of these answer with what most servers say, and report it when the servers did not all agree.
 
-async function getAddressTxids(addrScripthash: string): Promise<ServerResult<HistoryItem[]> | { conflictedResults: ServerResult<HistoryItem[]>[] }> {
+async function getAddressTxids(addrScripthash: string): Promise<{ chosen: ServerResult<HistoryItem[]>, conflict?: ServerConflict }> {
 	const startTime = new Date().getTime();
 
 	try {
@@ -267,15 +275,7 @@ async function getAddressTxids(addrScripthash: string): Promise<ServerResult<His
 			}
 		}
 
-		const first = results[0] as { length?: number };
-
-		for (let i = 1; i < results.length; i++) {
-			if ((results[i] as { length?: number }).length != first.length) {
-				return {conflictedResults:results};
-			}
-		}
-
-		return results[0];
+		return chooseAnswer(results, "transaction history", historyKey, historySummary);
 
 	} catch (err) {
 		logStats("blockchainScripthash_getHistory", new Date().getTime() - startTime, false);
@@ -284,7 +284,7 @@ async function getAddressTxids(addrScripthash: string): Promise<ServerResult<His
 	}
 }
 
-async function getAddressBalance(addrScripthash: string): Promise<ServerResult<Balance> | { conflictedResults: ServerResult<Balance>[] }> {
+async function getAddressBalance(addrScripthash: string): Promise<{ chosen: ServerResult<Balance>, conflict?: ServerConflict }> {
 	const startTime = new Date().getTime();
 
 	try {
@@ -304,15 +304,7 @@ async function getAddressBalance(addrScripthash: string): Promise<ServerResult<B
 			}
 		}
 
-		const first = results[0] as { confirmed?: number };
-
-		for (let i = 1; i < results.length; i++) {
-			if ((results[i] as { confirmed?: number }).confirmed != first.confirmed) {
-				return {conflictedResults:results};
-			}
-		}
-
-		return results[0];
+		return chooseAnswer(results, "balance", balanceKey, balanceSummary);
 
 	} catch (err) {
 		logStats("blockchainScripthash_getBalance", new Date().getTime() - startTime, false);

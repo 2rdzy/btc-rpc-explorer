@@ -1515,6 +1515,10 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 					res.locals.addressDetailsErrors = addressDetailsResult.errors;
 				}
 
+				if (addressDetailsResult.conflicts) {
+					res.locals.addressConflicts = addressDetailsResult.conflicts;
+				}
+
 				if (addressDetails) {
 					res.locals.addressDetails = addressDetails;
 
