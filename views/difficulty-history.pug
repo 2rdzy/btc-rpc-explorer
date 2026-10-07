@@ -77,8 +77,8 @@ block content
 											th.text-end.text-card-highlight.fw-light
 												span.text-uppercase Start Date
 												small.ms-1 (utc)
-											//th Date
-											//th.text-end Block Start
+											//-th Date
+											//-th.text-end Block Start
 											th.text-end.text-card-highlight.text-uppercase.fw-light Difficulty
 											th.text-end.text-card-highlight.fw-light
 												span.text-uppercase Hashes per block
@@ -91,8 +91,8 @@ block content
 											td.text-end.data-epoch
 											td.text-end.data-start-block
 											td.text-end.data-start-date
-											//td.data-date
-											//td.text-end.data-block-start
+											//-td.data-date
+											//-td.text-end.data-block-start
 											td.text-end.data-difficulty
 											td.text-end.data-hashes
 											td.text-end.data-difficulty-delta
@@ -144,12 +144,12 @@ block endOfBody
 		});
 
 		function loadData(chunkStrs) {
-			//console.log(JSON.stringify(chunkStrs));
+			//-console.log(JSON.stringify(chunkStrs));
 
 			var results = {heights:[]};
 
 			var statusCallback = function(chunkIndexDone, chunkCount) {
-				//console.log("Done: " + Math.min(((chunkIndexDone + 1) * chunkSize), count) + " of " + count);
+				//-console.log("Done: " + Math.min(((chunkIndexDone + 1) * chunkSize), count) + " of " + count);
 
 				var wPercent = `${parseInt(100 * (chunkIndexDone + 1) / parseFloat(chunkCount))}%`;
 				
@@ -178,15 +178,15 @@ block endOfBody
 				}
 
 				for (var i = 0; i < yearItems.length; i++) {
-					createGraph(`graph-diff-change-${yearItems[i][1]}`, [summary.changeGraphData_years[yearItems[i][1]]], "Change in work per block %", false);
+					createGraph(`graph-diff-change-${yearItems[i][1]}`, [summary.changeGraphData_years[yearItems[i][1]]], "Change in work per block %", false, null, null, true);
 				}
 
-				//createGraph("graph-diff-hist-2", summary.epochChunks, "Difficulty 2");
+				//-createGraph("graph-diff-hist-2", summary.epochChunks, "Difficulty 2");
 				
 				$("#main-content").show();
 				$("#progress-wrapper").hide();
 
-				// only show the first graph (All Time)
+				//- only show the first graph (All Time)
 				$(`.graph-diff-hist`).hide();
 				$(`.graph-diff-change`).hide();
 
@@ -226,16 +226,16 @@ block endOfBody
 
 				var row = $("#difficulty-table-row-prototype").clone();
 				row.attr("id", null);
-				//row.addClass("fee-rate-table-row");
+				//-row.addClass("fee-rate-table-row");
 
 				var startBlock = latestBlockStart - 2016 * i;
-				//var startBlock = 2016 * i;
+				//-var startBlock = 2016 * i;
 
 				row.find(".data-epoch").text(item.epoch);
 				row.find(".data-start-block").html(`<a href="./block-height/${startBlock}">${startBlock.toLocaleString()}</a>`);
 				row.find(".data-start-date").text(new Date(item.date * 1000).toISOString().slice(0, 10));
-				//row.find(".data-date").text(item.count.toLocaleString());
-				//row.find(".data-block-start").text(sumBlockCount.toDP(2));
+				//-row.find(".data-date").text(item.count.toLocaleString());
+				//-row.find(".data-block-start").text(sumBlockCount.toDP(2));
 
 				if (item.difficulty >= 1000000) {
 					row.find(".data-difficulty").text(parseInt(item.difficulty).toLocaleString());
@@ -279,11 +279,11 @@ block endOfBody
 
 				var row = $("#difficulty-delta-table-row-prototype").clone();
 				row.attr("id", null);
-				//row.addClass("fee-rate-table-row");
+				//-row.addClass("fee-rate-table-row");
 
 				row.find(".data-epoch").text(item.epoch);
-				//row.find(".data-date").text(item.count.toLocaleString());
-				//row.find(".data-block-start").text(sumBlockCount.toDP(2));
+				//-row.find(".data-date").text(item.count.toLocaleString());
+				//-row.find(".data-block-start").text(sumBlockCount.toDP(2));
 				if (item.difficultyDelta) {
 					if (item.difficultyDelta > 0) {
 						row.find(".data-difficulty-delta").text("+" + (new Decimal(item.difficultyDelta).toDP(2)));
@@ -305,7 +305,8 @@ block endOfBody
 		}
 
 		var chartsById = {};
-		function createGraph(graphId, datas, yLabelStr, logY, labels, colors) {
+		// greyBeforeFork: the line is grey before the epoch where the BLAKE2b chain begins and red after it
+		function createGraph(graphId, datas, yLabelStr, logY, labels, colors, greyBeforeFork) {
 			if (chartsById[graphId]) {
 				chartsById[graphId].destroy();
 			}
@@ -320,6 +321,7 @@ block endOfBody
 				datasets.push({
 					label: labels ? labels[i] : undefined,
 					borderColor: colors ? colors[i] : '#C4402A',
+					segment: greyBeforeFork ? { borderColor: forkMarker.segmentColor(summary.firstBlake2bEpoch, "#adb5bd", "#C4402A") } : undefined,
 					borderWidth: 2,
 					backgroundColor: 'rgba(0,0,0,0)',
 					data: datas[i],
@@ -353,9 +355,9 @@ block endOfBody
 							grid: {
 								color: gridLineColor
 							},
-							//ticks: {
-							//	stepSize: 100,
-							//}
+							//-ticks: {
+							//-	stepSize: 100,
+							//-}
 						},
 						y: {
 							type: logY ? "logarithmic" : "linear",
@@ -394,7 +396,7 @@ block endOfBody
 
 			var url = `./internal-api/difficulty-by-height/${chunks[chunkIndex]}`;
 			
-			//console.log(url);
+			//-console.log(url);
 
 			$.ajax({
 				url: url

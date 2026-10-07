@@ -2,11 +2,11 @@
 	table.table.table-borderless.table-striped.mb-0
 		thead
 			tr
-				//th
+				//-th
 
 				th.text-end.text-card-highlight.fw-normal.text-uppercase Height
 
-				//if (!hideTimestampColumn)
+				//-if (!hideTimestampColumn)
 				th.text-end.text-card-highlight.fw-normal.text-uppercase.d-none.d-md-table-cell
 					span.border-dotted(title="Timestamp of the block.", data-bs-toggle="tooltip") Time
 
@@ -32,7 +32,7 @@
 
 				th.text-end.text-card-highlight.fw-normal.text-uppercase.d-none.d-lg-table-cell Σ Fees
 				
-				//th.text-end Size (kB)
+				//-th.text-end Size (kB)
 
 				if (blocks && blocks.length > 0 && blocks[0].weight)
 					th.text-end.text-card-highlight.fw-normal.text-uppercase.d-none.d-lg-table-cell % Full
@@ -81,7 +81,7 @@
 							if (blockIndex < blocks.length - 1)
 								- var timeDiff = moment.duration(moment.utc(new Date(parseInt(block.time) * 1000)).diff(moment.utc(new Date(parseInt(blocks[blockIndex + 1].time) * 1000))));
 
-						//if (!hideTimestampColumn)
+						//-if (!hideTimestampColumn)
 						td.text-end.d-none.d-md-table-cell
 							+timestamp(block.time, {includeAgo:false})
 							
@@ -191,7 +191,7 @@
 								span(title="This data is unavailable due to blockchain pruning", data-bs-toggle="tooltip")
 									i.bi-backspace.text-danger
 
-							// idea: show typical tx fee, maybe also optimized fee if not segwit
+							//- idea: show typical tx fee, maybe also optimized fee if not segwit
 							if (false)
 								- var feeEstimateVal = currencyValue.times(166).dividedBy(coinConfig.baseCurrencyUnit.multiplier);
 								span.border-dotted(title=`Value: ${feeEstimateVal}`, data-bs-toggle="tooltip") #{currencyValue}

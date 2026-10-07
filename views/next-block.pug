@@ -60,7 +60,7 @@ block content
 									th.text-end.text-card-highlight.fw-light
 										span.text-uppercase Weight
 										small.ms-1 (wu)
-									//th Depends
+									//-th Depends
 
 							tbody
 								each tx, txIndex in blockTemplate.transactions
@@ -85,7 +85,7 @@ block content
 											+valueDisplay(new Decimal(tx.fee).dividedBy(coinConfig.baseCurrencyUnit.multiplier))
 
 										td.text-end #{tx.weight.toLocaleString()}
-										//td #{tx.depends.map(x => `#${(x - 1)}`).join(", ")}
+										//-td #{tx.depends.map(x => `#${(x - 1)}`).join(", ")}
 
 
 		+pageTab("JSON")

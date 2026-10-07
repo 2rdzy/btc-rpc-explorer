@@ -89,7 +89,7 @@ block endOfBody
 
 			}).done((res) => {
 				if (!res.count) {
-					// not started yet
+					//- not started yet
 					return;
 				}
 
@@ -116,7 +116,7 @@ block endOfBody
 								clearInterval(statusInterval);
 							}
 						}).always(() => {
-							// nothing
+							//- nothing
 						});
 					}
 				}
@@ -130,7 +130,7 @@ block endOfBody
 				url: `./internal-api/build-predicted-blocks?statusId=${statusId}`
 
 			}).done((buildResult) => {
-				// we update status elsewhere, this call just kicks off the build
+				//- we update status elsewhere, this call just kicks off the build
 
 			}).fail((jqXHR, textStatus, errorThrown) => {
 				$(".loading-error").html(`<h6 class='mt-4 text-danger'>Failed loading mempool:</h6><pre><code class='json'>${JSON.stringify(textStatus)}</code></pre><pre><code class='json'>${JSON.stringify(errorThrown)}</code></pre>`);

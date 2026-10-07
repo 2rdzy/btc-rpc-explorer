@@ -275,12 +275,12 @@ block endOfBody
 				chunkStrs.push(chunkStr);
 			}
 
-			//alert(JSON.stringify(chunks));
+			//-alert(JSON.stringify(chunks));
 
 			var results = [];
 
 			var statusCallback = function(chunkIndexDone, chunkCount) {
-				//console.log("Done: " + Math.min(((chunkIndexDone + 1) * chunkSize), count) + " of " + count);
+				//-console.log("Done: " + Math.min(((chunkIndexDone + 1) * chunkSize), count) + " of " + count);
 
 				var wPercent = `${parseInt(100 * (chunkIndexDone + 1) / parseFloat(chunkCount))}%`;
 				
@@ -318,7 +318,7 @@ block endOfBody
 					createChart("chart-tx-fee-rate-distribution", summary.feeRateDistribution, summary.feeRateDistributionLabels);
 				}
 
-				//$(".abc").text(JSON.stringify(summary));
+				//-$(".abc").text(JSON.stringify(summary));
 
 				$("#main-content").show();
 				$("#progress-wrapper").hide();
@@ -464,7 +464,7 @@ block endOfBody
 					row.addClass("table-borderless");
 				}
 				
-				// span(title=`Output Type: ${utils.outputTypeName(inputTypeKey)}`, data-bs-toggle="tooltip") #{utils.outputTypeAbbreviation(inputTypeKey)}
+				//- span(title=`Output Type: ${utils.outputTypeName(inputTypeKey)}`, data-bs-toggle="tooltip") #{utils.outputTypeAbbreviation(inputTypeKey)}
 				row.find(".data-type").html(`<span title='Type: ${item.type}' data-bs-toggle='tooltip'>${item.type}</span>`);
 				row.find(".data-count").text(item.count.toLocaleString());
 
@@ -484,7 +484,7 @@ block endOfBody
 					row.addClass("table-borderless");
 				}
 				
-				// span(title=`Output Type: ${utils.outputTypeName(inputTypeKey)}`, data-bs-toggle="tooltip") #{utils.outputTypeAbbreviation(inputTypeKey)}
+				//- span(title=`Output Type: ${utils.outputTypeName(inputTypeKey)}`, data-bs-toggle="tooltip") #{utils.outputTypeAbbreviation(inputTypeKey)}
 				row.find(".data-type").html(`<span title='Type: ${item.type}' data-bs-toggle='tooltip'>${item.type}</span>`);
 				row.find(".data-count").text(item.count.toLocaleString());
 
@@ -527,9 +527,9 @@ block endOfBody
 							grid: {
 								color: gridLineColor
 							},
-							//ticks: {
-							//	stepSize: 100,
-							//}
+							//-ticks: {
+							//-	stepSize: 100,
+							//-}
 						},
 						y: {
 							type: "logarithmic",
@@ -598,7 +598,7 @@ block endOfBody
 
 			var url = `./internal-api/block-tx-summaries/${blockHash}/${blockHeight}/${chunks[chunkIndex]}`;
 			
-			//console.log(url);
+			//-console.log(url);
 
 			$.ajax({
 				url: url
@@ -640,7 +640,7 @@ block endOfBody
 			for (var i = 0; i < txResults.length; i++) {
 				var txSummary = txResults[i];
 
-				//console.log(JSON.stringify(txSummary));
+				//-console.log(JSON.stringify(txSummary));
 				
 				for (var j = 0; j < txSummary.vout.length; j++) {
 					var vout = txSummary.vout[j];
