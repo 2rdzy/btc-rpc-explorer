@@ -3,7 +3,11 @@
 		"AlphaPool": { "name": "AlphaPool" },
 		"Lazarus": { "name": "Lazarus" },
 		"omegapool.tech": { "name": "omegapool.tech" },
-		"Legata": { "name": "Legata" }
+		"Legata": { "name": "Legata" },
+		"B2Pool.io": { "name": "B2Pool.io" },
+		"CONVOY": { "name": "CONVOY" },
+		"dxpool": { "name": "dxpool" },
+		"Rabid Pool": { "name": "Rabid Pool" }
 	},
 	"payout_addresses": {},
 	"block_hashes": {},
