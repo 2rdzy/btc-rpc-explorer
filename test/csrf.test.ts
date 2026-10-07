@@ -18,7 +18,9 @@ before(async () => {
 
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use(session({ secret: 'test', resave: false, saveUninitialized: true }));
+	// the session cookie is secure, as in the explorer; the client below says it came over HTTPS
+	app.set('trust proxy', true);
+	app.use(session({ secret: 'test', resave: false, saveUninitialized: true, cookie: { secure: true, httpOnly: true, sameSite: 'lax' } }));
 	app.use(csrfProtection, (req, res, next) => {
 		res.locals.csrfToken = generateToken(req);
 
@@ -46,7 +48,7 @@ function client() {
 	let cookie = '';
 
 	const request = async (path: string, options: RequestInit = {}) => {
-		const response = await fetch(base + path, { ...options, headers: { ...(options.headers as Record<string, string>), cookie } });
+		const response = await fetch(base + path, { ...options, headers: { ...(options.headers as Record<string, string>), cookie, 'x-forwarded-proto': 'https' } });
 		const setCookie = response.headers.get('set-cookie');
 
 		if (setCookie) {
