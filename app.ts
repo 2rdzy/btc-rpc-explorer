@@ -158,6 +158,7 @@ processStatsInterval.unref();
 
 import normalizeActions from "./app/normalizeActions.js";
 import actionPerformanceMonitor from "./app/actionPerformanceMonitor.js";
+import { settingsFromCookie } from "./app/helpers/settings.js";
 expressApp.use(actionPerformanceMonitor(statTracker, {
 	ignoredEndsWithActions: /\.js|\.css|\.svg|\.png|\.woff2/,
 	ignoredStartsWithActions: `${config.baseUrl}snippet`,
@@ -187,6 +188,18 @@ if (process.env.NODE_ENV != "local") {
 expressApp.use(cookieParser());
 
 expressApp.disable('x-powered-by');
+
+// Headers every response carries. Only the snippets (the quote one is made to be embedded in other sites) may be framed.
+expressApp.use(function(req, res, next) {
+	res.setHeader("X-Content-Type-Options", "nosniff");
+	res.setHeader("Referrer-Policy", "same-origin");
+
+	if (!req.path.startsWith(config.baseUrl + "snippet/")) {
+		res.setHeader("X-Frame-Options", "SAMEORIGIN");
+	}
+
+	next();
+});
 
 
 if ((process.env.BTCEXP_BASIC_AUTH_PASSWORD || process.env.BTCEXP_SSO_TOKEN_FILE) && config.rateLimiting.loginMaxFailures != -1) {
@@ -939,8 +952,7 @@ expressApp.use(function(req, res, next) {
 	if (!req.session.userSettings) {
 		req.session.userSettings = Object.create(null);
 
-		const cookieSettings = JSON.parse(req.cookies["user-settings"] || "{}");
-		for (const [key, value] of Object.entries(cookieSettings)) {
+		for (const [key, value] of Object.entries(settingsFromCookie(req.cookies["user-settings"]))) {
 			req.session.userSettings[key] = value;
 		}
 	}

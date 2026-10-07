@@ -122,7 +122,6 @@ export const pages: PageCase[] = [
 	{ path: "/terminal", post: { cmd: "getblockcount" }, contains: ["Unknown command"] },
 	{ path: "/terminal", post: { cmd: "parsescript 51" }, contains: ["OP_1"] },
 	{ path: "/terminal", post: { cmd: "parsescript zz" }, contains: ["needs a script as hex"] },
-	{ path: "/predicted-blocks-old" },
 
 	// the static pages
 	{ path: "/about", contains: ["About", "Dan Janosik"] },

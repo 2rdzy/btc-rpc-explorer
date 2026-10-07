@@ -73,6 +73,24 @@ describe('the explorer against a recorded node', () => {
 		});
 	}
 
+	test('responses carry the security headers, and only the snippets can be framed', async () => {
+		const auth = { authorization: 'Basic ' + Buffer.from(`user:${smokePassword}`).toString('base64') };
+
+		for (const path of ['/', '/api/version', '/nonexistent', '/block-height/975700']) {
+			const response = await fetch(app.baseUrl + path, { headers: auth, redirect: 'manual' });
+
+			assert.equal(response.headers.get('x-content-type-options'), 'nosniff', path);
+			assert.equal(response.headers.get('referrer-policy'), 'same-origin', path);
+			assert.equal(response.headers.get('x-frame-options'), 'SAMEORIGIN', path);
+			assert.equal(response.headers.get('x-powered-by'), null, path);
+		}
+
+		const snippet = await fetch(`${app.baseUrl}/snippet/timestamp`, { headers: auth });
+
+		assert.equal(snippet.headers.get('x-content-type-options'), 'nosniff');
+		assert.equal(snippet.headers.get('x-frame-options'), null);
+	});
+
 	test('without the password nothing is served', async () => {
 		for (const page of [{ path: '/' }, { path: '/rpc-browser' }, { path: '/api/block/975700' }]) {
 			assert.equal((await requestPage(app.baseUrl, page)).status, 401, page.path);

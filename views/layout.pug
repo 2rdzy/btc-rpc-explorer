@@ -294,9 +294,9 @@ html(lang="en")
 		
 		script.
 			var serverTzOffset = "!{new Decimal(new Date().getTimezoneOffset()).dividedBy(60)}";
-			var browserTzOffset = "!{browserTzOffset}";
+			var browserTzOffset = "#{browserTzOffset}";
 			var currentBrowserTzOffset = (new Date().getTimezoneOffset() / 60).toString();
-			var userTzOffset = "!{userTzOffset}";
+			var userTzOffset = "#{userTzOffset}";
 			
 			document.addEventListener("DOMContentLoaded", function(event) {''
 				enableTooltipsAndPopovers();
