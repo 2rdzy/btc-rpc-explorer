@@ -291,6 +291,11 @@ if (rateLimitWindowMinutes == -1) {
 				return true;
 			}
 
+			// what the pages ask for in the background (the block analysis alone makes dozens of these calls)
+			if (req.originalUrl.includes("/internal-api/")) {
+				return true;
+			}
+
 			return false;
 		},
 		handler: function (req, res) {

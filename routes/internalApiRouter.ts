@@ -7,7 +7,7 @@ import asyncHandler from "express-async-handler";
 import * as utils from "../app/utils.js";
 import { queryInt, queryString } from "../app/request.js";
 import * as coreApi from "../app/api/coreApi.js";
-import { blockRangeError, maxHeightListLength, parseHeightList } from "../app/helpers/limits.js";
+import { blockRangeError, maxHeightListLength, maxTxidListLength, parseHeightList, parseTxidList } from "../app/helpers/limits.js";
 import type { RpcData } from "../app/api/rpcApi.js";
 
 // What a build leaves behind (its status and result) is dropped after an hour when nobody fetched it, so that builds
@@ -71,7 +71,13 @@ router.get("/block-stats-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/mempool-txs/:txids", function(req, res, next) {
-	const txids = req.params.txids.split(",").map(utils.asHash);
+	const txids = parseTxidList(req.params.txids);
+
+	if (txids == null) {
+		res.status(400).json({success:false, error:"A list of at most " + maxTxidListLength + " transaction ids is needed."});
+
+		return;
+	}
 
 	const promises = [];
 
@@ -400,7 +406,13 @@ router.get("/raw-tx-with-inputs/:txid", function(req, res, next) {
 router.get("/block-tx-summaries/:blockHash/:blockHeight/:txids", function(req, res, next) {
 	const blockHash = req.params.blockHash;
 	const blockHeight = parseInt(req.params.blockHeight);
-	const txids = req.params.txids.split(",").map(utils.asHash);
+	const txids = parseTxidList(req.params.txids);
+
+	if (txids == null) {
+		res.status(400).json({success:false, error:"A list of at most " + maxTxidListLength + " transaction ids is needed."});
+
+		return;
+	}
 
 	const promises = [];
 

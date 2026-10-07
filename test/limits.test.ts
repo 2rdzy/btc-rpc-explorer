@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { blockRangeError, maxBlockRange, maxHeightListLength, parseHeightList } from "../app/helpers/limits.js";
+import { blockRangeError, maxBlockRange, maxHeightListLength, maxTxidListLength, parseHeightList, parseTxidList } from "../app/helpers/limits.js";
 
 describe("blockRangeError", () => {
 	test("a range of the allowed size is fine", () => {
@@ -36,6 +36,26 @@ describe("parseHeightList", () => {
 	test("anything that is no height refuses the list", () => {
 		for (const list of ["", "abc", "1,,2", "1,2,", "-1", "1.5", "1e3", " 1", "0x10", "1234567890", "1,abc"]) {
 			assert.equal(parseHeightList(list), null, JSON.stringify(list));
+		}
+	});
+});
+
+describe("parseTxidList", () => {
+	const txid = (n: number) => n.toString(16).padStart(64, "0");
+
+	test("txids are returned in order, whatever the case", () => {
+		assert.deepEqual(parseTxidList(`${txid(1)},${txid(2).toUpperCase()}`), [txid(1), txid(2).toUpperCase()]);
+		assert.deepEqual(parseTxidList(txid(1)), [txid(1)]);
+	});
+
+	test("the longest list allowed is fine, one more is not", () => {
+		assert.equal(parseTxidList(Array.from({ length: maxTxidListLength }, (_, i) => txid(i)).join(","))!.length, maxTxidListLength);
+		assert.equal(parseTxidList(Array.from({ length: maxTxidListLength + 1 }, (_, i) => txid(i)).join(",")), null);
+	});
+
+	test("anything that is no txid refuses the list", () => {
+		for (const list of ["", "abc", `${txid(1)},`, `,${txid(1)}`, `${txid(1)},zz`, `${txid(1)}0`, txid(1).slice(1), `${txid(1)} `, `${"g".repeat(64)}`]) {
+			assert.equal(parseTxidList(list), null, JSON.stringify(list));
 		}
 	});
 });
