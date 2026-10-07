@@ -40,6 +40,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * The RPC terminal and browser show the node's own error message.
 * `/api/price/marketcap` no longer fails when exchange rates are disabled, and further bugs found by the review and by the tests are fixed.
 * The block analysis asked for ten transactions at a time, which for a large block was hundreds of requests and used up the rate limit, after which nothing worked for a while. It asks for 50, and the calls the pages make in the background (`/internal-api/`) no longer count towards the rate limit.
+* The difficulty history no longer reuses BLAKE2b epochs that an older version cached with a wrong difficulty (worked out from the bits as if the proof of work were SHA-256d), which left the BLAKE2b line short and put a bogus step in the chart.
 * Docker: a multi-stage image that runs as a non-root user under `tini`, a compose file bound to localhost, and a CI job that builds it.
 * Tests: about 600 tests run in CI on Node 20 and 22, among them page tests that run the whole explorer against recorded and made-up node answers.
 
