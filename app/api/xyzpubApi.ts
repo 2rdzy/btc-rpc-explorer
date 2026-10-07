@@ -225,7 +225,12 @@ export async function searchXpubTxids(extendedPubkey: string, gapLimit = 20, add
 								}
 							}
 						} else {
+							// no answer about this address (no address API, or it failed): count it as empty,
+							// or this loop and the gap check never end
 							result.emptyAddresses[receiveOrChange == 0 ? "receive" : "change"].push(address);
+
+							gapCounts[receiveOrChange]++;
+							moreTx = false;
 						}
 
 						txOffset += txLimit;
