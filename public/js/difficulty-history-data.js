@@ -9,6 +9,17 @@
 		root.difficultyHistoryData = factory();
 	}
 })(typeof self !== 'undefined' ? self : this, function () {
+	// The expected number of SHA-256d hashes per block at difficulty 1: 2^256 over the target of difficulty 1
+	// (0xffff * 2^208), which is 2^48 / 0xffff.
+	var SHA256D_HASHES_PER_DIFFICULTY = 4295032833;
+
+	// The work a block takes, in expected hashes, for the difficulty a block header reports: the BLAKE2b difficulty of
+	// Knots already is the expected number of hashes, the SHA-256d difficulty is a multiple of the easiest target.
+	// Both are then on one scale, and can be compared.
+	function hashesPerBlock(difficulty, isBlake2b) {
+		return isBlake2b ? difficulty : difficulty * SHA256D_HASHES_PER_DIFFICULTY;
+	}
+
 	// raw: { heights: [epoch start heights], <height>: { difficulty, time, blake2b }, ... }
 	// yearItems: [[label, years], ...], the time windows the charts offer
 	function summarizeData(raw, yearItems) {
@@ -42,15 +53,17 @@
 				summary.firstBlake2bEpoch = i;
 			}
 
-			summary.difficultyData.push({epoch:i, date:raw[heightStr].time, difficulty:raw[heightStr].difficulty, blake2b:isBlake2b});
+			var hashes = hashesPerBlock(raw[heightStr].difficulty, isBlake2b);
 
-			summary.graphData.push({x:i, y:raw[heightStr].difficulty});
+			summary.difficultyData.push({epoch:i, date:raw[heightStr].time, difficulty:raw[heightStr].difficulty, hashes:hashes, blake2b:isBlake2b});
+
+			summary.graphData.push({x:i, y:hashes});
 
 			var yearIndex = Math.floor((raw.heights.length - i) / 26);
 
 			for (let j = 0; j < yearItems.length; j++) {
 				if (yearIndex < yearItems[j][1]) {
-					(isBlake2b ? summary.blake2bGraphData_years : summary.graphData_years)[yearItems[j][1]].push({x:i, y:raw[heightStr].difficulty});
+					(isBlake2b ? summary.blake2bGraphData_years : summary.graphData_years)[yearItems[j][1]].push({x:i, y:hashes});
 				}
 			}
 
@@ -65,25 +78,14 @@
 				summary.difficultyDeltaData.push({epoch:i});
 
 			} else {
-				var d1 = raw[heightStr].difficulty;
-				var d0 = raw[previousHeightStr].difficulty
-
-				if (isBlake2b != !!raw[previousHeightStr].blake2b) {
-					// the proof of work changed between these epochs: the two difficulties are not comparable
-					summary.difficultyDeltaData.push({epoch:i, algorithmChange:true});
-
-					for (let j = 0; j < yearItems.length; j++) {
-						if (yearIndex < yearItems[j][1]) {
-							summary.changeGraphData_years[yearItems[j][1]].push({x:i, y:null});
-						}
-					}
-
-					continue;
-				}
+				// the change in the work a block takes: across the switch of the proof of work too, where it fell by far
+				var previousIsBlake2b = !!raw[previousHeightStr].blake2b;
+				var d1 = hashes;
+				var d0 = hashesPerBlock(raw[previousHeightStr].difficulty, previousIsBlake2b);
 
 				var deltaPercent = 100 * (d1 / d0 - 1);
 
-				summary.difficultyDeltaData.push({epoch:i, difficultyDelta:deltaPercent});
+				summary.difficultyDeltaData.push(isBlake2b != previousIsBlake2b ? {epoch:i, algorithmChange:true, difficultyDelta:deltaPercent} : {epoch:i, difficultyDelta:deltaPercent});
 
 
 				if (deltaPercent > 100) {
@@ -107,5 +109,5 @@
 		return summary;
 	}
 
-	return { summarizeData: summarizeData };
+	return { summarizeData: summarizeData, hashesPerBlock: hashesPerBlock, SHA256D_HASHES_PER_DIFFICULTY: SHA256D_HASHES_PER_DIFFICULTY };
 });
