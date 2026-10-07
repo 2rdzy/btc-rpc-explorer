@@ -11,6 +11,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * Removed: demo mode (`BTCEXP_DEMO` and `--demo`; it opened the RPC tools to everyone), the S3 asset upload and its settings (`BTCEXP_S3_BUCKET`, `BTCEXP_S3_BUCKET_PATH`, `BTCEXP_S3_BUCKET_REGION`, `BTCEXP_CDN_BASE_URL`), and the unauthenticated `/connect` and `/disconnect` routes.
 * The Redis cache keys changed (they no longer contain a hash of the RPC password), so an existing cache is simply not used.
 * New settings: `BTCEXP_PUBLIC_URL` (link preview tags), `BTCEXP_RATE_LIMIT_LOGIN_FAILURES`.
+* Optional, for a faster UTXO set page: `coinstatsindex=1` in the node's `bitcoin.conf`. The explorer uses the index when the node has it (see the README).
 
 ###### BLAKE2b chain
 
