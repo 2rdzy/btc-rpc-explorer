@@ -19,6 +19,8 @@ Whatever reasons you may have for running a full node (trustlessness, technical 
 * The node details page shows the BLAKE2b fork height and whether it has taken effect.
 * A hand-maintained list identifies the miners seen on this chain (`public/txt/mining-pools-configs-custom/`).
 * Red theme and the Blake2b name.
+* Safer defaults: production mode, verified Electrum certificates, CSRF protection, rate-limited logins, security headers, and the RPC tools and admin pages only behind the password. See "Security" below.
+* TypeScript, a build step, tests that run the whole explorer, and a Docker image.
 
 Blocks up to the fork are shared with Bitcoin. From the fork on, blocks use BLAKE2b proof of work and difficulty is the expected number of hashes per block.
 
@@ -38,7 +40,7 @@ Blocks up to the fork are shared with Bitcoin. From the fork on, blocks use BLAK
 
 # Changelog / Release notes
 
-See [CHANGELOG.md](/CHANGELOG.md) (upstream's history).
+See [CHANGELOG.md](CHANGELOG.md): the release notes of this fork start at 4.0.0 (read "Upgrading" there when you come from upstream), and upstream's history follows. Changes to the public API are in [CHANGELOG-API.md](CHANGELOG-API.md).
 
 
 # Getting started
@@ -106,7 +108,7 @@ BTCEXP_ELECTRUM_TXINDEX=true
 Notes:
 
 * The cookie file is regenerated every time bitcoind restarts. Copy it again after a restart.
-* The Electrum client does not verify the server's TLS certificate (so self-signed Fulcrum certificates work). Only use it with a server you trust on a network you trust.
+* Electrum servers over `tls://` are verified. A server with a self-signed certificate (Fulcrum's default) needs its fingerprint in `BTCEXP_ELECTRUM_TLS_FINGERPRINT` (get it with `openssl x509 -in cert.pem -noout -fingerprint -sha256`), or its certificate in `BTCEXP_ELECTRUM_TLS_CA`. See [.env-sample](.env-sample). With several servers, the address page shows what most of them say and warns when they differ.
 * To use a node on another machine without opening its RPC port, forward it over SSH: `ssh -N -L 8332:127.0.0.1:8332 user@node-host`, then point `BTCEXP_BITCOIND_HOST` at `127.0.0.1`.
 
 #### CLI arguments
@@ -134,6 +136,15 @@ After successful access with the token, a cookie is set for authentication. To r
 2. `docker run -d --name btc-rpc-explorer --network host --env-file .env -v /path/to/.cookie:/path/to/.cookie:ro btc-rpc-explorer` (with `--network host` the explorer reaches a node on the same machine as `127.0.0.1`; otherwise publish the port with `-p 127.0.0.1:3002:3002` and point `BTCEXP_BITCOIND_HOST` at an address the container can reach)
 
 The image holds no settings: they come from `--env-file` (`.env` and the caches are left out of the build by `.dockerignore`). It runs as the unprivileged user `node`, so the cookie file has to be readable by user id 1000. See also [docker-compose.yml](docker-compose.yml) and [docs/Server-Setup-Docker.md](docs/Server-Setup-Docker.md).
+
+
+## Security
+
+* The explorer is meant for your own node. It binds to `127.0.0.1` by default; to reach it from elsewhere put it behind a reverse proxy with HTTPS (below) and set `BTCEXP_BASIC_AUTH_PASSWORD`.
+* The RPC browser, the RPC terminal and the admin pages are only served when the password is set and given. Without it they show a message instead. What the RPC tools can run is limited by `BTCEXP_RPC_BLACKLIST` (see [.env-sample](.env-sample)).
+* The pages need the node's RPC login: prefer the cookie file (`BTCEXP_BITCOIND_COOKIE`) to a password in the environment, and never expose the RPC port of the node itself.
+* Set `BTCEXP_PRIVACY_MODE=true` (the default is `false`) when you do not want the explorer to ask external services for exchange rates, IP locations and the like.
+* Found a vulnerability? Please report it privately, through the "Report a vulnerability" option under the Security tab of the repository, not in a public issue.
 
 
 ## Reverse proxy with HTTPS

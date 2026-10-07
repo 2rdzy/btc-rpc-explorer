@@ -7,9 +7,9 @@ Leave the default config, scroll to the bottom, paste in at bottom and edit:
 ```
 upstream explorer-servers {
 	ip_hash;
-	server srv1.example.com:3000 max_fails=1 weight=4;	
-	server srv2.example.com:3000 max_fails=1 weight=2;
-	server srv3.example.com:3000 max_fails=1 weight=1;		
+	server srv1.example.com:3002 max_fails=1 weight=4;	
+	server srv2.example.com:3002 max_fails=1 weight=2;
+	server srv3.example.com:3002 max_fails=1 weight=1;		
 }
 
 server {
