@@ -5,7 +5,7 @@ canvas.mb-3(id=graphData.id)
 script.
 	Chart.defaults.elements.point.radius = 1;
 	var ctx = document.getElementById("#{graphData.id}").getContext('2d');
-	// the block where the BLAKE2b chain begins, or null: it is marked, and the line is grey before it and red after it
+	//- the block where the BLAKE2b chain begins, or null: it is marked, and the line is grey before it and red after it
 	var forkHeight = #{typeof blake2bForkHeight == "number" ? blake2bForkHeight : "null"};
 	var graph = new Chart(ctx, {
 		type: 'line',

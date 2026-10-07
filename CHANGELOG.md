@@ -44,6 +44,8 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * Docker: a multi-stage image that runs as a non-root user under `tini`, a compose file bound to localhost, and a CI job that builds it.
 * Tests: about 600 tests run in CI on Node 20 and 22, among them page tests that run the whole explorer against recorded and made-up node answers.
 * The charts of the transaction stats mark the block where the BLAKE2b chain splits off (a dashed line with a label); the line is grey before it (history shared with Bitcoin) and red after it.
+* The change chart of the difficulty history is grey before the fork and red after it, like the other charts.
+* The home page no longer nests a row without a column count inside the mempool row (its classes read `row-cols-md-NaN`), and pages no longer start with HTML comments in front of the doctype (template comments written with `//` were sent to the browser).
 
 
 ##### v3.5.1

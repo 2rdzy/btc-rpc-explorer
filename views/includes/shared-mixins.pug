@@ -35,7 +35,7 @@ mixin pageTitle(text, subtext, copyableSubtext=false)
 			small
 				+copyTextButton(subtext)
 	
-	//hr.mb-3
+	//-hr.mb-3
 
 
 mixin sectionTitleBlock
@@ -89,7 +89,7 @@ mixin summaryRow(itemCount)
 	- locals.rowCounts = {};
 	- locals.rowCountsArray.forEach(x => locals.rowCounts[x[0]] = x[1]);
 
-	//h1 #{itemCount} #{JSON.stringify(locals.rowCounts)}
+	//-h1 #{itemCount} #{JSON.stringify(locals.rowCounts)}
 
 	.row.row-cols-1.summary-row(class=utils.objectProperties(locals.colCounts).map(x => `row-cols-${x}-${locals.colCounts[x]}`).join(" "))
 		block
@@ -117,7 +117,7 @@ mixin summaryItem(title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl, l
 	- var rowIndexes = utils.objectProperties(locals.colCounts).map(x => [x, locals.colCounts[x]]).map(x => [x[0], Math.floor(locals.summaryItemIndex / x[1])]);
 
 	.col(class=(locals.summaryItemIndex == (locals.summaryItemCount - 1) ? "mb-0" : "mb-3"), class=rowIndexes.map(x => `mb-${x[0]}-${(x[1] < (locals.rowCounts[x[0]] - 1) ? "4" : "0")}`))
-		//span.text-danger (#{JSON.stringify(locals.rowCounts)})
+		//-span.text-danger (#{JSON.stringify(locals.rowCounts)})
 		.text-start.text-md-center
 			+summaryTitle(title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl, linkDesc)
 			
@@ -128,16 +128,16 @@ mixin summaryItem(title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl, l
 	- locals.summaryItemIndex++;
 
 
-// options keys:
-// 		- blockHeightsByTxid
-// 		- sharedBlockHeight (int)
-// 		- showDates (true|false)
-// 		- highlightAddress (address)
-// 		- addrGainsByTxid (map)
-// 		- addrLossesByTxid (map)
-// 		- mempoolDetailsByTxid (map)
+//- options keys:
+//- 		- blockHeightsByTxid
+//- 		- sharedBlockHeight (int)
+//- 		- showDates (true|false)
+//- 		- highlightAddress (address)
+//- 		- addrGainsByTxid (map)
+//- 		- addrLossesByTxid (map)
+//- 		- mempoolDetailsByTxid (map)
 
-// txBlockHeightsByTxid_orSharedBlockHeight, showDates=false, highlightAddress, addrGainsByTxid, addrLossesByTxid)
+//- txBlockHeightsByTxid_orSharedBlockHeight, showDates=false, highlightAddress, addrGainsByTxid, addrLossesByTxid)
 mixin txList(visibleTxs, txCount, limit, offset, inputsByTxid, options={})
 	if (txCount > limit && !options.hidePagination)
 		.rounded-0.rounded-top.bg-content.border
@@ -146,7 +146,7 @@ mixin txList(visibleTxs, txCount, limit, offset, inputsByTxid, options={})
 				+pagination(limit, offset, null, txCount, paginationBaseUrl)
 					
 	
-		//.mb-4.mb-md-3
+		//-.mb-4.mb-md-3
 		.pb-4.pb-md-2.bg-tx-separator
 
 
@@ -377,9 +377,9 @@ mixin valueDisplay(val, options={})
 mixin _valueDisplayBtc(val, options={})
 	- var parts = utils.formatCurrencyAmount(val, userSettings.displayCurrency);
 
-	//span #{JSON.stringify(parts)}
+	//-span #{JSON.stringify(parts)}
 
-	//span.d-inline.d-sm-none.fw-light.me-tiny ₿
+	//-span.d-inline.d-sm-none.fw-light.me-tiny ₿
 	
 	span #{parts.val}
 		if (parts.lessSignificantDigits && !options.hideLessSignificantDigits)
@@ -398,12 +398,12 @@ mixin _valueDisplaySat(val, summarizeMin=Infinity, summarizeDecimals=3)
 	- var localCurrencyDisplay = userSettings.displayCurrency == "local";
 	- var parts = utils.formatCurrencyAmount(val, "sat");
 
-	//span #{JSON.stringify(parts)}
+	//-span #{JSON.stringify(parts)}
 	
 	if (Math.abs(parts.intVal) >= summarizeMin)
-		//span #{JSON.stringify(parts)}
+		//-span #{JSON.stringify(parts)}
 		- var largeNumberData = utils.formatLargeNumberSignificant(parts.intVal, summarizeDecimals >= 0 ? summarizeDecimals : 3);
-		//span #{JSON.stringify(largeNumberData)} #{parts.intVal}
+		//-span #{JSON.stringify(largeNumberData)} #{parts.intVal}
 		span(title=parts.intVal.toLocaleString(), data-bs-toggle="tooltip") #{largeNumberData[0]}
 		span #{largeNumberData[1].abbreviation}
 		
@@ -425,12 +425,12 @@ mixin _valueDisplayLocal(val, summarizeMin=Infinity, summarizeDecimals=3)
 
 	- var parts = utils.formatCurrencyAmount(val, userSettings.localCurrency);
 
-	//span #{JSON.stringify(parts)}
+	//-span #{JSON.stringify(parts)}
 	span.fw-light.me-tiny #{global.currencySymbols[userSettings.localCurrency]}
 
 	if (Math.abs(parts.intVal) >= summarizeMin)
 		- var largeNumberData = utils.formatLargeNumberSignificant(parts.intVal, summarizeDecimals >= 0 ? summarizeDecimals : 3);
-		//span #{JSON.stringify(largeNumberData)} #{parts.intVal}
+		//-span #{JSON.stringify(largeNumberData)} #{parts.intVal}
 		span.border-dotted(title=`${global.currencySymbols[userSettings.localCurrency]}${parts.intVal.toLocaleString()}<br/>${utils.formatCurrencyAmount(val, coinConfig.defaultCurrencyUnit.name.toLowerCase()).simpleVal} BTC`, data-bs-toggle="tooltip", data-bs-html="true")
 			span #{largeNumberData[0]}
 			span.ms-1 #{largeNumberData[1].textDesc}
@@ -453,15 +453,15 @@ mixin valueDisplaySpecial(val, maxDecimals=-1, summarizeAlways=false, summarizeM
 			else
 				- var parts = utils.formatCurrencyAmount(val, localCurrencyDisplay ? userSettings.localCurrency : userSettings.displayCurrency);
 
-			//span #{JSON.stringify(parts)}
+			//-span #{JSON.stringify(parts)}
 			if (localCurrencyDisplay)
 				span.me-1 #{global.currencySymbols[userSettings.localCurrency]}
-				//| #{JSON.stringify(parts)}
+				//-| #{JSON.stringify(parts)}
 
 			if (summarizeAlways || parts.intVal >= summarizeMin)
-				//span #{JSON.stringify(parts)}
+				//-span #{JSON.stringify(parts)}
 				- var largeNumberData = utils.formatLargeNumberSignificant(parts.intVal, summarizeDecimals >= 0 ? summarizeDecimals : 2);
-				//span #{JSON.stringify(largeNumberData)} #{parts.intVal}
+				//-span #{JSON.stringify(largeNumberData)} #{parts.intVal}
 				span(class=(localCurrencyDisplay ? "border-dotted" : false), title=(localCurrencyDisplay ? `${utils.formatCurrencyAmount(val, coinConfig.defaultCurrencyUnit.name.toLowerCase()).simpleVal} BTC` : false), data-bs-toggle=(localCurrencyDisplay ? "tooltip" : false)) #{largeNumberData[0]} #{largeNumberData[1].textDesc}
 			
 			else if (maxDecimals == 0)
@@ -835,7 +835,7 @@ mixin dismissableInfoAlert(userSettingDismissedName, textToShowWhenClosed)
 				block
 
 				a.btn-close(href=`./changeSetting?name=${userSettingDismissedName}&value=true`, aria-label="Close", style="text-decoration: none;", title="Hide this note", data-bs-toggle="tooltip")
-				//button.btn-close.text-muted(type="button", data-bs-dismiss="alert", aria-label="Close", title="Hide this note", data-bs-toggle="tooltip")
+				//-button.btn-close.text-muted(type="button", data-bs-dismiss="alert", aria-label="Close", title="Hide this note", data-bs-toggle="tooltip")
 
 		else if (textToShowWhenClosed)
 			.alert.alert-primary.shadow-sm.mb-4(role="alert")
@@ -856,7 +856,7 @@ mixin dismissableAlert(userSettingDismissedName, textToShowWhenClosed)
 				block
 
 				a.btn-close(href=`./changeSetting?name=${userSettingDismissedName}&value=true`, aria-label="Close", style="text-decoration: none;", title="Hide this note", data-bs-toggle="tooltip")
-				//button.btn-close.text-muted(type="button", data-bs-dismiss="alert", aria-label="Close", title="Hide this note", data-bs-toggle="tooltip")
+				//-button.btn-close.text-muted(type="button", data-bs-dismiss="alert", aria-label="Close", title="Hide this note", data-bs-toggle="tooltip")
 
 		else if (textToShowWhenClosed)
 			.alert.alert-primary.shadow-sm.mb-4(role="alert")

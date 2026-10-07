@@ -155,7 +155,7 @@ block content
 												| block #{getdeploymentinfo.blake2b.height.toLocaleString()})
 
 							each item, itemName in getdeploymentinfo.deployments
-								// (title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl)
+								//- (title, titleDesc, subtitle, subtitleDesc, linkText, linkUrl)
 								+summaryItem(itemName, forkUrls[itemName] ? forkUrls[itemName].title : null)
 									if (item.active)
 										span.me-2
@@ -198,10 +198,10 @@ block content
 												i.bi-box-arrow-up-right.small
 
 
-				// deprecated, as of v23.0, which now has this data in getdeploymentinfo.deployments (see above)
+				//- deprecated, as of v23.0, which now has this data in getdeploymentinfo.deployments (see above)
 				if (getblockchaininfo.softforks)
 					if (getblockchaininfo.bip9_softforks)
-						// old format: ~ v0.18.0
+						//- old format: ~ v0.18.0
 						- var softforks = [];
 						each item in getblockchaininfo.softforks
 							- softforks.push(item);
@@ -223,7 +223,7 @@ block content
 												div #{propName}: #{propVal}
 
 					else
-						// more modern format
+						//- more modern format
 						- var forkUrls = {"bip34":"https://github.com/bitcoin/bips/blob/master/bip-0034.mediawiki", "bip65":"https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki", "bip66":"https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki", "csv":"https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki", "segwit":"https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki", "taproot":"https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki"};
 
 						+contentSection("Soft Forks")

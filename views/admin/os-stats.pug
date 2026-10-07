@@ -67,7 +67,7 @@ block endOfBody
 				yaxes.push({
 					scaleLabel: {
 						display: false,
-						//labelString: names[i]
+						//-labelString: names[i]
 					},
 					grid: {
 						color: gridLineColor
@@ -75,7 +75,7 @@ block endOfBody
 				});
 			}
 
-			// update data in graph if we already created, otherwise create anew
+			//- update data in graph if we already created, otherwise create anew
 			if (graphsById[chartid]) {
 				graph = graphsById[chartid];
 				graph.data = { datasets: datasets };
@@ -89,7 +89,7 @@ block endOfBody
 						datasets: datasets
 					},
 					options: {
-						// disable all animations
+						//- disable all animations
 						animation: { duration: 0 },
 						hover: { animationDuration: 0 },
 						responsiveAnimationDuration: 0,

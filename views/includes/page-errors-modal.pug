@@ -17,8 +17,8 @@ div.modal.fade(id="pageErrorsModal" role="dialog" aria-hidden="true")
 						div(class=(itemIndex < (pageErrors.length - 1) ? "mb-3" : false))
 							h6 Error ##{(itemIndex + 1).toLocaleString()}
 							hr
-							//pre
-							//	code.json #{JSON.stringify(item.error, null, 4)}
+							//-pre
+							//-	code.json #{JSON.stringify(item.error, null, 4)}
 
 							pre
 								code.json #{JSON.stringify(item, null, 4)}

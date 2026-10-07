@@ -222,7 +222,7 @@ block endOfBody
 
 			}).done((res) => {
 				if (!res.count) {
-					// not started yet
+					//- not started yet
 					return;
 				}
 
@@ -249,7 +249,7 @@ block endOfBody
 								clearInterval(statusInterval);
 							}
 						}).always(() => {
-							// nothing
+							//- nothing
 						});
 					}
 				}
@@ -263,7 +263,7 @@ block endOfBody
 				url: `./internal-api/build-mempool-summary?statusId=${statusId}`
 
 			}).done((buildResult) => {
-				// we update status elsewhere, this call just kicks off the build
+				//- we update status elsewhere, this call just kicks off the build
 
 			}).fail((jqXHR, textStatus, errorThrown) => {
 				$(".loading-error").html(`<h6 class='mt-4 text-danger'>Failed loading mempool:</h6><pre><code class='json'>${JSON.stringify(textStatus)}</code></pre><pre><code class='json'>${JSON.stringify(errorThrown)}</code></pre>`);
@@ -283,7 +283,7 @@ block endOfBody
 			fillOldestTxTable(summary);
 			fillLargestTxTable(summary);
 
-			//console.log(JSON.stringify(summary));
+			//-console.log(JSON.stringify(summary));
 
 			$("#tx-count").text(summary.count.toLocaleString());
 			$("#block-count").text(new Decimal(summary.totalWeight).dividedBy(4000000).toDP(1)); // TODO: magic number: block weight
@@ -317,10 +317,10 @@ block endOfBody
 			updateFeeRateValue($("#avg-fee-rate"), summary.averageFeePerByte, 2, false);
 
 
-			//$("#summary-json").text(JSON.stringify(summary, null, 4));
+			//-$("#summary-json").text(JSON.stringify(summary, null, 4));
 
 
-			// fee rate chart
+			//- fee rate chart
 			var ctx1 = document.getElementById("mempoolBarChart").getContext('2d');
 			var mempoolBarChart = new Chart(ctx1, {
 				type: 'bar',
@@ -339,7 +339,7 @@ block endOfBody
 						{
 							data: feeRateGraphData.blockCounts.reverse(),
 							backgroundColor: feeRateGraphData.bgColors,
-							//yAxisID: "axis-tx-count",
+							//-yAxisID: "axis-tx-count",
 						},
 					]
 				},
@@ -391,7 +391,7 @@ block endOfBody
 				}
 			});
 
-			// tx size chart
+			//- tx size chart
 			var ctx2 = document.getElementById("txSizesBarChart").getContext('2d');
 			var txSizesBarChart = new Chart(ctx2, {
 				type: 'bar',
@@ -439,7 +439,7 @@ block endOfBody
 				}
 			});
 
-			// tx age chart
+			//- tx age chart
 			var ctx3 = document.getElementById("txAgesBarChart").getContext('2d');
 			var txSizesBarChart = new Chart(ctx3, {
 				type: 'bar',
@@ -488,7 +488,7 @@ block endOfBody
 			});
 
 
-			// fee rate table
+			//- fee rate table
 			var sumBlockCount = new Decimal(0);
 
 			for (var i = (summary.satoshiPerByteBuckets.length - 1); i >= 0; i--) {
@@ -626,9 +626,9 @@ block endOfBody
 
 			for (var i = 0; i < feeBucketLabels.length; i++) {
 				var feeBucketLabel = feeBucketLabels[i];
-				//var percentTx = Math.round(100 * feeBucketTxCounts[i] / summary.count).toLocaleString();
+				//-var percentTx = Math.round(100 * feeBucketTxCounts[i] / summary.count).toLocaleString();
 				
-				//graphData.feeBucketLabels.push([feeBucketLabel]);//, `${feeBucketTxCounts[i]} tx (${percentTx}%)`]);
+				//-graphData.feeBucketLabels.push([feeBucketLabel]);//, `${feeBucketTxCounts[i]} tx (${percentTx}%)`]);
 				graphData.bgColors.push(`hsl(${(333 * i / feeBucketLabels.length)}, 100%, 50%)`);
 			}
 
@@ -716,7 +716,7 @@ block endOfBody
 				var blockCount = new Decimal(item.totalWeight).dividedBy(4000000); // TODO: magic number: block weight
 				
 				if (feeRate >= (item.minFeeRate || 1) && feeRate < (item.maxFeeRate || 10000000)) {
-					// in this bucket
+					//- in this bucket
 					var minBlocks = sumBlockCount;
 					var maxBlocks = sumBlockCount.plus(blockCount);
 

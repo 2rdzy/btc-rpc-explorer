@@ -100,7 +100,7 @@ block content
 							+summaryItem("RBF", "Whether this unconfirmed transaction is replaceable using Replace-By-Fee.")
 								- var replaceable = false;
 								each vin, vinIndex in tx.vin
-									// ref: https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki#summary
+									//- ref: https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki#summary
 									if (vin.sequence < 4294967295 - 1)
 										- replaceable = true;
 
@@ -190,11 +190,11 @@ block content
 
 					- var showLocktime = false;
 					if (tx.locktime > 500000000 && result.getrawtransaction.locktime > (new Date().getTime() / 1000))
-						// future-dated locktime date
+						//- future-dated locktime date
 						- showLocktime = true;
 
 					if (tx.locktime > 0 && !isTxConfirmed)
-						// unconfirmed locktime block height
+						//- unconfirmed locktime block height
 						- showLocktime = true;
 
 					+summaryRow(3 + (tx.weight ? 1 : 0) + (valueDestroyed ? 1 : 0) + (showLocktime ? 1 : 0) + (parseInt(daysDestroyed) > 0 ? 1 : 0))
@@ -345,7 +345,7 @@ block content
 															span.text-muted.text-tiny (empty)
 														else
 															+hexDataDisplay(witnessItem)
-													//.d-inline-block.small.border.rounded-1.p-1.px-2.card-highlight.word-wrap(class=(witnessIndex < (vin.txinwitness.length - 1) ? "mb-2" : false)) #{witnessItem}
+													//-.d-inline-block.small.border.rounded-1.p-1.px-2.card-highlight.word-wrap(class=(witnessIndex < (vin.txinwitness.length - 1) ? "mb-2" : false)) #{witnessItem}
 
 											if (vin.txinwitness.length > maxWitnessDisplayCount)
 												span.text-muted.text-tiny.fw-bold (#{(vin.txinwitness.length - maxWitnessDisplayCount).toLocaleString()} more witness items)
@@ -432,7 +432,7 @@ block content
 									pre
 										code.json(data-lang="json") #{JSON.stringify(mempoolDetails, null, 4)}
 
-					//pre #{JSON.stringify(result.txInputs, null, 4)}
+					//-pre #{JSON.stringify(result.txInputs, null, 4)}
 
 				else
 					span This transaction is very large. Displaying it's data here may cause problems. Instead, see it's raw data via the internal API:

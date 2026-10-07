@@ -274,7 +274,7 @@ mixin txIoDetails(tx, txInputs, totalIOValues, blockHeight, options={})
 							
 
 							if (voutAddresses.length == 0)
-								// xs display only, output type when we have no address (e.g. op_return)
+								//- xs display only, output type when we have no address (e.g. op_return)
 
 								if (vout.scriptPubKey.asm && vout.scriptPubKey.asm.startsWith('OP_RETURN '))
 									if (false)

@@ -24,7 +24,7 @@ html(lang="en")
 		meta(property="og:description" content=(metaDesc != undefined ? metaDesc : "Open-source, easy-to-use, educational Bitcoin explorer whose only dependency is your Bitcoin Knots node."))
 
 		if config.publicUrl
-			// the link preview image: social networks need its absolute address (BTCEXP_PUBLIC_URL)
+			//- the link preview image: social networks need its absolute address (BTCEXP_PUBLIC_URL)
 			meta(property="og:image" content=`${config.publicUrl}/img/social-preview.png`)
 			meta(property="og:image:width" content="1200")
 			meta(property="og:image:height" content="630")
@@ -287,7 +287,7 @@ html(lang="en")
 
 				onLoad_tabSelection();
 
-				//console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+				//-console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
 				console.log("Manual TZ Offset: " + userTzOffset);
 				console.log("Browser TZ Offset: " + browserTzOffset);
 

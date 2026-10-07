@@ -67,6 +67,14 @@ describe('the explorer against a recorded node', () => {
 				}
 			}
 
+			// a page starts with its doctype: template comments written with // end up in front of it
+			if (result.text.includes('<html')) {
+				assert.ok(result.text.startsWith('<!DOCTYPE html>'), `${page.path} starts with ${JSON.stringify(result.text.slice(0, 40))}`);
+			}
+
+			// a column count that is not a number leaves classes like row-cols-md-NaN in the page
+			assert.ok(!/row-cols-\w+-(NaN|undefined)/.test(result.text), `${page.path} has a summary row with no column count`);
+
 			if (page.settleMs) {
 				await new Promise(resolve => setTimeout(resolve, page.settleMs));
 			}

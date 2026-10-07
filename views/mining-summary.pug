@@ -108,7 +108,7 @@ block endOfBody
 
 			}).done((res) => {
 				if (!res.count) {
-					// not started yet
+					//- not started yet
 					return;
 				}
 
@@ -134,7 +134,7 @@ block endOfBody
 							displaySummaryData(summary);
 						}
 					}).always(() => {
-						// nothing
+						//- nothing
 					});
 				}
 			}).fail((a, b, c) => {
@@ -151,15 +151,15 @@ block endOfBody
 				url: `./internal-api/build-mining-summary/${startBlock}/${endBlock}?statusId=${statusId}`
 
 			}).done((buildResult) => {
-				// we update status elsewhere, this call just kicks off the build
+				//- we update status elsewhere, this call just kicks off the build
 
 			}).fail((jqXHR, textStatus, errorThrown) => {
 				console.log("Error: " + textStatus);
 				console.log("Error details: ", errorThrown);
 
-				//$(".loading-error").html(`<h6 class='mt-4 text-danger'>Failed loading mempool:</h6><pre><code class='json'>${JSON.stringify(textStatus)}</code></pre><pre><code class='json'>${JSON.stringify(errorThrown)}</code></pre>`);
+				//-$(".loading-error").html(`<h6 class='mt-4 text-danger'>Failed loading mempool:</h6><pre><code class='json'>${JSON.stringify(textStatus)}</code></pre><pre><code class='json'>${JSON.stringify(errorThrown)}</code></pre>`);
 
-				//hljs.highlightAll();
+				//-hljs.highlightAll();
 
 			}).always(() => {
 			});
@@ -169,7 +169,7 @@ block endOfBody
 			$("#time-range-buttons .block-count-btn").removeClass("disabled");
 			$("#block-selections-buttons .dropdown-item").removeClass("disabled");
 
-			//console.log(JSON.stringify(results));
+			//-console.log(JSON.stringify(results));
 
 			var totalSubsidyPlusFees = new Decimal(summary.overall.totalSubsidy).plus(new Decimal(summary.overall.totalFees));
 
@@ -282,7 +282,7 @@ block endOfBody
 			}
 			
 
-			//console.log("data: " + JSON.stringify(pieChartData.backgroundColors));
+			//-console.log("data: " + JSON.stringify(pieChartData.backgroundColors));
 
 
 			$("#summary-table").show();
@@ -291,7 +291,7 @@ block endOfBody
 
 		function prepareUI() {
 			$("#time-range-buttons .block-count-btn").on("click", function() {
-				// highlight current selection
+				//- highlight current selection
 				$("#time-range-buttons .block-count-btn").removeClass("btn-primary").addClass("btn-outline-primary");
 				$(this).addClass("btn-primary").removeClass("btn-outline-primary");
 				$("#preconfigured-dropdown").removeClass("btn-primary").addClass("btn-outline-primary");
@@ -310,7 +310,7 @@ block endOfBody
 			});
 
 			$("#block-selections-buttons .dropdown-item").on("click", function() {
-				// highlight current selection
+				//- highlight current selection
 				$("#time-range-buttons .block-count-btn").removeClass("btn-primary").addClass("btn-outline-primary");
 				$("#preconfigured-dropdown").removeClass("btn-outline-primary").addClass("btn-primary");
 				
@@ -331,7 +331,7 @@ block endOfBody
 			});
 
 			$("#custom-range-form").on("submit", function() {
-				// highlight current selection
+				//- highlight current selection
 				$("#time-range-buttons .block-count-btn").removeClass("btn-primary").addClass("btn-outline-primary");
 				$("#preconfigured-dropdown").removeClass("btn-primary").addClass("btn-outline-primary");
 				
