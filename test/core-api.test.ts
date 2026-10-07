@@ -349,6 +349,35 @@ describe('next block, difficulty and chain stats (the fee groups and the range)'
 		assert.equal(global.difficultyByBlockheightCacheDirty, true);
 	});
 
+	test('getDifficultyByBlockHeights fetches again what an older version cached without the blake2b flag', async () => {
+		// as found on a live node: the difficulty of a BLAKE2b epoch worked out from the bits as if it were SHA-256d
+		global.difficultyByBlockheightCache = {
+			1500: { difficulty: 100, blake2b: false, time: 5 },
+			2500: { difficulty: 17842859.58, time: 8 },
+			3500: { difficulty: 127479855693691.4, time: 7 }
+		};
+		const asked: string[] = [];
+		fakeRpc({
+			getblockhash: params => hash(params[0]),
+			getblockheader: params => {
+				asked.push(params[0]);
+
+				return Number(params[0].slice(-4)) == 2500 ? { height: 2500, difficulty_blake2b: 7.66e16, time: 9 } : { height: 3500, difficulty: 127479855693691.4, time: 7 };
+			}
+		});
+
+		const out = await coreApi.getDifficultyByBlockHeights([1500, 2500, 3500]);
+
+		// the one with the flag is used as it is, the two without are asked for again
+		assert.equal(asked.length, 2);
+		assert.deepEqual(out, {
+			1500: { difficulty: 100, blake2b: false, time: 5 },
+			2500: { difficulty: 7.66e16, blake2b: true, time: 9 },
+			3500: { difficulty: 127479855693691.4, blake2b: false, time: 7 }
+		});
+		assert.deepEqual(global.difficultyByBlockheightCache[2500], { difficulty: 7.66e16, blake2b: true, time: 9 });
+	});
+
 	test('getTxStats understands the keywords and builds the series', async () => {
 		fakeRpc({
 			getblockchaininfo: () => ({ blocks: 1000 }),

@@ -502,9 +502,10 @@ async function getDifficultyByBlockHeights(blockHeights: number[]): Promise<Reco
 		const blockHeight = blockHeights[i];
 		const blockHeightStr = `${blockHeight}`;
 
-		// entries cached by older versions may lack a difficulty (BLAKE2b headers), so fetch those again
+		// Entries cached by older versions have no `blake2b` flag, and for a BLAKE2b header they may hold a difficulty worked
+		// out from the bits as if the proof of work were SHA-256d (or none at all): fetch those again.
 		const cachedItem = global.difficultyByBlockheightCache[blockHeightStr];
-		if (cachedItem && cachedItem.difficulty != null) {
+		if (cachedItem && cachedItem.difficulty != null && typeof cachedItem.blake2b === "boolean") {
 			results[blockHeight] = cachedItem;
 
 		} else {
