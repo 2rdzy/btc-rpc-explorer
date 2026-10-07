@@ -36,6 +36,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 
 * Red theme and Blake2b branding, with better link contrast in the dark themes; all text says Bitcoin Knots and what this fork is; the upstream demo links are gone; the README and setup docs are rewritten for this fork; the original authors are credited on the About page and in the README.
 * A block or transaction that does not exist answers 404 instead of 500.
+* The fee rate chart and table of the mempool summary were in sat per weight unit while labelled sat/vB, so every rate was four times too low and most transactions fell into the "[0 - 1)" bucket. They are in sat/vB now.
 * The RPC terminal and browser show the node's own error message.
 * `/api/price/marketcap` no longer fails when exchange rates are disabled, and further bugs found by the review and by the tests are fixed.
 * Docker: a multi-stage image that runs as a non-root user under `tini`, a compose file bound to localhost, and a CI job that builds it.

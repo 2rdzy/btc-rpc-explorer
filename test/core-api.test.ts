@@ -474,18 +474,35 @@ describe('mempool and mining summaries', () => {
 		assert.deepEqual(summary.sizeBucketLabels, ['0 - 60', 120, 180, 240, '240+']);
 		assert.deepEqual(summary.sizeBucketTxCounts, [0, 1, 0, 1, 1]);
 
-		// fee rates of 8.33, 10 and 37.5 sats per weight unit: buckets of 1, and everything above the top 0.25% of
-		// the weight in one bucket labelled by where it starts
-		assert.equal(summary.satoshiPerByteBucketLabels.length, 38);
+		// fee rates of 33.3, 150 and 40 sat/vB: buckets of 1, and everything above the top 0.25% of the weight in one
+		// bucket labelled by where it starts
+		assert.equal(summary.satoshiPerByteBucketLabels.length, 151);
 		assert.equal(summary.satoshiPerByteBucketLabels[0], '[0 - 1)');
-		assert.equal(summary.satoshiPerByteBucketLabels[36], '[36 - 37)');
-		assert.equal(summary.satoshiPerByteBucketLabels[37], '37+');
-		assert.equal(summary.satoshiPerByteBucketCounts.length, 38);
-		assert.deepEqual([8, 10, 37].map(i => summary.satoshiPerByteBucketCounts[i]), [1, 1, 1]);
+		assert.equal(summary.satoshiPerByteBucketLabels[33], '[33 - 34)');
+		assert.equal(summary.satoshiPerByteBucketLabels[149], '[149 - 150)');
+		assert.equal(summary.satoshiPerByteBucketLabels[150], '150+');
+		assert.equal(summary.satoshiPerByteBucketCounts.length, 151);
+		assert.deepEqual([33, 40, 150].map(i => summary.satoshiPerByteBucketCounts[i]), [1, 1, 1]);
 		assert.equal(summary.satoshiPerByteBucketCounts.reduce((a: number, b: number) => a + b, 0), 3);
 
 		// ten minutes old at most: the age is given in minutes
 		assert.ok(summary.ageBucketLabels.every((label: string) => label.endsWith('m')), summary.ageBucketLabels);
+	});
+
+	test('the fee rate buckets are in sat/vB: a transaction paying the 1 sat/vB minimum is not in the one below 1', async () => {
+		const now = Math.floor(Date.now() / 1000);
+		const entries: Record<string, ReturnType<typeof entry>> = {
+			nnnnnnnnnn01: entry(0.000004, 400, now - 60),
+			oooooooooo02: entry(0.0000099, 400, now - 60)
+		};
+		fakeRpc({ getrawmempool: () => Object.keys(entries), getmempoolentry: params => entries[params[0]] });
+
+		const summary = await coreApi.buildMempoolSummary('s', 5, 5, () => {});
+
+		// 400 sat for 400 vB is 1 sat/vB, and 990 sat for 400 vB is 2.475
+		assert.equal(summary.satoshiPerByteBucketCounts[0], 0);
+		assert.equal(summary.satoshiPerByteBucketCounts[1], 1);
+		assert.equal(summary.satoshiPerByteBucketCounts[2], 1);
 	});
 
 	test('the oldest, largest and highest fee transactions are listed in order', async () => {
