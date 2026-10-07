@@ -5,7 +5,7 @@ const resourceIntegrityHashes: Record<string, string> = {
     "dataTables.bootstrap4.min.js": "sha384-uiSTMvD1kcI19sAHJDVf68medP9HA2E2PzGis9Efmfsdb8p9+mvbQNgFhzii1MEX",
     "decimal.js": "sha384-AZER8B64Ei3MdcUsKj9o83PHYCWb4dY9wJz58HzSDLat+G/QlGUdXhIlNOH56LUe",
     "difficulty-history-data.js": "sha384-Q6PKYW5M+8kXBgFzvbcmKkot7Ym1W1RaeMoyjLL3P+WJ136jQT/8YwKE26w9XX2v",
-    "fork-marker.js": "sha384-2vGk26IFXt4qW62SWkBlF0iwLe8qAmbirYXdJdoamiGsDUchACon4M0a7HHpuDsP",
+    "fork-marker.js": "sha384-PlnPA80aTGlgxBoRX9w9thnOZBrUZ4o5DJtIkjXHKL9zCenJoJ6wUshyNCEw2fIW",
     "highlight.min.js": "sha384-WRBQ3Nk0J+xE63PvRMOqL5e7wVeo/08dicApRgIsnUQV1zXQTP+VxcsVV8AeatLp",
     "jquery.dataTables.min.js": "sha384-rgWRqC0OFPisxlUvl332tiM/qmaNxnlY46eksSZD84t+s2vZlqGeHrncwIRX7CGp",
     "jquery.min.js": "sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK",
