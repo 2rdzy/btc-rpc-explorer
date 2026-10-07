@@ -8,7 +8,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * Run `npm ci && npm run build` and start the explorer with `npm start` (or `node dist/bin/cli.js`): it runs from `dist/` now. The Docker image does this itself. Node 20 or newer is needed.
 * `NODE_ENV` defaults to `production`. Without `BTCEXP_COOKIE_SECRET` and an RPC password to derive it from, a random cookie secret is used, so sessions do not survive a restart.
 * Electrum servers over `tls://` are verified. A server with a self-signed certificate needs `BTCEXP_ELECTRUM_TLS_FINGERPRINT` (or `BTCEXP_ELECTRUM_TLS_CA`); `BTCEXP_ELECTRUM_TLS_ALLOW_UNVERIFIED` switches the check off.
-* Removed: the S3 asset upload and its settings (`BTCEXP_S3_BUCKET`, `BTCEXP_S3_BUCKET_PATH`, `BTCEXP_S3_BUCKET_REGION`, `BTCEXP_CDN_BASE_URL`), and the unauthenticated `/connect` and `/disconnect` routes.
+* Removed: demo mode (`BTCEXP_DEMO` and `--demo`; it opened the RPC tools to everyone), the S3 asset upload and its settings (`BTCEXP_S3_BUCKET`, `BTCEXP_S3_BUCKET_PATH`, `BTCEXP_S3_BUCKET_REGION`, `BTCEXP_CDN_BASE_URL`), and the unauthenticated `/connect` and `/disconnect` routes.
 * The Redis cache keys changed (they no longer contain a hash of the RPC password), so an existing cache is simply not used.
 * New settings: `BTCEXP_PUBLIC_URL` (link preview tags), `BTCEXP_RATE_LIMIT_LOGIN_FAILURES`.
 

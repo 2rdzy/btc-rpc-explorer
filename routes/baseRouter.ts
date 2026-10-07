@@ -955,12 +955,6 @@ router.get("/block-height/:blockHeight", asyncHandler(async (req, res, next) => 
 		if (req.query.limit) {
 			limit = queryInt(req.query, "limit", limit);
 
-			// for demo sites, limit page sizes
-			if (config.demoSite && limit > config.site.blockTxPageSize) {
-				limit = config.site.blockTxPageSize;
-
-				res.locals.userMessage = "Transaction page size limited to " + config.site.blockTxPageSize + ". If this is your site, you can change or disable this limit in the site config.";
-			}
 		}
 
 		if (req.query.offset) {
@@ -1070,12 +1064,6 @@ router.get("/block/:blockHash", asyncHandler(async (req, res, next) => {
 		if (req.query.limit) {
 			limit = queryInt(req.query, "limit", limit);
 
-			// for demo sites, limit page sizes
-			if (config.demoSite && limit > config.site.blockTxPageSize) {
-				limit = config.site.blockTxPageSize;
-
-				res.locals.userMessage = "Transaction page size limited to " + config.site.blockTxPageSize + ". If this is your site, you can change or disable this limit in the site config.";
-			}
 		}
 
 		if (req.query.offset) {
@@ -1372,12 +1360,6 @@ router.get("/address/:address", asyncHandler(async (req, res, next) => {
 		if (req.query.limit) {
 			limit = queryInt(req.query, "limit", limit);
 
-			// for demo sites, limit page sizes
-			if (config.demoSite && limit > config.site.addressTxPageSize) {
-				limit = config.site.addressTxPageSize;
-
-				res.locals.userMessage = "Transaction page size limited to " + config.site.addressTxPageSize + ". If this is your site, you can change or disable this limit in the site config.";
-			}
 		}
 
 		if (req.query.offset) {
@@ -1674,7 +1656,7 @@ router.get("/next-halving", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/rpc-terminal", function(req, res, next) {
-	if (!config.demoSite && !req.authenticated) {
+	if (!req.authenticated) {
 		res.send("RPC Terminal / Browser require authentication. Set an authentication password via the 'BTCEXP_BASIC_AUTH_PASSWORD' environment variable (see .env-sample file for more info).");
 		
 		next();
@@ -1688,7 +1670,7 @@ router.get("/rpc-terminal", function(req, res, next) {
 });
 
 router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
-	if (!config.demoSite && !req.authenticated) {
+	if (!req.authenticated) {
 		res.send("RPC Terminal / Browser require authentication. Set an authentication password via the 'BTCEXP_BASIC_AUTH_PASSWORD' environment variable (see .env-sample file for more info).");
 
 		next();
@@ -1752,7 +1734,7 @@ router.post("/rpc-terminal", asyncHandler(async (req, res, next) => {
 }));
 
 router.get("/rpc-browser", asyncHandler(async (req, res, next) => {
-	if (!config.demoSite && !req.authenticated) {
+	if (!req.authenticated) {
 		res.send("RPC Terminal / Browser require authentication. Set an authentication password via the 'BTCEXP_BASIC_AUTH_PASSWORD' environment variable (see .env-sample file for more info).");
 
 		next();

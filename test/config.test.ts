@@ -89,11 +89,10 @@ describe('config defaults', () => {
 		assert.equal(c.coin, 'BTC');
 	});
 
-	test('privacy, demo and the in-memory cache switch default to off; rates and slow device mode to on', () => {
+	test('privacy and the in-memory cache switch default to off; rates and slow device mode to on', () => {
 		const c = config({});
 
 		assert.equal(c.privacyMode, false);
-		assert.equal(c.demoSite, false);
 		assert.equal(c.noInmemoryRpcCache, false);
 		assert.equal(c.slowDeviceMode, true);
 		assert.equal(c.queryExchangeRates, false);
@@ -134,7 +133,6 @@ describe('config from the environment', () => {
 
 	test('switches are read case-insensitively', () => {
 		assert.equal(config({ BTCEXP_PRIVACY_MODE: 'TRUE' }, 'privacyMode'), true);
-		assert.equal(config({ BTCEXP_DEMO: 'True' }, 'demoSite'), true);
 		assert.equal(config({ BTCEXP_NO_RATES: 'false' }, 'queryExchangeRates'), true);
 		assert.equal(config({ BTCEXP_NO_RATES: 'false', BTCEXP_PRIVACY_MODE: 'true' }, 'queryExchangeRates'), false);
 	});

@@ -370,23 +370,6 @@ function loadMiningPoolConfigs() {
 	});
 }
 
-async function getSourcecodeProjectMetadata() {
-	const options = {
-		url: "https://api.github.com/repos/2rdzy/btc-rpc-explorer",
-		headers: {
-			'User-Agent': 'request'
-		}
-	};
-	try {
-		const response = await axios(options);
-
-		global.sourcecodeProjectMetadata = response.data;
-
-	} catch (err) {
-		utils.logError("3208fh3ew7eghfg", err);
-		}
-}
-
 function loadChangelog() {
 	let filename = "CHANGELOG.md";
 	
@@ -899,13 +882,6 @@ expressApp.continueStartup = function() {
 
 
 	loadMiningPoolConfigs();
-
-
-	if (config.demoSite) {
-		getSourcecodeProjectMetadata();
-		setInterval(getSourcecodeProjectMetadata, 3600000);
-	}
-
 };
 
 expressApp.use(function(req, res, next) {
