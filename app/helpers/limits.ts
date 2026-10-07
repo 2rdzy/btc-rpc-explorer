@@ -7,6 +7,9 @@ export const maxBlockRange = 10000;
 // block heights in a list (the internal API loads a few at a time)
 export const maxHeightListLength = 100;
 
+// transaction ids in a list (the block analysis asks for 50 at a time)
+export const maxTxidListLength = 100;
+
 // the addresses of an extended public key that one request derives or looks up, and the gap after which the search stops
 export const maxXpubAddresses = 1000;
 export const maxXpubGapLimit = 100;
@@ -35,4 +38,11 @@ export function parseHeightList(list: string): number[] | null {
 	const heights = parts.map(part => /^\d{1,9}$/.test(part) ? parseInt(part) : NaN);
 
 	return heights.some(Number.isNaN) ? null : heights;
+}
+
+// The transaction ids of a comma separated list, or null when it is too long or has something that is no txid.
+export function parseTxidList(list: string): string[] | null {
+	const txids = list.split(",");
+
+	return txids.length <= maxTxidListLength && txids.every(txid => /^[0-9a-fA-F]{64}$/.test(txid)) ? txids : null;
 }
