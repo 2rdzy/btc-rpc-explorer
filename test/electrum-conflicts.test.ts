@@ -11,6 +11,11 @@ import type { ElectrumAnswers } from "./helpers/fakeElectrum.js";
 // p2wpkh script of a made-up key: the content only matters for the hash the client sends
 const scriptPubkey = "0014" + "11".repeat(20);
 
+// the clients keep trying to reconnect after their servers are closed: end the test process instead of waiting for them
+after(() => {
+	setTimeout(() => process.exit(process.exitCode ?? 0), 200).unref();
+});
+
 const answer = <T>(result: T, server: string | null) => ({ result, server });
 const same = (x: string) => x;
 
@@ -102,8 +107,6 @@ describe("Electrum servers that disagree", () => {
 		config.electrumServers = originalServers;
 		config.electrumTls = originalTls;
 		closers.forEach(close => close());
-		// the clients keep trying to reconnect: end the test process instead of waiting for them
-		setTimeout(() => process.exit(process.exitCode ?? 0), 200).unref();
 	});
 
 	test("the majority's answer is shown and the disagreement is reported", async () => {
@@ -122,5 +125,67 @@ describe("Electrum servers that disagree", () => {
 		assert.match(balance.used, /^127\.0\.0\.1:\d+$/);
 		assert.equal(balance.answers.find(a => a.server === balance.used)!.summary, "1000 sat confirmed");
 		assert.equal(transactions.answers.find(a => a.server === transactions.used)!.summary, "3 confirmed transactions");
+	});
+});
+
+describe("Electrum servers of which one fails", () => {
+	const history = [{ tx_hash: "aa", height: 1 }, { tx_hash: "bb", height: 2 }];
+	const good: ElectrumAnswers = { history, balance: { confirmed: 700, unconfirmed: 0 } };
+	const failing: ElectrumAnswers = { ...good, failing: ["blockchain.scripthash.get_history", "blockchain.scripthash.get_balance"] };
+	const closers: (() => void)[] = [];
+	const originalServers = config.electrumServers;
+	const originalTls = config.electrumTls;
+
+	before(async () => {
+		const servers = [await startFakeElectrum(failing), await startFakeElectrum(good)];
+
+		closers.push(...servers.map(s => s.close));
+		config.electrumTls = {};
+		config.electrumServers = servers.map(s => ({ host: "127.0.0.1", port: s.port, protocol: "tcp" }));
+		await electrumAddressApi.connectToServers();
+	});
+
+	after(() => {
+		config.electrumServers = originalServers;
+		config.electrumTls = originalTls;
+		closers.forEach(close => close());
+	});
+
+	test("the server that answers is used, with no conflict", async () => {
+		const out = await electrumAddressApi.getAddressDetails("addr", scriptPubkey, "desc", 10, 0);
+
+		assert.deepEqual(out.errors, []);
+		assert.equal(out.conflicts, undefined);
+		assert.equal(out.addressDetails!.txCount, 2);
+		assert.equal(out.addressDetails!.balanceSat, 700);
+	});
+});
+
+describe("Electrum servers that all fail", () => {
+	const failing: ElectrumAnswers = { history: [], balance: { confirmed: 0, unconfirmed: 0 }, failing: ["blockchain.scripthash.get_history", "blockchain.scripthash.get_balance"] };
+	const closers: (() => void)[] = [];
+	const originalServers = config.electrumServers;
+	const originalTls = config.electrumTls;
+
+	before(async () => {
+		const servers = [await startFakeElectrum(failing), await startFakeElectrum(failing)];
+
+		closers.push(...servers.map(s => s.close));
+		config.electrumTls = {};
+		config.electrumServers = servers.map(s => ({ host: "127.0.0.1", port: s.port, protocol: "tcp" }));
+		await electrumAddressApi.connectToServers();
+	});
+
+	after(() => {
+		config.electrumServers = originalServers;
+		config.electrumTls = originalTls;
+		closers.forEach(close => close());
+	});
+
+	test("the failure is reported, as when there is one server", async () => {
+		const out = await electrumAddressApi.getAddressDetails("addr", scriptPubkey, "desc", 10, 0);
+
+		assert.ok(out.errors!.length > 0);
+		assert.deepEqual(out.addressDetails, {});
 	});
 });

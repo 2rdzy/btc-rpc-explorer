@@ -3,7 +3,9 @@ import net from "node:net";
 // What a made-up Electrum server answers about an address.
 export interface ElectrumAnswers {
 	history: { tx_hash: string, height: number }[],
-	balance: { confirmed: number, unconfirmed: number }
+	balance: { confirmed: number, unconfirmed: number },
+	// methods this server answers with an error, like "history too large"
+	failing?: string[]
 }
 
 // A made-up Electrum server on a free local port, speaking newline-delimited JSON-RPC like the real thing.
@@ -32,7 +34,13 @@ export async function startFakeElectrum(answers: ElectrumAnswers): Promise<{ por
 				};
 
 				buffer = buffer.slice(i + 1);
-				socket.write(JSON.stringify({ jsonrpc: "2.0", id: message.id, result: results[message.method] }) + "\n");
+
+				if (answers.failing?.includes(message.method)) {
+					socket.write(JSON.stringify({ jsonrpc: "2.0", id: message.id, error: { code: 1, message: "history too large" } }) + "\n");
+
+				} else {
+					socket.write(JSON.stringify({ jsonrpc: "2.0", id: message.id, result: results[message.method] }) + "\n");
+				}
 			}
 		});
 	});

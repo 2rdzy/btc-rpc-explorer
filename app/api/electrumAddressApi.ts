@@ -158,14 +158,17 @@ async function runOnServer<T>(electrumClient: Client, f: (client: Client) => Pro
 	}
 }
 
-function runOnAllServers<T>(f: (client: Client) => Promise<T>): Promise<ServerResult<T>[]> {
-	const promises: Promise<ServerResult<T>>[] = [];
+// The answers of the servers that answered. A server that fails (it is down, or cannot answer this, like a history that
+// is too large for it) is left out as long as another one answers; when none does, the first failure is thrown.
+async function runOnAllServers<T>(f: (client: Client) => Promise<T>): Promise<ServerResult<T>[]> {
+	const settled = await Promise.allSettled(electrumClients.map(client => runOnServer(client, f)));
+	const answers = settled.filter((x): x is PromiseFulfilledResult<ServerResult<T>> => x.status == "fulfilled").map(x => x.value);
 
-	for (let i = 0; i < electrumClients.length; i++) {
-		promises.push(runOnServer(electrumClients[i], f));
+	if (answers.length == 0) {
+		throw settled.length > 0 ? (settled[0] as PromiseRejectedResult).reason : new Error("No Electrum server connection");
 	}
 
-	return Promise.all(promises);
+	return answers;
 }
 
 // The address's transactions (as txids with their block heights) and balance, as the Electrum servers say.

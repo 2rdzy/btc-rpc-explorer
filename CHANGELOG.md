@@ -30,7 +30,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 
 ###### Electrum
 
-* With several Electrum servers the address page shows what most of them say and a trust warning, with each server's answer, when they differ. (The comparison never worked before.)
+* With several Electrum servers the address page shows what most of them say and a trust warning, with each server's answer, when they differ. (The comparison never worked before.) A server that is down, or cannot answer, is left out as long as another one does.
 
 ###### Other changes
 
