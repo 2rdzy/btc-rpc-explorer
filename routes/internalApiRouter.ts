@@ -7,16 +7,30 @@ import asyncHandler from "express-async-handler";
 import * as utils from "../app/utils.js";
 import { queryInt, queryString } from "../app/request.js";
 import * as coreApi from "../app/api/coreApi.js";
+import { blockRangeError, maxHeightListLength, parseHeightList } from "../app/helpers/limits.js";
 import type { RpcData } from "../app/api/rpcApi.js";
+
+// What a build leaves behind (its status and result) is dropped after an hour when nobody fetched it, so that builds
+// that are started and never collected do not pile up in memory.
+const keepBuildsMillis = 60 * 60 * 1000;
+
+function expireLater(statusId: string, ...stores: Record<string, unknown>[]) {
+	setTimeout(() => {
+		for (const store of stores) {
+			delete store[statusId];
+		}
+	}, keepBuildsMillis).unref();
+}
 
 
 
 router.get("/blocks-by-height/:blockHeights", function(req, res, next) {
-	const blockHeightStrs = req.params.blockHeights.split(",");
-	
-	const blockHeights: number[] = [];
-	for (let i = 0; i < blockHeightStrs.length; i++) {
-		blockHeights.push(parseInt(blockHeightStrs[i]));
+	const blockHeights = parseHeightList(req.params.blockHeights);
+
+	if (blockHeights == null) {
+		res.status(400).json({success:false, error:"A list of at most " + maxHeightListLength + " block heights is needed."});
+
+		return;
 	}
 
 	coreApi.getBlocksByHeight(blockHeights).then(function(result) {
@@ -25,11 +39,12 @@ router.get("/blocks-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/block-headers-by-height/:blockHeights", function(req, res, next) {
-	const blockHeightStrs = req.params.blockHeights.split(",");
-	
-	const blockHeights: number[] = [];
-	for (let i = 0; i < blockHeightStrs.length; i++) {
-		blockHeights.push(parseInt(blockHeightStrs[i]));
+	const blockHeights = parseHeightList(req.params.blockHeights);
+
+	if (blockHeights == null) {
+		res.status(400).json({success:false, error:"A list of at most " + maxHeightListLength + " block heights is needed."});
+
+		return;
 	}
 
 	coreApi.getBlockHeadersByHeight(blockHeights).then(function(result) {
@@ -40,11 +55,12 @@ router.get("/block-headers-by-height/:blockHeights", function(req, res, next) {
 });
 
 router.get("/block-stats-by-height/:blockHeights", function(req, res, next) {
-	const blockHeightStrs = req.params.blockHeights.split(",");
-	
-	const blockHeights: number[] = [];
-	for (let i = 0; i < blockHeightStrs.length; i++) {
-		blockHeights.push(parseInt(blockHeightStrs[i]));
+	const blockHeights = parseHeightList(req.params.blockHeights);
+
+	if (blockHeights == null) {
+		res.status(400).json({success:false, error:"A list of at most " + maxHeightListLength + " block heights is needed."});
+
+		return;
 	}
 
 	coreApi.getBlocksStatsByHeight(blockHeights).then(function(result) {
@@ -135,6 +151,7 @@ router.get("/build-predicted-blocks", asyncHandler(async (req, res, next) => {
 		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			predictedBlocksStatuses[statusId] = {};
+			expireLater(statusId, predictedBlocksOutputs, predictedBlocksStatuses);
 		}
 
 		res.json({success:true, status:"started"});
@@ -203,6 +220,7 @@ router.get("/build-mempool-summary", asyncHandler(async (req, res, next) => {
 		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			mempoolSummaryStatuses[statusId] = {};
+			expireLater(statusId, mempoolSummaries, mempoolSummaryStatuses);
 		}
 
 		
@@ -277,9 +295,18 @@ router.get("/build-mining-summary/:startBlock/:endBlock", asyncHandler(async (re
 		const startBlock = parseInt(req.params.startBlock);
 		const endBlock = parseInt(req.params.endBlock);
 
+		const rangeError = blockRangeError(startBlock, endBlock);
+
+		if (rangeError) {
+			res.status(400).json({success:false, error:rangeError});
+
+			return;
+		}
+
 		const statusId = queryString(req.query, "statusId", "");
 		if (statusId) {
 			miningSummaryStatuses[statusId] = {};
+			expireLater(statusId, miningSummaries, miningSummaryStatuses);
 		}
 
 		res.json({success:true, status:"started"});

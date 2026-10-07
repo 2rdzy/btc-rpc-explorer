@@ -1,6 +1,7 @@
 import { xpubChangeVersionBytes, bip32Addresses } from "../helpers/addresses.js";
 import * as coreApi from "./coreApi.js";
 import * as addressApi from "./addressApi.js";
+import { maxXpubAddresses, maxXpubGapLimit } from "../helpers/limits.js";
 
 export interface RelatedKey {
 	keyType: string,
@@ -131,6 +132,8 @@ export function getKeyDetails(extendedPubkey: string): KeyDetails {
 // 0 is receive
 // 1 is change
 export function getXpubAddresses(extendedPubkey: string, receiveOrChange = 0, limit = 20, offset = 0): string[] {
+	limit = Math.min(limit, maxXpubAddresses);
+
 	const xpub_tpub = global.activeBlockchain == "main" ? "xpub" : "tpub";
 	// if xpub/ypub/zpub convert to address under path m/0/0
 	if (extendedPubkey.match(/^(xpub|tpub).*$/)) {
@@ -173,6 +176,9 @@ export interface XpubSearchResult {
 // The addresses of an xpub that have transactions, and the empty ones after the last used one.
 // gapLimit=20, default as per bip32
 export async function searchXpubTxids(extendedPubkey: string, gapLimit = 20, addressLimit = -1): Promise<XpubSearchResult> {
+	gapLimit = Math.min(gapLimit, maxXpubGapLimit);
+	addressLimit = addressLimit == -1 ? -1 : Math.min(addressLimit, maxXpubAddresses);
+
 	// addressLimit == -1 means we get every address with a transaction and 20 addresses gap at the end. 	
 	const sort = "desc";
 	
