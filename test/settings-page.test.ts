@@ -71,6 +71,22 @@ describe("the settings in the running explorer", () => {
 		assert.equal(broken.status, 200);
 	});
 
+	test("the admin pages are refused when no password is set", async () => {
+		for (const path of ["/admin/dashboard", "/admin/app-stats", "/admin/perf-log", "/admin/os-stats"]) {
+			const response = await fetch(app.baseUrl + path);
+
+			assert.equal(response.status, 403, path);
+			assert.match(await response.text(), /require authentication/, path);
+		}
+	});
+
+	test("the session cookie is SameSite=Lax and HTTP only", async () => {
+		const cookie = (await fetch(app.baseUrl + "/about")).headers.getSetCookie().find(c => c.startsWith("connect.sid="))!;
+
+		assert.match(cookie, /SameSite=Lax/i);
+		assert.match(cookie, /HttpOnly/i);
+	});
+
 	test("a setting of another name is not kept when its value is not plain", async () => {
 		assert.ok(!(await change("uiTheme", '"><img src=x onerror=alert(1)>')).includes("user-settings="));
 		assert.ok(!(await change('a"b', "x")).includes("user-settings="));
