@@ -19,7 +19,9 @@ export type RpcData = any;
 
 export interface RpcRequest {
 	method: string,
-	parameters?: unknown[]
+	parameters?: unknown[],
+	// reject with the node's error for any method (the RPC tools show it); by default only methodsThatMustSucceed do
+	throwOnError?: boolean
 }
 
 interface RpcTask {
@@ -411,7 +413,7 @@ const methodsThatMustSucceed = new Set([
 	"getnetworkinfo"
 ]);
 
-function checkRpcError(method: string, rpcResult: RpcData): void {
+function checkRpcError(method: string, rpcResult: RpcData, throwOnError = false): void {
 	if (!rpcResult || !rpcResult.error) {
 		return;
 	}
@@ -420,7 +422,7 @@ function checkRpcError(method: string, rpcResult: RpcData): void {
 
 	debugLog(`RPC error: method=${method}, code=${rpcError.code}, message=${rpcError.message}`);
 
-	if (methodsThatMustSucceed.has(method)) {
+	if (throwOnError || methodsThatMustSucceed.has(method)) {
 		throw Object.assign(new Error(`RPC ${method} failed: ${rpcError.message} (code ${rpcError.code})`), {rpcCode: rpcError.code});
 	}
 }
@@ -514,7 +516,7 @@ export function getRpcDataWithParams(request: RpcRequest, verifyingConnection = 
 
 			try {
 				const rpcResult = await client.request(request.method, request.parameters);
-				checkRpcError(request.method, rpcResult);
+				checkRpcError(request.method, rpcResult, request.throwOnError);
 
 				const result = rpcResult.result;
 
