@@ -125,6 +125,12 @@ export function nodeSpecific(method: string, params: unknown[], tip: Tip): Recor
 				next: { height: tip.height + 1, bits: tip.bits, [tip.difficultyKey]: tip.difficulty }, warnings: []
 			});
 
+		case "gettxoutsetinfo":
+			return result({
+				height: tip.height, bestblock: tip.hash, txouts: 180000000, bogosize: 13000000000, total_amount: 19800000.5,
+				disk_size: 11000000000, transactions: 90000000
+			});
+
 		case "getnetworkhashps":
 			return result(3.7e16);
 
