@@ -64,6 +64,8 @@ With pruning enabled and/or `txindex` disabled:
 * The address and amount of previous transaction outputs will not be shown, only the txid:vout.
 * The mining fee will only be available for unconfirmed transactions.
 
+For the UTXO set page, the node can also keep the coin statistics index (`coinstatsindex=1` in `bitcoin.conf`; restart the node, wait until `bitcoin-cli getindexinfo` shows it as synced, then restart the explorer). It is optional: without it the page works but builds its snapshot more slowly and says so; with it the explorer uses it automatically.
+
 
 ## Install / Run
 

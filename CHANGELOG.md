@@ -11,6 +11,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * Removed: demo mode (`BTCEXP_DEMO` and `--demo`; it opened the RPC tools to everyone), the S3 asset upload and its settings (`BTCEXP_S3_BUCKET`, `BTCEXP_S3_BUCKET_PATH`, `BTCEXP_S3_BUCKET_REGION`, `BTCEXP_CDN_BASE_URL`), and the unauthenticated `/connect` and `/disconnect` routes.
 * The Redis cache keys changed (they no longer contain a hash of the RPC password), so an existing cache is simply not used.
 * New settings: `BTCEXP_PUBLIC_URL` (link preview tags), `BTCEXP_RATE_LIMIT_LOGIN_FAILURES`.
+* Optional, for a faster UTXO set page: `coinstatsindex=1` in the node's `bitcoin.conf`. The explorer uses the index when the node has it (see the README).
 
 ###### BLAKE2b chain
 
@@ -26,6 +27,9 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * Dependencies with known vulnerabilities are updated; Dependabot and a monthly `npm audit` keep watch, and there is a single lock file.
 * `csurf` is replaced by `csrf-sync`; failed logins are rate limited; the Basic authentication password is compared in constant time; the RPC password is no longer hashed into cache keys.
 * Electrum certificates are verified (see above); a bug that let `/api/xyzpub/txids` run out of memory when no address API was configured is fixed.
+* A cross-site scripting hole inherited from upstream is closed: `/changeSetting` kept any value, and the time zone settings are printed into a script on every page, so a crafted link could run script in a visitor's pages. Settings are now checked when they are set and when the cookie is read, and printed escaped.
+* The RPC browser, the RPC terminal and the admin pages (`/admin/*`, which had no protection at all) need the password. The session cookie is `SameSite=Lax`, and responses carry `X-Content-Type-Options`, `Referrer-Policy` and (except snippets) `X-Frame-Options`. There is no Content-Security-Policy yet.
+* One request can no longer ask for a million blocks, thousands of heights or an xpub search with a huge gap: block ranges are limited to 10,000 blocks, height and transaction id lists to 100, xpub address lists to 1,000 and the gap limit to 100. Uncollected builds are dropped after an hour.
 * The two Electrum client packages come from this account's forks, and the S3 upload, with its dependency, is gone.
 
 ###### Electrum
