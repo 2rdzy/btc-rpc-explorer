@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { plugin, segmentColor } from "../public/js/fork-marker.js";
+import { plugin, pointColor, segmentColor } from "../public/js/fork-marker.js";
 
 // a chart that records what is drawn: the x axis shows heights min..max over 100..500 pixels
 function fakeChart(min: number, max: number) {
@@ -79,5 +79,26 @@ describe("segmentColor", () => {
 
 	test("without a fork height every piece has the second color", () => {
 		assert.equal(segmentColor(null, "grey", "red")(piece(1) as never), "red");
+	});
+});
+
+describe("pointColor", () => {
+	const color = pointColor(960000, "grey", "red");
+	const point = (x: number) => ({ parsed: { x } });
+
+	test("a dot before the fork has the first color, one at or after it the second", () => {
+		assert.equal(color(point(959999) as never), "grey");
+		assert.equal(color(point(960000) as never), "red");
+		assert.equal(color(point(970000) as never), "red");
+	});
+
+	test("without a fork height every dot has the second color", () => {
+		assert.equal(pointColor(null, "grey", "red")(point(1) as never), "red");
+	});
+
+	test("a dot and the piece of line that ends in it have the same color", () => {
+		for (const x of [900000, 959999, 960000, 960001, 1000000]) {
+			assert.equal(pointColor(960000, "grey", "red")(point(x) as never), segmentColor(960000, "grey", "red")({ p1: { parsed: { x } } } as never));
+		}
 	});
 });

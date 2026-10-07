@@ -52,5 +52,13 @@
 		};
 	}
 
-	return { plugin: plugin, segmentColor: segmentColor };
+	// The color of each dot (Chart.js `pointBackgroundColor` and `pointBorderColor`): the same as the piece of the line
+	// that ends in it, so that the dots and the line match.
+	function pointColor(forkHeight, before, after) {
+		return function (context) {
+			return forkHeight == null || context.parsed.x >= forkHeight ? after : before;
+		};
+	}
+
+	return { plugin: plugin, segmentColor: segmentColor, pointColor: pointColor };
 });
