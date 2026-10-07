@@ -69,6 +69,13 @@ describe('getXpubAddresses', () => {
 	});
 });
 
+describe('getXpubAddresses limit', () => {
+	test('is cut at the maximum', { timeout: 30000 }, () => {
+		assert.equal(xyzpubApi.getXpubAddresses(zpub, 0, 1000000).length, 1000);
+		assert.equal(xyzpubApi.getXpubAddresses(zpub, 0, 5).length, 5);
+	});
+});
+
 describe('searchXpubTxids', () => {
 	const originalApi = config.addressApi;
 
@@ -107,6 +114,16 @@ describe('searchXpubTxids', () => {
 
 		// with a limit on the addresses too
 		assert.deepEqual((await xyzpubApi.searchXpubTxids(zpub, 20, 1)).usedAddresses, []);
+	});
+
+	test('a gap limit and an address limit above the maximum are cut', { timeout: 30000 }, async () => {
+		fakeRpc({ validateaddress: params => ({ address: params[0], scriptPubKey: '00' }) });
+		config.addressApi = undefined;
+
+		const out = await xyzpubApi.searchXpubTxids(zpub, 1000000);
+
+		assert.equal(out.emptyAddresses.receive.length, 100);
+		assert.equal(out.emptyAddresses.change.length, 100);
 	});
 
 	test('pages through an address with more transactions than one page', async () => {

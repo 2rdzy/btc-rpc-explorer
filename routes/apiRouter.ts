@@ -23,6 +23,7 @@ import apiDocs from "./../docs/api.js";
 import btcQuotes from "../app/coins/btcQuotes.js";
 import type { RpcData } from "../app/api/rpcApi.js";
 import type { ExchangedCurrency } from "../app/helpers/currency.js";
+import { blockRangeError } from "../app/helpers/limits.js";
 
 
 
@@ -876,6 +877,14 @@ router.get("/mining/miner-summary", asyncHandler(async (req, res) => {
 
 	if (startHeight == -1 || endHeight == -1) {
 		res.json({success:false, error:"Unknown start or end height - use either 'since' (e.g. 'since=7d') or 'startHeight'+'endHeight' parameters to specify the blocks to analyze."});
+
+		return;
+	}
+
+	const rangeError = blockRangeError(startHeight, endHeight);
+
+	if (rangeError) {
+		res.json({success:false, error:rangeError});
 
 		return;
 	}
