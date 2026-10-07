@@ -1,8 +1,10 @@
 This changelog specifically tracks changes to the Public API available at `/api` and is maintained separately from the app CHANGELOG such that it can properly adhere to semantic versioning.
 
 ##### v2.1.0
-###### Unreleased
+###### 2026-10-07
 
+* Block and header responses carry the extra fields a Knots node returns for BLAKE2b blocks (`difficulty_blake2b`, `nonce2`, ...), as the node gives them
+* Fixed `/api/price/marketcap` failing when exchange rates are disabled, and `/api/xyzpub/txids` never ending when no address API is configured
 * Changed `/api/mempool/fees` to include more details pertaining to `nextBlock` (nextBlock.smart is where the previous "nextBlock" scalar value used to be)
 
 ##### v2.0.0
