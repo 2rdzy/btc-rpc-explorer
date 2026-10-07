@@ -5,12 +5,16 @@ canvas.mb-3(id=graphData.id)
 script.
 	Chart.defaults.elements.point.radius = 1;
 	var ctx = document.getElementById("#{graphData.id}").getContext('2d');
+	// the block where the BLAKE2b chain begins, or null: it is marked, and the line is grey before it and red after it
+	var forkHeight = #{typeof blake2bForkHeight == "number" ? blake2bForkHeight : "null"};
 	var graph = new Chart(ctx, {
 		type: 'line',
+		plugins: [forkMarker.plugin(forkHeight, "BLAKE2b fork", "#C4402A")],
 		labels: [#{graphData.labels}],
 		data: {
 			datasets: [{
 				borderColor: '#C4402A',
+				segment: { borderColor: forkMarker.segmentColor(forkHeight, "#adb5bd", "#C4402A") },
 				borderWidth: 2,
 				backgroundColor: 'rgba(0,0,0,0)',
 				data: #{graphData.dataVar},

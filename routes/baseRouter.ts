@@ -2048,6 +2048,9 @@ router.get("/tx-stats", asyncHandler(async (req, res, next) => {
 	res.locals.getblockchaininfo = await coreApi.getBlockchainInfo();
 	const tipHeight = res.locals.getblockchaininfo.blocks;
 
+	// the charts mark the block where the BLAKE2b chain begins
+	res.locals.blake2bForkHeight = await coreApi.getBlake2bForkHeight();
+
 	// only re-calculate tx-stats every X blocks since it's data heavy
 	const heightInterval = 6;
 	const height = heightInterval * Math.floor(tipHeight / heightInterval);

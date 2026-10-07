@@ -38,7 +38,7 @@ export const pages: PageCase[] = [
 	{ path: "/difficulty-history", contains: ["Difficulty"] },
 	{ path: "/next-block", contains: ["Next Block"] },
 	{ path: "/predicted-blocks", contains: ["Predicted"] },
-	{ path: "/tx-stats", contains: ["Transaction"] },
+	{ path: "/tx-stats", contains: ["Transaction", "var forkHeight = 961640;", "splits off"] },
 	{ path: "/block-stats", contains: ["Block"] },
 	{ path: "/next-halving", contains: ["Halving"] },
 	{ path: "/utxo-set", contains: ["UTXO"] },

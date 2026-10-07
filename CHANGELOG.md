@@ -43,6 +43,7 @@ This is the first release of the fork for the BLAKE2b chain of Bitcoin Knots (BT
 * The difficulty history no longer reuses BLAKE2b epochs that an older version cached with a wrong difficulty (worked out from the bits as if the proof of work were SHA-256d), which left the BLAKE2b line short and put a bogus step in the chart.
 * Docker: a multi-stage image that runs as a non-root user under `tini`, a compose file bound to localhost, and a CI job that builds it.
 * Tests: about 600 tests run in CI on Node 20 and 22, among them page tests that run the whole explorer against recorded and made-up node answers.
+* The charts of the transaction stats mark the block where the BLAKE2b chain splits off (a dashed line with a label); the line is grey before it (history shared with Bitcoin) and red after it.
 
 
 ##### v3.5.1
