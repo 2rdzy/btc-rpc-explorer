@@ -1618,8 +1618,8 @@ async function buildMempoolSummary(statusId: string, ageBuckets: number, sizeBuc
 			const fee = txMempoolInfo.f;
 			const size = txMempoolInfo.w / 4;
 			const weight = txMempoolInfo.w;
-			const feePerByte = new Decimal(txMempoolInfo.f).dividedBy(global.SATS_PER_BTC).toNumber() / weight;
-			const satoshiPerByte = feePerByte * global.SATS_PER_BTC;
+			// sat/vB, which is what the buckets are labelled with (the weight is four times the virtual size)
+			const satoshiPerByte = txMempoolInfo.f / size;
 			const age = Date.now() / 1000 - txMempoolInfo.t;
 
 			let addedToBucket = false;
