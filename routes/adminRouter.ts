@@ -18,6 +18,18 @@ import * as appStats from "../app/appStats.js";
 
 
 
+// The admin pages show how the explorer is doing inside (errors, requests, memory, ...): like the RPC tools they
+// need the password.
+router.use(function(req, res, next) {
+	if (!req.authenticated) {
+		res.status(403).send("The admin pages require authentication. Set an authentication password via the 'BTCEXP_BASIC_AUTH_PASSWORD' environment variable (see .env-sample file for more info).");
+
+		return;
+	}
+
+	next();
+});
+
 router.get("/dashboard", function(req, res, next) {
 	res.locals.appStartTime = global.appStartTime;
 	res.locals.memstats = v8.getHeapStatistics();

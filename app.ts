@@ -232,7 +232,8 @@ const sessionConfig: session.SessionOptions = {
 	resave: false,
 	saveUninitialized: true,
 	cookie: {
-		secure: config.secureSite
+		secure: config.secureSite,
+		sameSite: "lax"
 	}
 };
 
