@@ -16,12 +16,12 @@ const coinbaseTx = (text: string, value = 0, payoutAddress = 'bc1qexample') => (
 describe('identifyMiner with the custom BLAKE2b pool list', () => {
 	before(() => { global.miningPoolsConfigs = [customConfig]; });
 
-	for (const [tag, name] of [['AlphaPool', 'AlphaPool'], ['Lazarus', 'Lazarus'], ['omegapool.tech', 'omegapool.tech'], ['Legata', 'Legata']]) {
+	for (const [tag, name] of [['AlphaPool', 'AlphaPool'], ['Lazarus', 'Lazarus'], ['omegapool.tech', 'omegapool.tech'], ['Legata', 'Legata'], ['/mined on B2Pool.io/', 'B2Pool.io'], ['CONVOY', 'CONVOY'], ['dxpool', 'dxpool'], ['Rabid Pool', 'Rabid Pool']]) {
 		test(`finds ${name} by its coinbase tag`, () => {
 			const miner = utils.identifyMiner(coinbaseTx(`xx ${tag} DATUM User yy`), 975000);
 
 			assert.equal(miner!.name, name);
-			assert.match(miner!.identifiedBy!, new RegExp(`coinbase tag '${tag}'`));
+			assert.match(miner!.identifiedBy!, new RegExp(`coinbase tag '${name}'`));
 		});
 	}
 
