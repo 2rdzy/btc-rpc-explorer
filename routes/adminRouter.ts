@@ -57,7 +57,6 @@ router.get("/dashboard", function(req, res, next) {
 	res.locals.appConfig = {
 		privacyMode: config.privacyMode,
 		slowDeviceMode: config.slowDeviceMode,
-		demoSite: config.demoSite,
 		rpcConcurrency: config.rpcConcurrency,
 		addressApi: config.addressApi,
 		ipStackComApiAccessKey: !!config.credentials.ipStackComApiAccessKey,

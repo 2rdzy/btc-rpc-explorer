@@ -119,10 +119,6 @@ Run `node dist/bin/cli.js --help` for the full list, for example:
 node dist/bin/cli.js --port 8080 --bitcoind-port 8332 --bitcoind-cookie ~/.bitcoin/.cookie
 ```
 
-#### Demo mode
-
-`BTCEXP_DEMO=true` enables some demo behaviour: page size limits and an open RPC terminal. Do not enable it on a node you care about without reading the settings in [.env-sample](.env-sample).
-
 #### SSO authentication
 
 You can configure SSO authentication similar to what ThunderHub and RTL provide. To enable it, make sure `BTCEXP_BASIC_AUTH_PASSWORD` is **not** set and set `BTCEXP_SSO_TOKEN_FILE` to point to a file write-accessible by btc-rpc-explorer. Your SSO provider then needs to read the token from this file and set it in the URL parameter `token`. The token changes with each login, so the provider needs to read it each time.

@@ -48,7 +48,6 @@ declare var rpcConnected: any;
 declare var rpcStats: any;
 declare var SATS_PER_BTC: any;
 declare var sourcecodeDate: any;
-declare var sourcecodeProjectMetadata: any;
 declare var sourcecodeVersion: any;
 declare var specialAddresses: any;
 declare var specialBlocks: any;

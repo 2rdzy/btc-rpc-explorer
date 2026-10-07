@@ -78,7 +78,6 @@ if (process.env.BTCEXP_ELECTRUM_TLS_ALLOW_UNVERIFIED == "true") {
 
 // default=false env vars
 [
-	"BTCEXP_DEMO",
 	"BTCEXP_PRIVACY_MODE",
 	"BTCEXP_NO_INMEMORY_RPC_CACHE",
 	"BTCEXP_RPC_ALLOWALL",
@@ -134,7 +133,6 @@ const config = {
 
 	privacyMode: (flag("BTCEXP_PRIVACY_MODE") == "true"),
 	slowDeviceMode: slowDeviceMode,
-	demoSite: (flag("BTCEXP_DEMO") == "true"),
 	queryExchangeRates: (flag("BTCEXP_NO_RATES") != "true" && flag("BTCEXP_PRIVACY_MODE") != "true"),
 	noInmemoryRpcCache: (flag("BTCEXP_NO_INMEMORY_RPC_CACHE") == "true"),
 	
@@ -299,7 +297,6 @@ const config = {
 
 debugLog(`Config(final): privacyMode=${config.privacyMode}`);
 debugLog(`Config(final): slowDeviceMode=${config.slowDeviceMode}`);
-debugLog(`Config(final): demo=${config.demoSite}`);
 debugLog(`Config(final): rpcAllowAll=${config.rpcBlacklist.length == 0}`);
 
 export = config;

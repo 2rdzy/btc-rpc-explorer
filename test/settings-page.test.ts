@@ -24,7 +24,8 @@ describe("the settings in the running explorer", () => {
 
 		buildApp();
 		node = await startFakeNode(fixtures, (method, params) => nodeSpecific(method, params, tip));
-		app = await startApp(node.port, {});
+		// (BTCEXP_DEMO used to open the RPC tools to everyone: it does nothing now)
+		app = await startApp(node.port, { BTCEXP_DEMO: "true" });
 	}, { timeout: 240000 });
 
 	after(async () => {
@@ -85,6 +86,10 @@ describe("the settings in the running explorer", () => {
 
 		assert.match(cookie, /SameSite=Lax/i);
 		assert.match(cookie, /HttpOnly/i);
+	});
+
+	test("the RPC browser is refused when no password is set, whatever BTCEXP_DEMO says", async () => {
+		assert.match(await (await fetch(`${app.baseUrl}/rpc-browser`)).text(), /RPC Terminal \/ Browser require authentication/);
 	});
 
 	test("a setting of another name is not kept when its value is not plain", async () => {
