@@ -6,6 +6,8 @@ export interface PageCase {
 	path: string,
 	// POST these form fields (with a CSRF token) instead of a GET
 	post?: Record<string, string>,
+	// GET with the CSRF token of a session in the query (for what executes something, as the RPC browser does)
+	csrf?: boolean,
 	// the status (default 200); 301 and 302 mean a redirect, and `location` is where to
 	status?: number,
 	location?: string,
@@ -62,8 +64,17 @@ export const pages: PageCase[] = [
 	{ path: `/tx/${GENESIS_TX}`, contains: ["Genesis"] },
 	{ path: `/tx/${UNKNOWN}`, status: 404, contains: ["Failed to load transaction"] },
 
+	// paging and sorting
+	{ path: "/blocks?limit=5&offset=2&sort=asc", contains: ["Blocks"] },
+	{ path: "/blocks?limit=3&offset=1&sort=desc", contains: ["Blocks"] },
+	{ path: "/blocks?limit=abc", contains: ["Blocks"] },
+	{ path: "/mempool-transactions?limit=5&offset=2&sort=asc" },
+	{ path: `/block/${BLOCK}?limit=5&offset=2&sort=asc`, contains: ["Block #975,700"] },
+	{ path: "/block-height/975700?limit=3&offset=1", contains: ["Block #975,700"] },
+
 	// addresses and keys
 	{ path: `/address/${ADDRESS}`, contains: [ADDRESS] },
+	{ path: `/address/${ADDRESS}?limit=5&offset=1&sort=asc`, contains: [ADDRESS] },
 	{ path: `/xyzpub/${ZPUB}`, contains: ["zpub"] },
 
 	// search
@@ -73,12 +84,44 @@ export const pages: PageCase[] = [
 	{ path: "/search", post: { query: ADDRESS }, status: 302, location: `./address/${ADDRESS}` },
 	{ path: "/search", post: { query: UNKNOWN }, status: 302, location: "./" },
 	{ path: "/search", post: { query: "" }, status: 302, location: "./" },
+	{ path: "/search", post: { query: "hello" }, status: 302, location: "./" },
+	{ path: "/search", post: { query: "99999999" }, status: 302, location: "./" },
+	{ path: "/search", post: { query: `${TX1}@975700` }, status: 302, location: `./tx/${TX1}@975700` },
+	{ path: "/search", post: { query: ZPUB }, status: 302, location: `./xyzpub/${ZPUB}` },
+	{ path: "/search", post: { query: "tpubD6NzVbkrYhZ4X" }, status: 302, location: "./xyzpub/tpubD6NzVbkrYhZ4X" },
+	{ path: "/search" },
+	{ path: "/block-analysis" },
 
 	// the RPC tools
 	{ path: "/rpc-browser", contains: ["RPC Browser"] },
 	{ path: "/rpc-browser?method=getblockcount", contains: ["getblockcount", "Arguments"] },
 	{ path: "/rpc-browser?method=getblock", contains: ["getblock"] },
+	{ path: "/rpc-browser?method=getblockcount&execute=true", csrf: true, contains: ["getblockcount"] },
+	{ path: `/rpc-browser?method=getblockhash&execute=true&args[0]=975700`, csrf: true, contains: [BLOCK] },
+	{ path: `/rpc-browser?method=getblockheader&execute=true&args[0]=${BLOCK}&args[1]=true`, csrf: true, contains: ["merkleroot"] },
+	{ path: "/rpc-browser?method=nosuchmethod", contains: ["nosuchmethod"] },
 	{ path: "/rpc-terminal", contains: ["Terminal"] },
+	{ path: "/rpc-terminal", post: { cmd: "getblockhash 975700" }, contains: [BLOCK] },
+	{ path: "/rpc-terminal", post: { cmd: "getblockhash 99999999" }, contains: ["Error"] },
+	{ path: "/rpc-terminal", post: { cmd: "stop" }, contains: ["blacklisted"] },
+
+	// the settings and the favourites, which redirect back to where they came from (here: the home page)
+	{ path: "/changeSetting?name=hideElectrumTrustWarnings&value=true", status: 302, location: "/" },
+	{ path: "/changeSetting?name=userTzOffset&value=abc", status: 302, location: "/" },
+	{ path: "/changeSetting?name=userTzOffset&value=2", status: 302, location: "/" },
+	{ path: "/changeSetting", status: 302, location: "/" },
+	{ path: "/session-data?action=add-rpc-favorite&data=getblockcount", status: 302, location: "/" },
+	{ path: "/session-data?action=remove-rpc-favorite&data=getblockcount", status: 302, location: "/" },
+	{ path: "/session-data", status: 302, location: "/" },
+	{ path: "/user-settings", contains: ["Settings"] },
+
+	// the terminal, behind the RPC browser
+	{ path: "/terminal" },
+	{ path: "/terminal", post: { cmd: "" }, contains: ["Unknown command"] },
+	{ path: "/terminal", post: { cmd: "getblockcount" }, contains: ["Unknown command"] },
+	{ path: "/terminal", post: { cmd: "parsescript 51" }, contains: ["OP_1"] },
+	{ path: "/terminal", post: { cmd: "parsescript zz" }, contains: ["needs a script as hex"] },
+	{ path: "/predicted-blocks-old" },
 
 	// the static pages
 	{ path: "/about", contains: ["About", "Dan Janosik"] },
@@ -113,8 +156,16 @@ export const pages: PageCase[] = [
 	{ path: "/api/mempool/summary" },
 	{ path: "/api/mempool/fees", contains: ["nextBlock"] },
 	{ path: "/api/price", contains: ["disabled"] },
+	{ path: "/api/price/sats", contains: ["disabled"] },
+	{ path: "/api/price/marketcap", contains: ["disabled"] },
 	{ path: "/api/quotes/all" },
+	{ path: "/api/quotes/random" },
 	{ path: "/api/holidays/all" },
+	{ path: "/api/holidays/today" },
+	{ path: "/api/changelog" },
+	{ path: "/api/tx/volume/24h" },
+	{ path: "/api/blockchain/utxo-set", contains: ["total_amount"] },
+	{ path: `/api/xyzpub/txids/${ZPUB}?limit=2` },
 
 	// what the pages load in the background
 	{ path: "/snippet/next-block" },

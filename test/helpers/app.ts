@@ -127,17 +127,23 @@ export interface PageResult {
 }
 
 // Requests a page (see test/fixtures/pages.ts): a GET, or a POST that carries the CSRF token of a session that was
-// just started. Redirects are not followed.
-export async function requestPage(baseUrl: string, page: { path: string, post?: Record<string, string> }, password?: string): Promise<PageResult> {
+// just started (a GET with `csrf` carries it in the query, as the pages that execute something do). Redirects are not followed.
+export async function requestPage(baseUrl: string, page: { path: string, post?: Record<string, string>, csrf?: boolean }, password?: string): Promise<PageResult> {
 	let response: Response;
 
 	// (the explorer asks for a password when BTCEXP_BASIC_AUTH_PASSWORD is set)
 	const auth: Record<string, string> = password === undefined ? {} : { authorization: 'Basic ' + Buffer.from(`user:${password}`).toString('base64') };
 
-	if (page.post) {
+	if (page.post || page.csrf) {
 		const home = await fetch(baseUrl + "/", { headers: auth });
 		const cookie = (home.headers.get("set-cookie") || "").split(";")[0];
 		const token = /name="csrf-token" content="([^"]+)"/.exec(await home.text())?.[1] ?? "";
+
+		if (!page.post) {
+			response = await fetch(`${baseUrl}${page.path}${page.path.includes("?") ? "&" : "?"}_csrf=${encodeURIComponent(token)}`, { redirect: "manual", headers: { ...auth, cookie } });
+
+			return { status: response.status, location: response.headers.get("location"), text: await response.text() };
+		}
 
 		response = await fetch(baseUrl + page.path, {
 			method: "POST",

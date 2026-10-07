@@ -95,6 +95,20 @@ describe('searchXpubTxids', () => {
 		assert.ok(get.mock.calls.length >= 7);
 	});
 
+	test('with no address API it ends (and finds nothing) instead of looping for ever', { timeout: 10000 }, async () => {
+		fakeRpc({ validateaddress: params => ({ address: params[0], scriptPubKey: '00' }) });
+		config.addressApi = undefined;
+
+		const out = await xyzpubApi.searchXpubTxids(zpub, 2);
+
+		assert.deepEqual(out.usedAddresses, []);
+		assert.equal(out.emptyAddresses.receive.length, 2);
+		assert.equal(out.emptyAddresses.change.length, 2);
+
+		// with a limit on the addresses too
+		assert.deepEqual((await xyzpubApi.searchXpubTxids(zpub, 20, 1)).usedAddresses, []);
+	});
+
 	test('pages through an address with more transactions than one page', async () => {
 		fakeRpc({ validateaddress: params => ({ address: params[0], scriptPubKey: '00' }) });
 		const full = Array.from({ length: 20 }, (_, i) => 'a' + i);
